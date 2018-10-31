@@ -85,7 +85,7 @@ Due to Kraken's LCA reporting, clades with many similar species will only have s
 The [manual](https://ccb.jhu.edu/software/bracken/index.shtml?t=manual) has an explanation of the command line options.
 
 #### Installation
-Installing Bracken with conda requires Kraken1, which leads to problems having both Kraken versions in the same environment in my experience. I would clone the [github repository](https://github.com/jenniferlu717/Bracken) and run `sh install_bracken.sh` instead. You can then add the `bracken` executable to a folder in your `PATH`.
+Installing Bracken with conda requires Kraken1, which leads to problems having both Kraken versions in the same environment in my experience. I would clone the [github repository](https://github.com/jenniferlu717/Bracken) and run `sh install_bracken.sh` instead. You can then add the `Bracken`  folder to your `PATH`.
 #### Databases
 I've built a database for 100 & 150bp reads in each of the db folders mentioned above. If you have different read lengths, contact Ben to build a DB or use the `bracken-build` command (use 32 cores for speed).
 ### Execution
