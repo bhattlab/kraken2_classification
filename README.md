@@ -12,10 +12,10 @@ source activate kraken2 && conda install -c bioconda kraken2 -y
 ```
 
 ## Usage
-Classificaion is as simple as one command:
+Classificaion is as simple as setting the database and one command:
 ```
 DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria/
-kraken2 --db $DB --threads 8 --output out.krak --report out.krark.report 
+kraken2 --db $DB --threads 8 --output out.krak --report out.krak.report in.fasta 
 ```
 The database stays in memory after loading, so it's very quick to run many samples consecutively. A loop over read files is one way to do this. 
 Note that you can use the `--paired` option for classification of paired end reads. This improves classified percentages over concatenated pairs in my experience. The `--use-mpa-style` option formats the report to match metaphlan2 style reports. See the manual linked above for full options.
@@ -35,35 +35,41 @@ I've evauluated some of the databases below on sets different metagenomic datase
 See this spreadsheet **TODO** for a summary of results.
 
 ## Available databases
-Specify the right database for your classification needs. To see if your organism of interest is present in a database (and therefore is able to be classified in your reads), search the `inspect.out` file in the database folder. If this has the name or taxonomic identifier you're interested in, you're good to go! Example:
+Specify the right database for your classification needs. To see if your organism of interest is present in a database (and therefore is able to be classified in your reads), search the `inspect.out` file in the database folder. If this has the name or taxonomic identifier you're interested in, you're good to go! In this example we see that crassphage is indeed present in the DB:
 ```
 $ grep -i crassphage /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria/inspect.out 
-  0.00  13159   13159   S       1211417         uncultured crAssphage
+>  0.00  13159   13159   S       1211417         uncultured crAssphage
 
 ```
 ### Genbank bacteria (high quality assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria/`
+
 Includes all bacterial sequences from genbank that were assembled to "Complete Genome" or "Chromosome" status. Will miss organisms that don't have high-quality assemblies in genbank. Very fast and low memory for simple bacterial classification.
 Has had Prevotell Copri and crAssphage sequences manually added. 
 
 ### Genbank bacteria and archaea (ALL assemblies) **IN PROGRESS**
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/`
+
 Includes all bacterial sequences from genbank assembled to any quality (includes "Scaffold" and "Contig" level assemblies). This database will be more noisy, but has greater range. 
 Has had Prevotell Copri and crAssphage sequences manually added. 
 
 ### Standard (high quality refseq assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/`
+
 Contains high-quality refseq assemblies of archaea, bacteria, human, UniVec_Core and viral sequences.
 
 ### Standard protein (high quality refseq assemblies) **IN PROGRESS**
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/`
+
 Protein database of high-quality refseq assemblies of archaea, bacteria, human, UniVec_Core and viral sequences.
 
 ### nt, env_nt
 The equivalent of the blast nt and env_nt databases can be found at 
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt`
+
 and
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt`
+
 I'm not sure how useful these are and haven't tried them in any real classification tasks.
 
 ### Custom sequences
