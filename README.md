@@ -45,13 +45,15 @@ $ grep -i crassphage /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oc
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria/`
 
 Includes all bacterial sequences from genbank that were assembled to "Complete Genome" or "Chromosome" status. Will miss organisms that don't have high-quality assemblies in genbank. Very fast and low memory for simple bacterial classification.
-Has had Prevotell Copri and crAssphage sequences manually added. 
+
+Has had Prevotella copri and crAssphage sequences manually added. 
 
 ### Genbank bacteria and archaea (ALL assemblies) **IN PROGRESS**
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/`
 
 Includes all bacterial sequences from genbank assembled to any quality (includes "Scaffold" and "Contig" level assemblies). This database will be more noisy, but has greater range. 
-Has had Prevotell Copri and crAssphage sequences manually added. 
+
+Has had Prevotella copri and crAssphage sequences manually added. 
 
 ### Standard (high quality refseq assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/`
@@ -79,6 +81,7 @@ Don't see your favorite bug in the `inspect.out` file? Have a newly assembled or
 ## Downstream processing
 ### Abundance estimation with Bracken
 [Bracken publication](https://peerj.com/articles/cs-104/)
+
 Due to Kraken's LCA reporting, clades with many similar species will only have species-level assignments for unique regions, leaving most reads "stranded" above the species level. The number of reads classified directly to a species may be far lower than the actual number present. Therefore, any assumption that Kraken’s raw read assignments can be directly translated into species- or strain-level abundance estimates is flawed, as ignoring reads at higher levels of the taxonomy will grossly underestimate some species, and creates the erroneous impression that Kraken’s assignments themselves were incorrect.Bracken (Bayesian Reestimation of Abundance after Classification with KrakEN) estimates species abundances in metagenomics samples by probabilistically re-distributing reads in the taxonomic tree. 
 The [manual](https://ccb.jhu.edu/software/bracken/index.shtml?t=manual) has an explanation of the command line options.
 
