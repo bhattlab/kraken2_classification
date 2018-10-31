@@ -2,7 +2,7 @@
 Short read classification with the kraken2 program
 
 ## Introduction
-[Kraken2](http://ccb.jhu.edu/software/kraken/) is a short read classification system that is fast and memory efficient. It allows you to assign a taxonomic identification to each read from a sequencing run. Kraken assigns each read to the lowest commen ancestor (LCA) of all sequences it alignes to. Through the use of the Bracken package, you can also get accurate estimates of proportions of different species (and genus, etc). This guide will cover some of the basics, but the full [manual](http://ccb.jhu.edu/software/kraken/MANUAL.html) is quite good and has more detail.
+[Kraken2](http://ccb.jhu.edu/software/kraken/) is a short read classification system that is fast and memory efficient. It allows you to assign a taxonomic identification to each read from a sequencing run. Kraken assigns each read to the lowest commen ancestor (LCA) of all sequences it alignes to. Through the use of the Bracken package, you can also get accurate estimates of proportions of different species. This guide will cover some of the basics, but the full [manual](http://ccb.jhu.edu/software/kraken/MANUAL.html) is quite good and has more detail.
 
 ## Installation
 Conda is the best way to get kraken2 installed. I've had issues installing kraken1 and kraken2 in the same environment, so it's best to create a new environment for kraken2. 
@@ -79,6 +79,8 @@ Don't see your favorite bug in the `inspect.out` file? Have a newly assembled or
 
 ## Downstream processing
 ### Abundance estimation with Bracken
+I highly recommend estimating abundances with Bracken! It makes the reports much more understandable. 
+
 [Bracken publication](https://peerj.com/articles/cs-104/)
 
 Due to Kraken's LCA reporting, clades with many similar species will only have species-level assignments for unique regions, leaving most reads "stranded" above the species level. The number of reads classified directly to a species may be far lower than the actual number present. Therefore, any assumption that Kraken’s raw read assignments can be directly translated into species- or strain-level abundance estimates is flawed, as ignoring reads at higher levels of the taxonomy will grossly underestimate some species, and creates the erroneous impression that Kraken’s assignments themselves were incorrect.Bracken (Bayesian Reestimation of Abundance after Classification with KrakEN) estimates species abundances in metagenomics samples by probabilistically re-distributing reads in the taxonomic tree. 
@@ -96,7 +98,7 @@ bracken -d $DB -i sample.report -o sample.report.bracken -r $READ_LEN
 The -l (classification level) and -t (classification threshold) options can be changed as well. 
 
 ### Visualization with Krona
-I like Krona for visualization of individual samples. It's a great way to explore the taxonomic identifications and proportions. Install the KronaTools package on your local machine from the [github repo](https://github.com/marbl/Krona/wiki/KronaTools). I then call the _ImportTaxonomy_ script on the Kraken report. Multiple reports can be specified on the command line to generate an html file with a tab for each input.
+I like Krona for visualization of individual samples. It's a great way to explore the taxonomic identifications and proportions. Install the KronaTools package on your local machine from the [github repo](https://github.com/marbl/Krona/wiki/KronaTools). I then call the _ImportTaxonomy_ script on the Kraken report. Multiple reports can be specified on the command line to generate an html file with a tab for each input. Bracken reports can be used as an input here as well. 
 ```
 ~/software/KronaTools-2.7/scripts/ImportTaxonomy.pl -m 3 -s 0 -q 0 -t 5 -i krak.report -o out.html
 ```
@@ -107,7 +109,7 @@ I like Krona for visualization of individual samples. It's a great way to explor
 options(browser="google-chrome")
 pavian::runApp()
 ```
-Pavian seems to work with kraken reports out of the box, but not bracken reports.
+Bracken reports can be used here as an input as well. 
 
 ### Metaphlan2 style heatmaps
 If you want to make a heatmap like in those made in metaphlan2, you can use the `--use-mpa-style` option to get a compatable report. Normalize to the total number of classified reads at the domain level:
