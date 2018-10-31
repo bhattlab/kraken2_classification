@@ -69,7 +69,6 @@ Protein database of high-quality refseq assemblies of archaea, bacteria, human, 
 The equivalent of the blast nt and env_nt databases can be found at 
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt`
 
-and
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt`
 
 I'm not sure how useful these are and haven't tried them in any real classification tasks.
