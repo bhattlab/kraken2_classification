@@ -102,6 +102,7 @@ I like Krona for visualization of individual samples. It's a great way to explor
 ```
 ~/software/KronaTools-2.7/scripts/ImportTaxonomy.pl -m 3 -s 0 -q 0 -t 5 -i krak.report -o out.html
 ```
+![Krona_classification](images/krona_classification.png "Using Krona is a great way to explore classification at many levels.")
 
 ### Sample comparison with Pavian
 [Pavian](http://ccb.jhu.edu/software/pavian/) is a web application fo comparing kraken classification results. I find it useful to visualize results across many samples. This application should be installed on your local machine in it's own conda environment. The [github repo] has installation instructions. I first have to run this option in R to work, then start the app: 
@@ -127,3 +128,4 @@ grep -E "(s__)|(^ID)"  merge_metaphlan.txt | grep -v "t__" | sed 's/^.*s__//g' >
 metaphlan_hclust_heatmap.py --in merge_metaphlan.txt  --top 25 --minv 0.1 -s log --out merge_metaphlan_heatmap.png -f braycurtis -d braycurtis -c viridis 
 metaphlan_hclust_heatmap.py --in merge_metaphlan.txt  --top 150 --minv 0.1 -s log --out merge_metaphlan_heatmap_big -f braycurtis -d braycurtis -c viridis
 ```
+![metaphlan2_heatmap](images/metaphlan2_heatmap.png "Using metaphlan2-style heatmaps from Kraken2 data.")
