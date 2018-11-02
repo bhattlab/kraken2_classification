@@ -109,7 +109,9 @@ I like Krona for visualization of individual samples. It's a great way to explor
 options(browser="google-chrome")
 pavian::runApp()
 ```
-Bracken reports can be used here as an input as well. 
+Bracken reports can be used here as an input as well. Pavian also makes nice classification flowcharts, see below for an example:
+
+![Pavian_classification](images/pavian_classification_flow.png "Using pavian can make nice classification flowcharts")
 
 ### Metaphlan2 style heatmaps
 If you want to make a heatmap like in those made in metaphlan2, you can use the `--use-mpa-style` option to get a compatable report. Normalize to the total number of classified reads at the domain level:
