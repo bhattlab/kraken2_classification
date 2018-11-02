@@ -60,7 +60,7 @@ Has had Prevotella copri and crAssphage sequences manually added.
 
 Contains high-quality refseq assemblies of archaea, bacteria, human, UniVec_Core and viral sequences.
 
-### Standard protein (high quality refseq assemblies) **IN PROGRESS**
+### Standard protein (high quality refseq assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/`
 
 Protein database of high-quality refseq assemblies of archaea, bacteria, human, UniVec_Core and viral sequences.
@@ -105,7 +105,7 @@ I like Krona for visualization of individual samples. It's a great way to explor
 ![Krona_classification](images/krona_classification.png "Using Krona is a great way to explore classification at many levels.")
 
 ### Sample comparison with Pavian
-[Pavian](http://ccb.jhu.edu/software/pavian/) is a web application fo comparing kraken classification results. I find it useful to visualize results across many samples. This application should be installed on your local machine in it's own conda environment. The [github repo] has installation instructions. I first have to run this option in R to work, then start the app: 
+[Pavian](http://ccb.jhu.edu/software/pavian/) is a web application fo comparing kraken classification results. I find it useful to visualize results across many samples. This application should be installed on your local machine in it's own conda environment. The [github repo](https://github.com/fbreitwieser/pavian) has installation instructions. I first have to run this option in R to work, then start the app: 
 ```
 options(browser="google-chrome")
 pavian::runApp()
