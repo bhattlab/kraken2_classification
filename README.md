@@ -20,19 +20,26 @@ kraken2 --db $DB --threads 8 --output out.krak --report out.krak.report in.fasta
 The database stays in memory after loading, so it's very quick to run many samples consecutively. A loop over read files is one way to do this. 
 Note that you can use the `--paired` option for classification of paired end reads. This improves classified percentages over concatenated pairs in my experience. The `--use-mpa-style` option formats the report to match metaphlan2 style reports. See the manual linked above for full options.
 
+### Snakemake workflow
+A workflow and configuration file are provided in this repo. By default, samples are classified using both the high quality and the complete genbank databases. Edit the `all` rule to change this behavior. Currently this depends on a list of sample names in the configuration file, and read files to be named following the sample name convention. 
+
+There's a lot of logic in the snakemake to allow classification in a loop on a single node, without having to redo any previously classified samples. If you know a better way to do this, I'm all ears...
+
 ### Memory usage
-Memory usage depends on the database. The manual recommends at least 175GB for the standard database. In my experiene, usage maxes out at the following values:
-TODO
+Memory usage depends on the database. For a rough estimate of memory requirements for a given db, check the size of the `hash.k2d` file, which has to fit completely in memory. The manual recommends at least 175GB for the standard database. In my experiene, usage maxes out at the following values:
+
+- Genbank high quality: 64g
+- Genbank all: 256g
+
 You should request at least this much memory on a node you plan to do classification on. 
 
 ### Time usage
-Kraken2 is very fast compared to kraken1 or other classification tools. After loading the database in memory the first time (about 5 minutes), subsequet runs proceed very quickly. Using 8 cores on SCG I had the following results with the genbank bacteria DB: 
+Kraken2 is very fast compared to kraken1 or other classification tools. After loading the database in memory the first time (about 5 minutes for genbank hq), subsequet runs proceed very quickly. Using 8 cores on SCG I had the following results with the genbank hq database: 
 `10399748 sequences (2356.32 Mbp) processed in 85.562s (7292.8 Kseq/m, 1652.36 Mbp/m).`
 That's 85 seconds for a dataset with about 10 million read pairs. Obviously more cores can make things faster for larger datasets.
 
 ## Classification percentages
-I've evauluated some of the databases below on sets different metagenomic datasets, and compared the unclassified percentages to our old Kraken1 custom database. Overall, Kraken2 seems to do better. 
-See this spreadsheet **TODO** for a summary of results.
+I've evauluated some of the databases below on sets different metagenomic datasets, and compared the unclassified percentages to our old Kraken1 custom database. See [this spreadsheet](https://docs.google.com/spreadsheets/d/15nVMno4w4Q-DVO9tdp1DBpwKslOkLb2TVqnSnuEofTY/edit?usp=sharing) for a summary of results. Overall, Kraken2 with the high quality database classifies less reads than Kraken1 but much quicker. The full genbank database has increased classification percentages and speed.
 
 ## Available databases
 Specify the right database for your classification needs. To see if your organism of interest is present in a database (and therefore is able to be classified in your reads), search the `inspect.out` file in the database folder. If this has the name or taxonomic identifier you're interested in, you're good to go! In this example we see that crassphage is indeed present in the DB:
@@ -41,31 +48,52 @@ $ grep -i crassphage /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oc
 >  0.00  13159   13159   S       1211417         uncultured crAssphage
 
 ```
-### Genbank bacteria (high quality assemblies)
+#### Genbank bacteria (high quality assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria/`
 
-Includes all bacterial sequences from genbank that were assembled to "Complete Genome" or "Chromosome" status. Will miss organisms that don't have high-quality assemblies in genbank. Very fast and low memory for simple bacterial classification.
+Includes all bacterial sequences from genbank that were assembled to "Complete Genome" or "Chromosome" status as of October 2018. Will miss organisms that don't have high-quality assemblies in genbank. Very fast and low memory for simple bacterial classification. 64g memory is sufficient for this database.
 
 Has had Prevotella copri and crAssphage sequences manually added. 
 
-### Genbank bacteria and archaea (ALL assemblies) **IN PROGRESS**
+**statistics**
+- 13653 sequences went into the construction of this database
+- 4053 species are present
+- 8383 species, subspecies or strains are present
+
+Check the `inspect.out` file for a closer look. 
+
+#### Genbank bacteria and archaea (ALL assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/`
 
-Includes all bacterial sequences from genbank assembled to any quality (includes "Scaffold" and "Contig" level assemblies). This database will be more noisy, but has greater range. 
+Includes all bacterial sequences from genbank assembled to any quality (includes "Scaffold" and "Contig" level assemblies) as of October 2018. 256g memory is necessary for this database, and runtimes will be longer. I've found results from this database to be more noisy, but with higher classification percentages. There is a long tail of very low abundance species present. Running Bracken is essential when using this database.
 
 Has had Prevotella copri and crAssphage sequences manually added. 
 
-### Standard (high quality refseq assemblies)
+**statistics**
+- 167229 sequences went into the construction of this database
+- 38789 species are present
+- 63871 species, subspecies or strains are present
+
+Check the `inspect.out` file for a closer look. 
+
+#### Standard (high quality refseq assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/`
 
 Contains high-quality refseq assemblies of archaea, bacteria, human, UniVec_Core and viral sequences.
 
-### Standard protein (high quality refseq assemblies)
+**statistics**
+- 20934 sequences went into the construction of this database
+- 11578 species are present
+- 17506 species, subspecies or strains are present
+
+Check the `inspect.out` file for a closer look. 
+
+#### Standard protein (high quality refseq assemblies)
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/`
 
 Protein database of high-quality refseq assemblies of archaea, bacteria, human, UniVec_Core and viral sequences.
 
-### nt, env_nt
+#### nt, env_nt
 The equivalent of the blast nt and env_nt databases can be found at 
 `/labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt`
 
@@ -73,7 +101,7 @@ The equivalent of the blast nt and env_nt databases can be found at
 
 I'm not sure how useful these are and haven't tried them in any real classification tasks.
 
-### Custom sequences
+#### Custom sequences
 Don't see your favorite bug in the `inspect.out` file? Have a newly assembled organism you want added to the database? It's an easy process to put custom sequences into the database and can be done in under a day of processing time. Contact Ben for requests (I'll batch these to once a month or something if there are lots of requests.)
 
 

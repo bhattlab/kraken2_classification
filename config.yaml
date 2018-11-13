@@ -1,0 +1,10 @@
+read_specification: ['R1', 'R2']
+extension: .fq.gz # or .fastq.gz (should be gzipped regardless) - must include the period!
+
+read_basedir: "/labs/asbhatt/data/bhatt_lab_sequencing/1k_metagenomes/plate1-8/4.trim/"
+sample_names: [
+"Plate1_A1",
+"Plate1_A2",
+"Plate1_A3",
+"Plate1_A4"
+]
