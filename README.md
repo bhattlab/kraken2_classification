@@ -20,6 +20,9 @@ kraken2 --db $DB --threads 8 --output out.krak --report out.krak.report in.fasta
 The database stays in memory after loading, so it's very quick to run many samples consecutively. A loop over read files is one way to do this. 
 Note that you can use the `--paired` option for classification of paired end reads. This improves classified percentages over concatenated pairs in my experience. The `--use-mpa-style` option formats the report to match metaphlan2 style reports. See the manual linked above for full options.
 
+**NEW 2018-11-15**
+You can convert between the standard kraken report and the mpa syle report with the `convert_report_mpa_style.py` script in this repo. Requires pandas. Due to some entries in the NCBI taxonomy missing taxonomic levels, the report may be not exactly the same databases not listed here. 
+
 ### Snakemake workflow
 A workflow and configuration file are provided in this repo. By default, samples are classified using both the high quality and the complete genbank databases. Edit the `all` rule to change this behavior. Currently this depends on a list of sample names in the configuration file, and read files to be named following the sample name convention. 
 
