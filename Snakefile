@@ -13,9 +13,9 @@ rule all:
         expand("kraken2_genbank_hq/{samp}.krak.mark", samp=sample_names),
         expand("kraken2_genbank_hq/{samp}.krak.report.mark", samp=sample_names),
         expand("kraken2_genbank_hq/{samp}.krak.report.bracken", samp=sample_names),
-        expand("kraken2_genbank_all/{samp}.krak.mark", samp=sample_names),
-        expand("kraken2_genbank_all/{samp}.krak.report.mark", samp=sample_names),
-        expand("kraken2_genbank_all/{samp}.krak.report.bracken", samp=sample_names),
+        # expand("kraken2_genbank_all/{samp}.krak.mark", samp=sample_names),
+        # expand("kraken2_genbank_all/{samp}.krak.report.mark", samp=sample_names),
+        # expand("kraken2_genbank_all/{samp}.krak.report.bracken", samp=sample_names),
 
 rule kraken_classify_hq:
     input:
@@ -44,8 +44,8 @@ rule kraken_classify_hq:
             open(t2, 'a').close()
 
         do_samples = list(set(sample_names) - set(files_both))
-        r1_new = expand(join(read_basedir, "{samp}_1.fq.gz"), samp=do_samples)
-        r2_new = expand(join(read_basedir, "{samp}_2.fq.gz"), samp=do_samples)
+        r1_new = expand(join(read_basedir, "{samp}_" + read_suffix[0] + extension), samp=do_samples)
+        r2_new = expand(join(read_basedir, "{samp}_" + read_suffix[1] + extension), samp=do_samples)
         krak_new = expand("kraken2_genbank_hq/{samp}.krak", samp=do_samples)
         krak_report_new = expand("kraken2_genbank_hq/{samp}.krak.report", samp=do_samples)
         print('running on ' + str(len(do_samples)) + ' out of ' + str(len(sample_names)))
@@ -56,7 +56,8 @@ rule kraken_classify_hq:
         for r1, r2, outf, outfr in zip(r1_new, r2_new, krak_new, krak_report_new):
             sub = "kraken2 --db {db} --threads {threads} --output {outf} \
                    --report {outfr} --paired {r1} {r2}".format(\
-                    db=params, threads=threads, outf=outf, outfr=outfr, r1=r1, r2=r2)
+                    db=params, threads=threads, outf=outf, outfr=outfr,
+                    r1=r1, r2=r2)
             # print(sub)
             os.system(sub)
             open(outf + '.mark','a').close()
@@ -89,8 +90,8 @@ rule kraken_classify_all:
             open(t2, 'a').close()
 
         do_samples = list(set(sample_names) - set(files_both))
-        r1_new = expand(join(read_basedir, "{samp}_1.fq.gz"), samp=do_samples)
-        r2_new = expand(join(read_basedir, "{samp}_2.fq.gz"), samp=do_samples)
+        r1_new = expand(join(read_basedir, "{samp}_" + read_suffix[0] + extension), samp=do_samples)
+        r2_new = expand(join(read_basedir, "{samp}_" + read_suffix[1] + extension), samp=do_samples)
         krak_new = expand("kraken2_genbank_all/{samp}.krak", samp=do_samples)
         krak_report_new = expand("kraken2_genbank_all/{samp}.krak.report", samp=do_samples)
         print('running on ' + str(len(do_samples)) + ' out of ' + str(len(sample_names)))
@@ -131,7 +132,7 @@ rule bracken_all:
     output:
         bracken_report = "kraken2_genbank_all/{samp}.krak.report.bracken"
     params: 
-        db = "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria",
+        db = "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_all",
         readlen = 150,
         actual_input = "kraken2_genbank_all/{samp}.krak.report"
     threads: 1
