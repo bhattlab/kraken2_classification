@@ -13,6 +13,7 @@ rule all:
         expand("kraken2_genbank_hq/{samp}.krak.mark", samp=sample_names),
         expand("kraken2_genbank_hq/{samp}.krak.report.mark", samp=sample_names),
         expand("kraken2_genbank_hq/{samp}.krak.report.bracken", samp=sample_names),
+        "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap.png"
         # expand("kraken2_genbank_all/{samp}.krak.mark", samp=sample_names),
         # expand("kraken2_genbank_all/{samp}.krak.report.mark", samp=sample_names),
         # expand("kraken2_genbank_all/{samp}.krak.report.bracken", samp=sample_names),
@@ -58,7 +59,7 @@ rule kraken_classify_hq:
                    --report {outfr} --paired {r1} {r2}".format(\
                     db=params, threads=threads, outf=outf, outfr=outfr,
                     r1=r1, r2=r2)
-            # print(sub)
+            print(sub)
             os.system(sub)
             open(outf + '.mark','a').close()
             open(outfr + '.mark','a').close()
@@ -142,4 +143,53 @@ rule bracken_all:
     shell:
         """
         bracken -d {params.db} -i {params.actual_input} -o {output.bracken_report} -r {params.readlen}
+        """
+
+# convert bracken to mpa syle report if desired 
+rule convert_bracken_mpa_hq:
+    input:
+        "kraken2_genbank_hq/{samp}.krak.report.bracken"
+    output:
+        "kraken2_genbank_hq/mpa_reports/{samp}.krak.report.bracken.mpa"
+    shell:
+        """
+        python convert_report_mpa_style.py -i {input} -o {output}
+        """
+
+rule norm_mpa_hq:
+    input: 
+        "kraken2_genbank_hq/mpa_reports/{samp}.krak.report.bracken.mpa"
+    output:
+        "kraken2_genbank_hq/mpa_reports/{samp}.krak.report.bracken.mpa.norm"
+    shell:
+        """
+        sum=$(grep -vP "\|" {input} | cut -f 2 | awk '{{sum += $1}} END {{printf ("%.2f\n", sum/100)}}')
+        awk -v sum="$sum" 'BEGIN {{FS="\t"}} {{OFS="\t"}} {{print $1,$2/sum}}' {input} > {output}
+        """
+
+
+rule merge_mpa_hq:
+    input: 
+        expand("kraken2_genbank_hq/mpa_reports/{samp}.krak.report.bracken.mpa.norm", samp=sample_names)
+    output:
+        merge = "kraken2_genbank_hq/mpa_reports/merge_metaphlan.txt"
+        merge_species = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_species.txt"
+    shell:
+        """
+        source activate biobakery2
+        merge_metaphlan_tables.py {input} >  {output.merge}
+        grep -E "(s__)|(^ID)"  {output.merge} | grep -v "t__" | sed 's/^.*s__//g' >  {output.merge_species}
+        """
+
+rule hclust_mpa_hq:
+    input:
+        merge = "kraken2_genbank_hq/mpa_reports/merge_metaphlan.txt"
+    output:
+        heamap1 = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap.png"
+        heamap2 = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap_big.png"
+    shell:
+        """
+        source activate biobakery2
+        metaphlan_hclust_heatmap.py --in {input} --top 25 --minv 0.1 -s log --out {output.heatmap1} -f braycurtis -d braycurtis -c viridis 
+        metaphlan_hclust_heatmap.py --in {input} --top 150 --minv 0.1 -s log --out {output.heatmap2} -f braycurtis -d braycurtis -c viridis
         """
