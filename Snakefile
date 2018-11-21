@@ -193,3 +193,14 @@ rule hclust_mpa_hq:
         metaphlan_hclust_heatmap.py --in {input} --top 25 --minv 0.1 -s log --out {output.heatmap1} -f braycurtis -d braycurtis -c viridis 
         metaphlan_hclust_heatmap.py --in {input} --top 150 --minv 0.1 -s log --out {output.heatmap2} -f braycurtis -d braycurtis -c viridis
         """
+
+# make biom formatted tables for use with Qiime2
+rule make_biom:
+    input: 
+        expand("kraken2_genbank_hq/{samp}.krak.report.bracken", samp=sample_names)
+    output:
+        "kraken2_genbank_hq/table.biom"
+    shell:
+    """
+        kraken-biom kraken2_genbank_hq/*_bracken.report -o {output}
+    """
