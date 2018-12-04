@@ -1,6 +1,7 @@
 import glob
 import os 
 from os.path import join, basename, splitext
+import glob
 
 configfile: "config.yaml"
 read_basedir = config['read_basedir']
@@ -8,12 +9,15 @@ sample_names = config['sample_names']
 read_suffix = config["read_specification"]
 extension = config["extension"]
 
+# remove markfiles prior to running workflow
+[os.remove(a) for a in glob.glob('kraken2_genbank_hq/*.mark')]
+
 rule all:
     input: 
         expand("kraken2_genbank_hq/{samp}.krak.mark", samp=sample_names),
         expand("kraken2_genbank_hq/{samp}.krak.report.mark", samp=sample_names),
         expand("kraken2_genbank_hq/{samp}.krak.report.bracken", samp=sample_names),
-        "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap.png"
+        # "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap.png"
         # expand("kraken2_genbank_all/{samp}.krak.mark", samp=sample_names),
         # expand("kraken2_genbank_all/{samp}.krak.report.mark", samp=sample_names),
         # expand("kraken2_genbank_all/{samp}.krak.report.bracken", samp=sample_names),
@@ -172,7 +176,7 @@ rule merge_mpa_hq:
     input: 
         expand("kraken2_genbank_hq/mpa_reports/{samp}.krak.report.bracken.mpa.norm", samp=sample_names)
     output:
-        merge = "kraken2_genbank_hq/mpa_reports/merge_metaphlan.txt"
+        merge = "kraken2_genbank_hq/mpa_reports/merge_metaphlan.txt",
         merge_species = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_species.txt"
     shell:
         """
@@ -185,7 +189,7 @@ rule hclust_mpa_hq:
     input:
         merge = "kraken2_genbank_hq/mpa_reports/merge_metaphlan.txt"
     output:
-        heamap1 = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap.png"
+        heamap1 = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap.png",
         heamap2 = "kraken2_genbank_hq/mpa_reports/merge_metaphlan_heatmap_big.png"
     shell:
         """
@@ -201,6 +205,6 @@ rule make_biom:
     output:
         "kraken2_genbank_hq/table.biom"
     shell:
-    """
+        """
         kraken-biom kraken2_genbank_hq/*_bracken.report -o {output}
-    """
+        """
