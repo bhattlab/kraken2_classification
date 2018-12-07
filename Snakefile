@@ -58,8 +58,8 @@ rule kraken_classify_hq:
         # print(len(krak_new))
         # print(len(krak_report_new))
         for r1, r2, outf, outfr in zip(r1_new, r2_new, krak_new, krak_report_new):
-            sub = "kraken2 --db {db} --threads {threads} --output {outf} \
-                   --report {outfr} --paired {r1} {r2}".format(\
+            sub = "kraken2 --db {db} --threads {threads} --output {outf} " + \
+                   "--report {outfr} --paired {r1} {r2}".format(\
                     db=params, threads=threads, outf=outf, outfr=outfr,
                     r1=r1, r2=r2)
             print(sub)
