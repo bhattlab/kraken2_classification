@@ -1,6 +1,13 @@
+database: "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria"
+#alternatives (see README):
+# /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/
+# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/
+# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/
+# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt
+# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt
 read_specification: ['R1', 'R2']
+read_length: 150
 extension: .fq.gz # or .fastq.gz (should be gzipped regardless) - must include the period!
-
 read_basedir: "/labs/asbhatt/data/bhatt_lab_sequencing/1k_metagenomes/plate1-8/4.trim/"
 sample_names: [
 "Plate1_A1",

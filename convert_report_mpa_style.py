@@ -3,7 +3,9 @@ import pandas as pd
 from itertools import compress
 import argparse
 
-def main():
+
+
+'''
     parser = argparse.ArgumentParser(description="Convert a kraken2 \
         standard report into the mpa-style  .")
     parser.add_argument('-i',
@@ -27,12 +29,13 @@ def main():
                         built by comparing reports. This option allows \
                         you to skip the corrections.')
     args = parser.parse_args()
-
+'''
+def main():
 
     taxonomy_levels = ["D","P","C","O","F","G","S"]
     taxonomy_lower = [t.lower() for t in taxonomy_levels]
 
-    report = pd.read_csv(args.input_report, delimiter='\t', header=None)
+    report = pd.read_csv(snakemake.input[0], delimiter='\t', header=None)
 
     # filter to rows at taxonomy_levels
     report_filtered = report.loc[report[3].isin(taxonomy_levels)]
@@ -69,15 +72,15 @@ def main():
             mpa_strings.append(tax_dict_to_string(tax_dict))
 
     # correct names if desired
-    if not args.no_corrections:
-        mpa_strings = correct_mpa_strings(mpa_strings)
+    #if not args.no_corrections:
+    mpa_strings = correct_mpa_strings(mpa_strings)
 
     # build data frame of report
     mpa_data = {"col1":mpa_strings, "col2":list(report_filtered[1])}  
     mpa_df = pd.DataFrame(mpa_data)
 
     # write out
-    mpa_df.to_csv(args.output, sep='\t', header=False, index=False)
+    mpa_df.to_csv(snakemake.output[0], sep='\t', header=False, index=False)
 
 def tax_dict_to_string(tax_dict):
     taxonomy_levels = ["D","P","C","O","F","G","S"]
