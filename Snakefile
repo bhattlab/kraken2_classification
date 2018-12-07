@@ -1,12 +1,15 @@
 import glob
 import os 
 from os.path import join, basename, splitext
+import glob
 
-configfile: "config.yaml"
 read_basedir = config['read_basedir']
 sample_names = config['sample_names']
 read_suffix = config["read_specification"]
 extension = config["extension"]
+
+# remove markfiles prior to running workflow
+[os.remove(a) for a in glob.glob('kraken2_genbank_hq/*.mark')]
 
 rule all:
     input: 
