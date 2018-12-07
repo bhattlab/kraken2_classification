@@ -3,7 +3,6 @@ import os
 from os.path import join, basename, splitext
 import glob
 
-configfile: "config.yaml"
 read_basedir = config['read_basedir']
 sample_names = config['sample_names']
 read_suffix = config["read_specification"]
