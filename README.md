@@ -29,7 +29,7 @@ d	2	case	d_1.fq.gz,d_2.fq.gz
 
 This yields a barplot that looks like this:
 
-![example barplot](images/taxonomic_composition.pdf "barplot!")
+![example barplot](images/taxonomic_composition.png "barplot!")
 
 ### Snakemake workflow
 A workflow and configuration file are provided in this repo. By default, samples are classified using the high quality genbank database. Edit the config.yaml file to change this behavior. Currently this depends on a list of sample names in the configuration file, and read files to be named following the sample name convention. 
