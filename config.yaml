@@ -1,5 +1,7 @@
+datasets: 'datasets.tsv' #tab-delimited table, see README
 database: "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria"
 #alternatives (see README):
+# /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
 # /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/
 # /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/
 # /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/
@@ -8,6 +10,7 @@ database: "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genb
 read_specification: ['R1', 'R2']
 read_length: 150
 extension: .fq.gz # or .fastq.gz (should be gzipped regardless) - must include the period!
+taxonomic_level: 'G' #options: D,P,C,O,F,G,S
 read_basedir: "/labs/asbhatt/data/bhatt_lab_sequencing/1k_metagenomes/plate1-8/4.trim/"
 sample_names: [
 "Plate1_A1",

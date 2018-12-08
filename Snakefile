@@ -11,21 +11,34 @@ extension = config["extension"]
 # remove markfiles prior to running workflow
 #[os.remove(a) for a in glob.glob('outputs/*.mark')]
 
+
+#process datasets inputs
+sample_reads = {}
+
+with open(config['datasets']) as asmf:
+    basedir = os.path.dirname(config['datasets'])
+    for l in asmf.readlines():
+        s = l.strip().split("\t")
+        if len(s) == 1 or s[0] == 'Sample' or s[0] == '#Sample':
+            continue
+
+        sample = s[0]
+        reads = s[3].split(',')
+        if sample in sample_reads:
+            raise ValueError("Non-unique sample encountered!")
+        sample_reads[sample] = reads
+
+
 rule all:
     input:
-        #"outputs/mpa_reports/merge_metaphlan.txt" 
-        #expand("outputs/{samp}.krak.mark", samp=sample_names),
-        #expand("outputs/{samp}.krak.report.mark", samp=sample_names),
-        expand("outputs/{samp}.krak.report.bracken", samp=sample_names),
-        # "outputs/mpa_reports/merge_metaphlan_heatmap.png"
-        # expand("kraken2_genbank_all/{samp}.krak.mark", samp=sample_names),
-        # expand("kraken2_genbank_all/{samp}.krak.report.mark", samp=sample_names),
-        # expand("kraken2_genbank_all/{samp}.krak.report.bracken", samp=sample_names),
+        #"outputs/class_long.tsv"
+        "outputs/plot/taxonomic_composition.pdf"
+
 
 rule kraken:
     input: 
         r1 = join(read_basedir, "{samp}_" + read_suffix[0] + extension),
-        r2 = join(read_basedir, "{samp}_" + read_suffix[1] + extension),
+        r2 = join(read_basedir, "{samp}_" + read_suffix[1] + extension)
     output:
         krak = "outputs/{samp}.krak.mark",
         krak_report = "outputs/{samp}.krak.report.mark"
@@ -35,8 +48,8 @@ rule kraken:
         mem=48,
         time=6
     shell:
-        "kraken2 --db {params.db} --threads {threads} --output {output.krak} --report {output.krak_report} " + \
-        "--paired {input.r1} {input.r2}"
+        "time kraken2 --db {params.db} --threads {threads} --output {output.krak} --report {output.krak_report} " + \
+        "--paired {input.r1} {input.r2}" #" --memory-mapping"
 
 rule bracken: 
     input:
@@ -45,14 +58,34 @@ rule bracken:
         "outputs/{samp}.krak.report.bracken"
     params: 
         db = config['database'],
-        readlen = config['read_length']
+        readlen = config['read_length'],
+        level = config['taxonomic_level']
     threads: 1
     resources:
         mem = 64,
         time = 1
     shell:
-        "bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen}"
+        "bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level}"
 
+rule postprocess_kraken_report:
+    input: rules.bracken.output
+    output: "outputs/postprocessed/{samp}.tsv"
+    shell: "cat {input} | tr -s ' ' '_' > {output}"
+
+rule collect_results:
+    input: expand("outputs/postprocessed/{samp}.tsv", samp = sample_names)
+    output: "outputs/class_long.tsv"
+    script: "scripts/collate_results.py"
+
+rule genus_barplot:
+    input: rules.collect_results.output
+    output: "outputs/plot/taxonomic_composition.pdf"
+    params: taxlevel='G'
+    script: "scripts/composition_barplot.R"
+
+
+
+'''
 # convert bracken to mpa syle report if desired 
 rule convert_bracken_mpa:
     input:
@@ -60,7 +93,7 @@ rule convert_bracken_mpa:
     output:
         "outputs/mpa_reports/{samp}.krak.report.bracken.mpa"
     script:
-        "convert_report_mpa_style.py"
+        "scripts/convert_report_mpa_style.py"
 
 
 rule norm_mpa:
@@ -110,3 +143,4 @@ rule make_biom:
         """
         kraken-biom outputs/*_bracken.report -o {output}
         """
+'''

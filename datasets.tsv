@@ -1,0 +1,3 @@
+Sample	Timepoint	Condition	Reads1.fq[.gz][,Reads2.fq[.gz]]
+a	1	control	a_1.fq,a_2.fq
+b	2	case	b_1.fq,b_2.fq
