@@ -1,20 +1,4 @@
-import glob
-import os 
-from os.path import join, basename, splitext
-#import glob 
-
-read_basedir = config['read_basedir']
-sample_names = config['sample_names']
-read_suffix = config["read_specification"]
-extension = config["extension"]
-
-# remove markfiles prior to running workflow
-#[os.remove(a) for a in glob.glob('outputs/*.mark')]
-
-
-#process datasets inputs
 sample_reads = {}
-
 with open(config['datasets']) as asmf:
     basedir = os.path.dirname(config['datasets'])
     for l in asmf.readlines():
@@ -28,20 +12,19 @@ with open(config['datasets']) as asmf:
             raise ValueError("Non-unique sample encountered!")
         sample_reads[sample] = reads
 
+sample_names = sample_reads.keys()
 
 rule all:
     input:
-        #"outputs/class_long.tsv"
         "outputs/plot/taxonomic_composition.pdf"
-
 
 rule kraken:
     input: 
-        r1 = join(read_basedir, "{samp}_" + read_suffix[0] + extension),
-        r2 = join(read_basedir, "{samp}_" + read_suffix[1] + extension)
+        r1 = lambda wildcards: sample_reads[wildcards.samp][0],
+        r2 = lambda wildcards: sample_reads[wildcards.samp][1]
     output:
-        krak = "outputs/{samp}.krak.mark",
-        krak_report = "outputs/{samp}.krak.report.mark"
+        krak = "outputs/{samp}.krak",
+        krak_report = "outputs/{samp}.krak.report"
     params: 
         db = config['database']
     resources:
@@ -49,7 +32,7 @@ rule kraken:
         time=6
     shell:
         "time kraken2 --db {params.db} --threads {threads} --output {output.krak} --report {output.krak_report} " + \
-        "--paired {input.r1} {input.r2}" #" --memory-mapping"
+        "--paired {input.r1} {input.r2}" 
 
 rule bracken: 
     input:
@@ -67,17 +50,12 @@ rule bracken:
     shell:
         "bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level}"
 
-rule postprocess_kraken_report:
-    input: rules.bracken.output
-    output: "outputs/postprocessed/{samp}.tsv"
-    shell: "cat {input} | tr -s ' ' '_' > {output}"
-
 rule collect_results:
-    input: expand("outputs/postprocessed/{samp}.tsv", samp = sample_names)
+    input: expand("outputs/{samp}.krak.report.bracken", samp = sample_names)
     output: "outputs/class_long.tsv"
     script: "scripts/collate_results.py"
 
-rule genus_barplot:
+rule barplot:
     input: rules.collect_results.output
     output: "outputs/plot/taxonomic_composition.pdf"
     params: taxlevel='G'

@@ -1,16 +1,15 @@
 # kraken2_classification
 Short read classification with the kraken2 program
 
-## Introduction
-[Kraken2](http://ccb.jhu.edu/software/kraken/) is a short read classification system that is fast and memory efficient. It allows you to assign a taxonomic identification to each read from a sequencing run. Kraken assigns each read to the lowest commen ancestor (LCA) of all sequences it alignes to. Through the use of the Bracken package, you can also get accurate estimates of proportions of different species. This guide will cover some of the basics, but the full [manual](http://ccb.jhu.edu/software/kraken/MANUAL.html) is quite good and has more detail.
-
-## Installation
+## Installation 
+Run the below.  It is also tasteful to copy datasets.tsv and config.yaml to a working directory for modification and workflow execution.
 ```
 conda env create -f classification2.yaml
 ```
 
 ## Usage
-Run the following in an interactive session, or submit it as a job.  Do not add `--profile scg` as is typically done with other workflows.
+Run the following in an interactive session, or submit it as a job.  Do not add `--profile scg` as is typically done with other workflows. By default, samples are classified using the high quality genbank database (see Databases section below) and postprocessed/visualized at the genus level. Edit the config.yaml file to change this behavior.
+
 ```
 source activate classification2
 snakemake -s path/to/Snakefile --configfile config.yaml
@@ -31,8 +30,9 @@ This yields a barplot that looks like this:
 
 ![example barplot](images/taxonomic_composition.png "barplot!")
 
-### Snakemake workflow
-A workflow and configuration file are provided in this repo. By default, samples are classified using the high quality genbank database. Edit the config.yaml file to change this behavior. Currently this depends on a list of sample names in the configuration file, and read files to be named following the sample name convention. 
+
+## Introduction
+[Kraken2](http://ccb.jhu.edu/software/kraken/) is a short read classification system that is fast and memory efficient. It allows you to assign a taxonomic identification to each read from a sequencing run. Kraken assigns each read to the lowest commen ancestor (LCA) of all sequences it alignes to. Through the use of the Bracken package, you can also get accurate estimates of proportions of different species. This guide will cover some of the basics, but the full [manual](http://ccb.jhu.edu/software/kraken/MANUAL.html) is quite good and has more detail.
 
 
 ### Memory usage

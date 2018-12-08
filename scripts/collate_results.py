@@ -23,7 +23,7 @@ for inf in inputs:
 	with open(inf, 'r') as i:
 		for l in i.readlines()[1:]:
 			s = l.strip().split("\t")
-			sample = os.path.splitext(os.path.basename(inf))[0]
+			sample = os.path.splitext(os.path.basename(inf))[0].split('.')[0]
 			
 			percent = s[6]
 			reads = s[4]
