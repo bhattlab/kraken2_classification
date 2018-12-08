@@ -16,7 +16,8 @@ sample_names = sample_reads.keys()
 
 rule all:
     input:
-        "outputs/plot/taxonomic_composition.pdf"
+        "outputs/plot/taxonomic_composition.pdf",
+        expand("outputs/krona/{samp}.html", samp = sample_names)
 
 rule kraken:
     input: 
@@ -61,6 +62,12 @@ rule barplot:
     params: taxlevel='G'
     script: "scripts/composition_barplot.R"
 
+rule krona:
+    input: rules.kraken.output.krak_report
+    output: "outputs/krona/{samp}.html"
+    shell:
+        "ktImportTaxonomy -m 3 -s 0 -q 0 -t 5 -i {input} -o {output} " + \
+        "-tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy"
 
 
 '''
