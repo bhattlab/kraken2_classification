@@ -19,4 +19,4 @@ d   2   case    d_1.fq.gz,d_2.fq.gz
 
 This yields a barplot that looks like this:
 
-![example barplot](images/taxonomic_composition.png "barplot!")
+![example barplot](../images/taxonomic_composition.png "barplot!")

@@ -9,7 +9,7 @@ $ grep -i crassphage /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oc
 ### Recommended database
 `/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom/`
 
-*NOTE* the bracken database for this has not been built yet. You will not be able to use bracken. 
+**NOTE** the bracken database for this has not been built yet. You will not be able to use bracken. 
 
 This should suit most classification needs. Includes all sequences from genbank that were assembled to "Complete Genome" or "Chromosome" status (basically hiqh quality assemblies) as of January 2019 from the following classes 
 - Bacteria 
@@ -23,6 +23,7 @@ This should suit most classification needs. Includes all sequences from genbank 
 #### Statistics
 
 There are the following number of genomes from each domain of life in the database
+
 Domain | Genome count
 -------|-------------
 d__Archaea | 264
