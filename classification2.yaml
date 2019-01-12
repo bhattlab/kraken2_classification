@@ -5,7 +5,7 @@ channels:
   - r
 dependencies:
   - kraken2
-  - bracken
+  # - bracken
   - krona
   - python>3.5
   - kraken
