@@ -1,7 +1,19 @@
-datasets: 'datasets.tsv' #tab-delimited table, see README
+# Specify sample names and read files
+# tab-delimited table with three columns, see manual/usage.md
+# sample_name  read1_file  read2_file
+sample_file: samples.tsv
 read_length: 150 #or 100
 taxonomic_level: 'S' #options: D,P,C,O,F,G,S
+# see database options below, or manual/databases.md
 database: "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria"
+
+
+# advanced options
+# specify a datasets file here to get taxonomic barplots
+# organized by condition and timepoint. 
+barplot_datasets: 'datasets.tsv' #tab-delimited table, see manual/downstream_plotting.md
+
+
 #database alternatives (see README):
 # NO BRACKEN YET: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom 
 # /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria

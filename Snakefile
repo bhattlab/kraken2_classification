@@ -1,23 +1,47 @@
+# Snakefile for kraken2 classification
+# Does classification, plotting, etc
+
+# default configuration only does classification
+# reads in sample info and reads from the sample_file 
 sample_reads = {}
-with open(config['datasets']) as asmf:
-    basedir = os.path.dirname(config['datasets'])
-    for l in asmf.readlines():
+with open(config['sample_file']) as sf:
+    for l in sf.readlines():
         s = l.strip().split("\t")
-        if len(s) == 1 or s[0] == 'Sample' or s[0] == '#Sample':
+        if len(s) == 1 or s[0] == 'Sample' or s[0] == '#Sample' or s[0].startswith('#'):
             continue
 
         sample = s[0]
-        reads = s[3].split(',')
+        if (len(s)==3):
+            reads = [s[1],s[2]]
+        elif len(s==2):
+            reads=s[1]
+        
         if sample in sample_reads:
             raise ValueError("Non-unique sample encountered!")
         sample_reads[sample] = reads
-
 sample_names = sample_reads.keys()
+
+extra_run_list =[]
+# here is the stuff for the barplot
+if config['barplot_datasets'] != '':
+    extra_run_list.append('barplot')
+    
+# additional outputs determined by whats specified in the readme
+extra_files = {
+    "barplot": "outputs/plot/taxonomic_composition.pdf",
+    "krona": expand("outputs/krona/{samp}.html", samp = sample_names),
+    "mpa_heatmap": "outputs/mpa_reports/merge_metaphlan_heatmap.png",
+    "biom_file": "outputs/table.biom"
+}
+run_extra = [extra_files[f] for f in extra_run_list]
+print(run_extra)
 
 rule all:
     input:
-        "outputs/plot/taxonomic_composition.pdf",
-        expand("outputs/krona/{samp}.html", samp = sample_names)
+        expand("outputs/{samp}.krak.report.bracken", samp=sample_names),
+        run_extra
+        # "outputs/plot/taxonomic_composition.pdf",
+        # expand("outputs/krona/{samp}.html", samp = sample_names)
 
 rule kraken:
     input: 
