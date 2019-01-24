@@ -1,5 +1,8 @@
 # Snakefile for kraken2 classification
 # Does classification, plotting, etc
+from os.path import join
+# output base directory
+outdir = config['outdir']
 
 # default configuration only does classification
 # reads in sample info and reads from the sample_file 
@@ -28,30 +31,32 @@ if config['barplot_datasets'] != '':
     
 # additional outputs determined by whats specified in the readme
 extra_files = {
-    "barplot": "outputs/plot/taxonomic_composition.pdf",
-    "krona": expand("outputs/krona/{samp}.html", samp = sample_names),
-    "mpa_heatmap": "outputs/mpa_reports/merge_metaphlan_heatmap.png",
-    "biom_file": "outputs/table.biom"
+    "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
+    "krona": expand(join(outdir, "krona/{samp}.html"), samp = sample_names),
+    "mpa_heatmap": join(outdir, "mpa_reports/merge_metaphlan_heatmap.png"),
+    "biom_file": join(outdir, "table.biom")
 }
 run_extra = [extra_files[f] for f in extra_run_list]
-print(run_extra)
+print("run Extra files: " + str(run_extra))
 
 rule all:
     input:
-        expand("outputs/{samp}.krak.report.bracken", samp=sample_names),
+        expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
+        expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
         run_extra
-        # "outputs/plot/taxonomic_composition.pdf",
-        # expand("outputs/krona/{samp}.html", samp = sample_names)
+        # join(outdir, "plots/taxonomic_composition.pdf"),
+        # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
 rule kraken:
     input: 
         r1 = lambda wildcards: sample_reads[wildcards.samp][0],
         r2 = lambda wildcards: sample_reads[wildcards.samp][1]
     output:
-        krak = "outputs/{samp}.krak",
-        krak_report = "outputs/{samp}.krak.report"
+        krak = join(outdir, "classification/{samp}.krak"),
+        krak_report = join(outdir, "classification/{samp}.krak.report")
     params: 
         db = config['database']
+    threads: 8 
     resources:
         mem=48,
         time=6
@@ -63,7 +68,7 @@ rule bracken:
     input:
         rules.kraken.output
     output:
-        "outputs/{samp}.krak.report.bracken"
+        join(outdir, "classification/{samp}.krak.report.bracken")
     params: 
         db = config['database'],
         readlen = config['read_length'],
@@ -76,19 +81,19 @@ rule bracken:
         "bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level}"
 
 rule collect_results:
-    input: expand("outputs/{samp}.krak.report.bracken", samp = sample_names)
+    input: expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp = sample_names)
     output: "outputs/class_long.tsv"
     script: "scripts/collate_results.py"
 
 rule barplot:
     input: rules.collect_results.output
-    output: "outputs/plot/taxonomic_composition.pdf"
+    output: join(outdir, "plots/taxonomic_composition.pdf")
     params: taxlevel='G'
     script: "scripts/composition_barplot.R"
 
 rule krona:
     input: rules.kraken.output.krak_report
-    output: "outputs/krona/{samp}.html"
+    output: join(outdir, "krona/{samp}.html")
     shell:
         "ktImportTaxonomy -m 3 -s 0 -q 0 -t 5 -i {input} -o {output} " + \
         "-tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy"

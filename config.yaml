@@ -2,19 +2,22 @@
 # tab-delimited table with three columns, see manual/usage.md
 # sample_name  read1_file  read2_file
 sample_file: samples.tsv
+# output directory 
+outdir: kraken2_classification
 read_length: 150 #or 100
 taxonomic_level: 'S' #options: D,P,C,O,F,G,S
 # see database options below, or manual/databases.md
 database: "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria"
 
 
-# advanced options
+######### Advanced options and plotting ###################
 # specify a datasets file here to get taxonomic barplots
 # organized by condition and timepoint. 
-barplot_datasets: 'datasets.tsv' #tab-delimited table, see manual/downstream_plotting.md
+barplot_datasets: '' #tab-delimited table, see manual/downstream_plotting.md
 
+###########################################################
 
-#database alternatives (see README):
+########### database alternatives (see README): ###########
 # NO BRACKEN YET: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom 
 # /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
 # /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/
@@ -22,3 +25,5 @@ barplot_datasets: 'datasets.tsv' #tab-delimited table, see manual/downstream_plo
 # /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/
 # /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt
 # /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt
+###########################################################
+
