@@ -27,3 +27,6 @@ bracken -d "$DB" -i out.krak.report -o out out.krak.report.bracken -r "$read_len
 source activate classification2
 snakemake -s path/to/Snakefile --configfile config.yaml
 ```
+
+## Parsing output reports
+The Kraken reports (sample.krak.report) and bracken reports (sample.kraK_bracken.report) are the best for downstream analysis. See [Downstream processing and plotting](manual/downstream_plotting.md) for details on using the data in R. 

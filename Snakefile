@@ -60,10 +60,10 @@ rule kraken:
     resources:
         mem=48,
         time=6
-    shell:
-        "time kraken2 --db {params.db} --threads {threads} --output {output.krak} --report {output.krak_report} " + \
-        "--paired {input.r1} {input.r2}" 
-
+    shell: """
+        time kraken2 --db {params.db} --threads {threads} --output {output.krak} --report {output.krak_report} \
+        --paired {input.r1} {input.r2} 
+        """
 rule bracken: 
     input:
         rules.kraken.output
@@ -72,13 +72,15 @@ rule bracken:
     params: 
         db = config['database'],
         readlen = config['read_length'],
-        level = config['taxonomic_level']
+        level = config['taxonomic_level'],
+        threshold = 10
     threads: 1
     resources:
         mem = 64,
         time = 1
-    shell:
-        "bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level}"
+    shell: """
+        bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level} -t {params.threshold}
+        """
 
 rule collect_results:
     input: expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp = sample_names)
@@ -94,10 +96,10 @@ rule barplot:
 rule krona:
     input: rules.kraken.output.krak_report
     output: join(outdir, "krona/{samp}.html")
-    shell:
-        "ktImportTaxonomy -m 3 -s 0 -q 0 -t 5 -i {input} -o {output} " + \
-        "-tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy"
-
+    shell: """
+        ktImportTaxonomy -m 3 -s 0 -q 0 -t 5 -i {input} -o {output} \
+        -tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy
+        """
 
 '''
 # convert bracken to mpa syle report if desired 
