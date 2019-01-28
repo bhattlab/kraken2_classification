@@ -1,6 +1,8 @@
 # Specify sample names and read files
 # tab-delimited table with three columns, see manual/usage.md
 # sample_name  read1_file  read2_file
+# is also outputted at the end of the preprocessing workflow as 
+#   preprocessing/01_processing/classification_input.txt 
 sample_file: samples.tsv
 # output base directory - will contain subfolders for reports, plots, etc
 outdir: kraken2_classification

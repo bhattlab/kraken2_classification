@@ -14,7 +14,7 @@ Short read classification with the kraken2 program
 ## Quickstart
 *Install*
 ```
-conda env create -f classification2.yaml
+conda env create -f classification_env.yaml
 ```
 *Run*
 ```

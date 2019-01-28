@@ -43,6 +43,7 @@ rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
         expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
+        join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf'),
         run_extra
         # join(outdir, "plots/taxonomic_composition.pdf"),
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
@@ -84,7 +85,7 @@ rule bracken:
 
 rule downsteam_processing:
     input:
-        rules.bracken.output
+        expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
     params:
         scripts_folder = config["scripts_dir"],
         sample_reads = config["sample_file"],
@@ -94,7 +95,7 @@ rule downsteam_processing:
     output:
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
     script:
-        join("{params.scripts_dir}", 'post_classification_workflow.R')
+        join("{params.scripts_folder}", 'post_classification_workflow.R')
 
 
 

@@ -1,11 +1,11 @@
 # plotting tools for kraken classification results
 # uses input matrices from the process_classification.R script
 library(RColorBrewer)
-library(rafalib)
 library(ggpubr)
 
 # testing color pal stuff
 if(F){
+    library(rafalib)
     mypar(3,2)
     pie(rep(1,8), col=brewer.pal(8,'Accent'), main='Accent')
     pie(rep(1,8), col=brewer.pal(8,'Dark2'), main='Dark2')

@@ -9,11 +9,11 @@ library(reshape2)
 # 4) pcoa plot?
 
 # options we need from snakemake
-scripts.folder <- snakemake@params[[1]]
-sample.reads.f <- snakemake@params[[2]]
-sample.groups.f <- snakemake@params[[3]]
-workflow.outdir <- snakemake@params[[4]]
-bracken.report <- snakemake@params[[5]]
+scripts.folder <- snakemake@params[['scripts_folder']]
+sample.reads.f <- snakemake@params[['sample_reads']]
+sample.groups.f <- snakemake@params[['sample_groups']]
+workflow.outdir <- snakemake@params[['outdir']]
+bracken.report <- snakemake@params[['bracken_report']]
 classification.folder <- file.path(workflow.outdir, 'classification')
 outfolder.matrices <- file.path(workflow.outdir, 'processed_results')
 outfolder.plots <- file.path(outfolder.matrices, 'plots')

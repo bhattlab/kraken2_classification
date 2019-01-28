@@ -1,0 +1,25 @@
+name: classification2
+channels:
+  - conda-forge
+  - bioconda
+  - r
+dependencies:
+  - kraken2
+  # - bracken
+  - krona
+  - python>3.5
+  - kraken
+  - ncurses
+  - datrie
+  - r-ggplot2
+  - r-ggpubr
+  - r-doby
+  - r-rcolorbrewer
+  - r-scales
+  - r-plyr
+  - r-reshape2
+  - r-vegan
+  - r-stringi
+  - pip
+  - pip:
+    - snakemake==5.3.0
