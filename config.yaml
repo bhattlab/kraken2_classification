@@ -2,16 +2,27 @@
 # tab-delimited table with three columns, see manual/usage.md
 # sample_name  read1_file  read2_file
 sample_file: samples.tsv
-# output directory 
+# output base directory - will contain subfolders for reports, plots, etc
 outdir: kraken2_classification
 read_length: 150 #or 100
 taxonomic_level: 'S' #options: D,P,C,O,F,G,S
 # see database options below, or manual/databases.md
-database: "/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria"
+database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
+
+######### Downstream processing ###################
+# directory to find scripts for processing
+# either the path of the kraken2_classification repo cloned, 
+# or a symlink to the scripts directory
+scripts_dir: scripts
+# file defining sample groups. Tab delimited with two columns, see manual/downstream_plotting.md
+# if nothing specified, all samples will be treated as one group
+sample_groups_file: sample_groups.tsv
+# use bracken results in downstream processing
+use_bracken_downstream: True
 
 
-######### Advanced options and plotting ###################
-# specify a datasets file here to get taxonomic barplots
+######### Other advanced options ###################
+# Eli's workflow: specify a datasets file here to get taxonomic barplots
 # organized by condition and timepoint. 
 barplot_datasets: '' #tab-delimited table, see manual/downstream_plotting.md
 

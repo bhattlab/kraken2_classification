@@ -82,6 +82,22 @@ rule bracken:
         bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level} -t {params.threshold}
         """
 
+rule downsteam_processing:
+    input:
+        rules.bracken.output
+    params:
+        scripts_folder = config["scripts_dir"],
+        sample_reads = config["sample_file"],
+        sample_groups = config["sample_groups_file"],
+        outdir = outdir,
+        bracken_report = config["use_bracken_downstream"]
+    output:
+        join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
+    script:
+        join("{params.scripts_dir}", 'post_classification_workflow.R')
+
+
+
 rule collect_results:
     input: expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp = sample_names)
     output: "outputs/class_long.tsv"
