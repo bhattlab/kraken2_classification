@@ -23,7 +23,7 @@ DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bact
 read_length=150   # must be 150 or 100
 kraken2 --db "$DB" --threads 2 --output out.krak --report out.krak.report --paired r1.fq r2.fq
 bracken -d "$DB" -i out.krak.report -o out out.krak.report.bracken -r "$read_length"
-# Snakemake workflow 
+# Snakemake workflow - change options in config.yaml first
 source activate classification2
 snakemake -s path/to/Snakefile --configfile config.yaml
 ```
