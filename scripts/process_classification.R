@@ -18,7 +18,7 @@ read_kraken_report <- function(fname, filter.tax.level="S", include.unmapped=F, 
     
     valid.tax.levels <- c('D','P','C','O','F','G','S')
     if (!file.exists(fname)){
-        stop('File does not exist!')
+        stop(paste('File does not exist:', fname))
     } else if(!(filter.tax.level %in% valid.tax.levels)) {
          stop(paste('filter tax.level must be in', paste(valid.tax.levels, collapse = ', ')))
     }
@@ -60,10 +60,12 @@ read_kraken_report <- function(fname, filter.tax.level="S", include.unmapped=F, 
     if (include.unmapped){ 
         df.filter <- rbind(df.filter, df[df$taxid==0,])}
     df.filter <- df.filter[,c(report.column, 'reads.below')]
-    # sort decreasing
-    df.filter <- df.filter[order(df.filter$reads.below, decreasing = T),]
     # strip whitespace from name
     df.filter[,1] <- trimws(df.filter[,1])
+    # aggregate any duplicate rows - sometimes happens with 'environmental samples'
+    df.filter <- aggregate(reads.below ~ name, data=df.filter, FUN=sum)    
+    # sort decreasing
+    df.filter <- df.filter[order(df.filter$reads.below, decreasing = T),]
     return(df.filter)
 }
 
@@ -85,16 +87,10 @@ merge_kraken_df_list <- function(df.list){
     if (!all(sapply(df.list, function(x) colnames(x)[1]==merge.colname))){
         stop('First column name must be all identical to merge')
     }
-    
-    # first merge
-    merge.temp <- merge(df.list[[1]], df.list[[2]], by = merge.colname, ALL=TRUE, sort=F)
-    # subsequent merges
-    if(length(df.list) > 2){
-        for (i in 3:length(df.list)){
-            merge.temp <- suppressWarnings(merge(merge.temp, df.list[[i]], by = merge.colname, all.x=TRUE, all.y=TRUE, sort=F))
-        }
-    }
 
+    # Reduce to merge list of data frames into one
+    merge.temp <- Reduce(function(x,y) merge(x, y, all=TRUE, by=merge.colname, sort=F), df.list)
+    
     rownames(merge.temp) <- merge.temp[,1]
     merge.mat <- as.matrix(merge.temp[,c(-1)])
     colnames(merge.mat) <- names(df.list)
