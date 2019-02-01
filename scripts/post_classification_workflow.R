@@ -39,7 +39,7 @@ if (!dir.exists(outfolder.plots)){ dir.create(outfolder.plots, recursive = T)}
 
 # read sample groups file
 sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
-colnames(sample.reads) <- c('sample', 'r1', 'r2')
+colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
 # if a groups file is specified, read it. Otherwise assign everything to one group
 if (sample.groups.f != '') {
     sample.groups <- read.table(sample.groups.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
@@ -55,11 +55,13 @@ if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$samp
 # get sample names
 if (bracken.report){f.ext <- '.krak_bracken.report'} else {f.ext <- '.krak.report'}
 flist <- sapply(sample.groups$sample, function(x) file.path(classification.folder, paste(x, f.ext, sep='')))
+names(flist) <- sample.groups$sample
 if (!(all(file.exists(flist)))){
     stop("Some classification files do not exist!")
 }
 
 # read in to matrices
+# print(flist)
 bracken.species.reads <- many_files_to_matrix(flist)
 bracken.genus.reads <- many_files_to_matrix(flist,filter.tax.level = 'G')
 bracken.species.fraction <- reads_matrix_to_percentages(bracken.species.reads)
@@ -95,6 +97,8 @@ div.df.melt <- melt(div.df)
 colnames(div.df.melt) <- c('sample','method','value')
 div.df.melt$sample <- factor(div.df.melt$sample, levels = sample.groups$sample)
 div.plot.list <- list()
+# print(sample.groups)
+# print(div.df.melt)
 for (g in unique(sample.groups$group)){
     plot.samples <- sample.groups[sample.groups$group==g, "sample"]
     plot.df <- div.df.melt[div.df.melt$sample %in% plot.samples, ]
@@ -149,7 +153,7 @@ for (g in unique(sample.groups$group)){
     # genus level
     div.df.g.genus <- data.frame(plot.samples, div.df[plot.samples, 'shannon_genus'])
     plot.title.genus <- paste('Taxonomy and diversity:', g, 'genus')
-    plotlist.genus[[g]] <- plot_many_samples_with_diversity_barplot(bracken.genus.fraction[,plot.samples], div.df.g.genus, plot.title = plot.title.genus)
+    plotlist.genus[[g]] <- plot_many_samples_with_diversity_barplot(bracken.genus.fraction[,plot.samples], div.df.g.genus, plot.title = plot.title.genus, scale.name='Genus')
 }
 
 # width of plot = 9 + quarter inch for each sample over 10
