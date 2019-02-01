@@ -18,7 +18,7 @@ database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genba
 scripts_dir: scripts
 # file defining sample groups. Tab delimited with two columns, see manual/downstream_plotting.md
 # if nothing specified, all samples will be treated as one group
-sample_groups_file: sample_groups.tsv
+sample_groups_file: ''
 # use bracken results in downstream processing
 use_bracken_downstream: True
 
