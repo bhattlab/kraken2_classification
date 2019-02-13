@@ -25,18 +25,25 @@ read_kraken_report <- function(fname, filter.tax.level="S", include.unmapped=F, 
     df <- read.table(fname, sep='\t', quote='', header = F,
                      col.names=c('pct', 'reads.below','reads.direct','tax.level','taxid','name'))
     
+    # if domain, add in Kingdom too becuase theyre all classified that way...
+    if (filter.tax.level == 'D'){
+        filter.tax.levels <- c('D','K')
+    } else {
+        filter.tax.levels <- c(filter.tax.level)
+    }
+    
     # take out everything that maps to this level
-    df.filter <- df[df$tax.level==filter.tax.level,]
+    df.filter <- df[df$tax.level %in% filter.tax.levels,]
     
     # check for mismapped
     found.level <- F
     add.df <- data.frame()
-    below.levels <- valid.tax.levels[(which(valid.tax.levels==filter.tax.level)+1):length(valid.tax.levels)]
+    below.levels <- valid.tax.levels[(which(valid.tax.levels %in% filter.tax.levels)+1):length(valid.tax.levels)]
     below.sublevels <- paste(below.levels, rep(1:9, each=length(below.levels)), sep='')
     ilter.tax.sublevels <- paste(filter.tax.level, 1:9, sep='')
     for (i in 1:nrow(df)){
         this.level <- df[i, 'tax.level']
-        if (this.level==filter.tax.level){
+        if (this.level %in% filter.tax.levels){
             found.level <- T
         } else if (!(this.level %in% c(ilter.tax.sublevels, below.levels, below.sublevels))){
             found.level <- F
@@ -55,7 +62,11 @@ read_kraken_report <- function(fname, filter.tax.level="S", include.unmapped=F, 
     }
     
     # append to df.filter
-    df.filter <- rbind(df.filter, add.df)
+    # dont do this if looking at domain level, get weird results
+    if (!('D' %in% filter.tax.levels)){
+        df.filter <- rbind(df.filter, add.df)
+    }
+
     # add unmpped if desired
     if (include.unmapped){ 
         df.filter <- rbind(df.filter, df[df$taxid==0,])}
