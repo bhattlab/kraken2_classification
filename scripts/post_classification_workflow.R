@@ -2,6 +2,7 @@
 library(ggplot2)
 library(vegan)
 library(reshape2)
+library(RColorBrewer)
 
 # 1) parse into matrix at species and genus level
 # 2) diversity calculations at species and genus level
@@ -27,12 +28,12 @@ outfolder.plots <- file.path(outfolder.matrices, 'plots')
 # outfolder.matrices <- '~/scg_scratch/ssrc_conventional/kraken2_classify/processed_results'
 # outfolder.plots <- file.path(outfolder.matrices, 'plots')
 
-# source other scripts for processing and plotting
-source.script.1 <- file.path(scripts.folder, 'process_classification.R')
-source.script.2 <- file.path(scripts.folder, 'plotting_classification.R')
+source.script.1 <- file.path('scripts/process_classification.R')
+source.script.2 <- file.path('scripts/plotting_classification.R')
 if (!(file.exists(source.script.1) & file.exists(source.script.2))){
     stop('Specify right source script dir')
 }
+
 source(source.script.1)
 source(source.script.2)
 if (!dir.exists(outfolder.plots)){ dir.create(outfolder.plots, recursive = T)}
@@ -187,7 +188,7 @@ g1 <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
     # scale_color_brewer(palette='Set1') +
     scale_color_manual(values = cols) +
     theme_bw() +
-    labs(title='Microbiome beta diversity (Bray-Curtis metric)',
+    labs(title='Microbiome beta diversity, species level (Bray-Curtis metric)',
          subtitle='Principal Coordinates Analysis plot',
          x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
          y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) + 
@@ -200,10 +201,43 @@ nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
 nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
 g2 <- g1 + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
 
+# repeat for genus level
+pcoa.res <- capscale(t(bracken.genus.fraction)~1, distance='bray')
+pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
+pcoa.df.melt <- melt(pcoa.df)
+pcoa.variance <- summary(pcoa.res)$cont$importance[2,1:2]
+g3 <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
+    geom_point(size=3) +
+    # scale_color_brewer(palette='Set1') +
+    scale_color_manual(values = cols) +
+    theme_bw() +
+    labs(title='Microbiome beta diversity, genus level (Bray-Curtis metric)',
+         subtitle='Principal Coordinates Analysis plot',
+         x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
+         y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) + 
+    xlim(c(min(pcoa.df$MDS1), max(pcoa.df$MDS1) * 1.25)) +
+    ylim(c(min(pcoa.df$MDS2), max(pcoa.df$MDS2) * 1.1)) +
+    guides(color=guide_legend(title='Group'))
+
+# add a version with labels above the points
+nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
+nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
+g4 <- g3 + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
+
 # save plot
 pcoa.pdf <- file.path(outfolder.plots, 'PCoA_2D_plot.pdf')
 pdf(pcoa.pdf, height=6.5, width=9)
 print(g1)
 print(g2)
+print(g3)
+print(g4)
 dev.off()
+
+# simple bray curtis distance metrics
+bray.dist.species <- as.matrix(vegdist(t(bracken.species.fraction)))
+bray.dist.genus <- as.matrix(vegdist(t(bracken.genus.fraction)))
+out.bray.species <- file.path(outfolder.matrices, 'braycurtis_distance_species.txt')
+out.bray.genus <- file.path(outfolder.matrices, 'braycurtis_distance_genus.txt')
+write.table(bray.dist.species, out.bray.species, sep='\t', quote=F, row.names = T, col.names = T)
+write.table(bray.dist.genus, out.bray.genus, sep='\t', quote=F, row.names = T, col.names = T)
 
