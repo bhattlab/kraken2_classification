@@ -13,7 +13,7 @@ scripts.folder <- snakemake@params[['scripts_folder']]
 sample.reads.f <- snakemake@params[['sample_reads']]
 sample.groups.f <- snakemake@params[['sample_groups']]
 workflow.outdir <- snakemake@params[['outdir']]
-bracken.report <- snakemake@params[['bracken_report']]
+use.bracken.report <- snakemake@params[['use_bracken_report']]
 classification.folder <- file.path(workflow.outdir, 'classification')
 outfolder.matrices <- file.path(workflow.outdir, 'processed_results')
 outfolder.plots <- file.path(outfolder.matrices, 'plots')
@@ -23,7 +23,7 @@ outfolder.plots <- file.path(outfolder.matrices, 'plots')
 # sample.reads.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/samples.tsv' 
 # sample.groups.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/sample_groups.tsv' 
 # classification.folder <- '~/scg_scratch/ssrc_conventional/kraken2_classify/kraken2_classification/'
-# bracken.report <- T
+# use.bracken.report <- T
 # outfolder.matrices <- '~/scg_scratch/ssrc_conventional/kraken2_classify/processed_results'
 # outfolder.plots <- file.path(outfolder.matrices, 'plots')
 
@@ -53,7 +53,7 @@ if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$samp
 }
 
 # get sample names
-if (bracken.report){f.ext <- '.krak_bracken.report'} else {f.ext <- '.krak.report'}
+if (use.bracken.report){f.ext <- '.krak_bracken.report'} else {f.ext <- '.krak.report'}
 flist <- sapply(sample.groups$sample, function(x) file.path(classification.folder, paste(x, f.ext, sep='')))
 names(flist) <- sample.groups$sample
 if (!(all(file.exists(flist)))){
@@ -61,13 +61,18 @@ if (!(all(file.exists(flist)))){
 }
 
 # read in to matrices
+# different normalization methods to include
+# read number (raw) 
+# fraction of total reads
+# fraction of classified reads
+# fraction of reads classified at this level
 # print(flist)
 bracken.species.reads <- many_files_to_matrix(flist)
 bracken.genus.reads <- many_files_to_matrix(flist,filter.tax.level = 'G')
 bracken.species.fraction <- reads_matrix_to_percentages(bracken.species.reads)
 bracken.genus.fraction <- reads_matrix_to_percentages(bracken.genus.reads)
 # save matrices
-if (bracken.report){mat.name <- 'bracken'} else {mat.name <- 'kraken'}
+if (use.bracken.report){mat.name <- 'bracken'} else {mat.name <- 'kraken'}
 out.mat.1 <- file.path(outfolder.matrices, paste(mat.name, 'species_reads.txt', sep='_'))
 out.mat.2 <- file.path(outfolder.matrices, paste(mat.name, 'genus_reads.txt', sep='_'))
 out.mat.3 <- file.path(outfolder.matrices, paste(mat.name, 'species_percentage.txt', sep='_'))

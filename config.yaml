@@ -1,6 +1,8 @@
 # Specify sample names and read files
 # tab-delimited table with three columns, see manual/usage.md
-# sample_name  read1_file  read2_file
+#    sample_name  read1_file  [read2_file]
+#    if paired end, all samples must be paired end
+#    if single end, all samples must be single end
 # is also outputted at the end of the preprocessing workflow as 
 #   preprocessing/01_processing/classification_input.txt 
 sample_file: samples.tsv
@@ -11,23 +13,24 @@ taxonomic_level: 'S' #options: D,P,C,O,F,G,S
 # see database options below, or manual/databases.md
 database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
 
-######### Downstream processing ###################
+############# Downstream processing #######################
+# Do Bracken calculations and use it in downstream processing
+run_bracken: True
 # directory to find scripts for processing
 # either the path of the kraken2_classification repo cloned, 
 # or a symlink to the scripts directory
 scripts_dir: scripts
-# file defining sample groups. Tab delimited with two columns, see manual/downstream_plotting.md
-# if nothing specified, all samples will be treated as one group
+# file defining sample groups. Tab delimited with two columns,
+#    see manual/downstream_plotting.md
+# if empty string specified, all samples will be treated as one group
 sample_groups_file: ''
-# use bracken results in downstream processing
-use_bracken_downstream: True
+###########################################################
 
 
 ######### Other advanced options ###################
 # Eli's workflow: specify a datasets file here to get taxonomic barplots
 # organized by condition and timepoint. 
 barplot_datasets: '' #tab-delimited table, see manual/downstream_plotting.md
-
 ###########################################################
 
 ########### database alternatives (see README): ###########

@@ -1,70 +1,101 @@
 # Snakefile for kraken2 classification
 # Does classification, plotting, etc
 from os.path import join
+import sys
 # output base directory
 outdir = config['outdir']
 
-# default configuration only does classification
-# reads in sample info and reads from the sample_file 
-sample_reads = {}
-with open(config['sample_file']) as sf:
-    for l in sf.readlines():
-        s = l.strip().split("\t")
-        if len(s) == 1 or s[0] == 'Sample' or s[0] == '#Sample' or s[0].startswith('#'):
-            continue
+def get_sample_reads(sample_file):
+    sample_reads = {}
+    paired_end = ''
+    with open(sample_file) as sf:
+        for l in sf.readlines():
+            s = l.strip().split("\t")
+            if len(s) == 1 or s[0] == 'Sample' or s[0] == '#Sample' or s[0].startswith('#'):
+                continue
+            sample = s[0]
+            # paired end specified
+            if (len(s)==3):
+                reads = [s[1],s[2]]
+                if paired_end != '' and not paired_end: 
+                    sys.exit('All samples must be paired or single ended.')
+                paired_end = True
+            # single end specified
+            elif len(s)==2:
+                reads=s[1]
+                if paired_end != '' and paired_end: 
+                    sys.exit('All samples must be paired or single ended.')
+                paired_end = False
+            if sample in sample_reads:
+                raise ValueError("Non-unique sample encountered!")
+            sample_reads[sample] = reads
+    return (sample_reads, paired_end)
 
-        sample = s[0]
-        if (len(s)==3):
-            reads = [s[1],s[2]]
-        elif len(s==2):
-            reads=s[1]
-        
-        if sample in sample_reads:
-            raise ValueError("Non-unique sample encountered!")
-        sample_reads[sample] = reads
+
+# read in sample info and reads from the sample_file 
+sample_reads, paired_end = get_sample_reads(config['sample_file'])
+if paired_end: 
+    paired_string = '--paired'
+else: 
+    paired_string = ''
 sample_names = sample_reads.keys()
 
+# extra specified files to generate from the config file
 extra_run_list =[]
-# here is the stuff for the barplot
+# Do we want to run bracken?
+if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom':
+    print('NO Bracken database for this option yet. Disabling Bracken.')
+    run_bracken = False
+else: 
+    run_bracken = config['run_bracken']
+# add bracken to extra files
+if run_bracken:
+    extra_run_list.append('bracken')
+    downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
+else:
+    downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
+# Elis barplot workflow
 if config['barplot_datasets'] != '':
     extra_run_list.append('barplot')
     
 # additional outputs determined by whats specified in the readme
 extra_files = {
+    "bracken": expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
     "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
     "krona": expand(join(outdir, "krona/{samp}.html"), samp = sample_names),
     "mpa_heatmap": join(outdir, "mpa_reports/merge_metaphlan_heatmap.png"),
     "biom_file": join(outdir, "table.biom")
 }
 run_extra = [extra_files[f] for f in extra_run_list]
-print("run Extra files: " + str(run_extra))
+# print("run Extra files: " + str(run_extra))
 
 rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
-        expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf'),
         run_extra
-        # join(outdir, "plots/taxonomic_composition.pdf"),
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
 rule kraken:
     input: 
-        r1 = lambda wildcards: sample_reads[wildcards.samp][0],
-        r2 = lambda wildcards: sample_reads[wildcards.samp][1]
+        reads = lambda wildcards: sample_reads[wildcards.samp],
+        # r2 = lambda wildcards: sample_reads[wildcards.samp][1]
     output:
         krak = join(outdir, "classification/{samp}.krak"),
         krak_report = join(outdir, "classification/{samp}.krak.report")
     params: 
-        db = config['database']
+        db = config['database'],
+        paired_string = paired_string
     threads: 8 
     resources:
         mem=48,
         time=6
     shell: """
-        time kraken2 --db {params.db} --threads {threads} --output {output.krak} --report {output.krak_report} \
-        --paired {input.r1} {input.r2} 
+        time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
+        --report {output.krak_report} {params.paired_string} {input.reads}
+        # and 
         """
+
 rule bracken: 
     input:
         rules.kraken.output
@@ -80,18 +111,19 @@ rule bracken:
         mem = 64,
         time = 1
     shell: """
-        bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} -l {params.level} -t {params.threshold}
+        bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} \
+        -l {params.level} -t {params.threshold}
         """
 
 rule downsteam_processing:
     input:
-        expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
+        downsteam_processing_input
     params:
         scripts_folder = config["scripts_dir"],
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
         outdir = outdir,
-        bracken_report = config["use_bracken_downstream"]
+        use_bracken_report = run_bracken
     output:
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
     script:
