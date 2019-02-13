@@ -30,13 +30,9 @@ parse_kraken_report <- function(df, filter.tax.level="S", include.unmapped=F, re
     }
     
     valid.tax.levels <- c('D','P','C','O','F','G','S')
-    if (!file.exists(fname)){
-        stop(paste('File does not exist:', fname))
-    } else if(!(filter.tax.level %in% valid.tax.levels)) {
-         stop(paste('filter tax.level must be in', paste(valid.tax.levels, collapse = ', ')))
+    if(!(filter.tax.level %in% valid.tax.levels)) {
+        stop(paste('filter tax.level must be in', paste(valid.tax.levels, collapse = ', ')))
     }
-    df <- read.table(fname, sep='\t', quote='', header = F,
-                     col.names=c('pct', 'reads.below','reads.direct','tax.level','taxid','name'))
     
     # if domain, add in Kingdom too becuase theyre all classified that way...
     if (filter.tax.level == 'D'){
