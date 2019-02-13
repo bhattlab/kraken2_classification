@@ -16,21 +16,10 @@ database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genba
 ############# Downstream processing #######################
 # Do Bracken calculations and use it in downstream processing
 run_bracken: True
-# directory to find scripts for processing
-# either the path of the kraken2_classification repo cloned, 
-# or a symlink to the scripts directory
-scripts_dir: scripts
 # file defining sample groups. Tab delimited with two columns,
 #    see manual/downstream_plotting.md
 # if empty string specified, all samples will be treated as one group
 sample_groups_file: ''
-###########################################################
-
-
-######### Other advanced options ###################
-# Eli's workflow: specify a datasets file here to get taxonomic barplots
-# organized by condition and timepoint. 
-barplot_datasets: '' #tab-delimited table, see manual/downstream_plotting.md
 ###########################################################
 
 ########### database alternatives (see README): ###########
