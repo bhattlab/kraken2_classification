@@ -54,9 +54,6 @@ if run_bracken:
     downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
 else:
     downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
-# Elis barplot workflow
-if config['barplot_datasets'] != '':
-    extra_run_list.append('barplot')
     
 # additional outputs determined by whats specified in the readme
 extra_files = {
