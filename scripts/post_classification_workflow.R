@@ -28,8 +28,8 @@ outfolder.plots <- file.path(outfolder.matrices, 'plots')
 # outfolder.matrices <- '~/scg_scratch/ssrc_conventional/kraken2_classify/processed_results'
 # outfolder.plots <- file.path(outfolder.matrices, 'plots')
 
-source.script.1 <- file.path('scripts/process_classification.R')
-source.script.2 <- file.path('scripts/plotting_classification.R')
+source.script.1 <- file.path(snakemake@scriptdir, 'process_classification.R')
+source.script.2 <- file.path(snakemake@scriptdir, 'plotting_classification.R')
 if (!(file.exists(source.script.1) & file.exists(source.script.2))){
     stop('Specify right source script dir')
 }
