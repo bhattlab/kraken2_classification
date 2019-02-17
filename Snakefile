@@ -55,9 +55,18 @@ if run_bracken:
 else:
     downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
     
+# do we want to extract unmapped reads?
+if config['extract_unmapped']:
+    if paired_end:
+        extra_run_list.append('unmapped_paired')
+    else:
+        extra_run_list.append('unmapped_single')
+
 # additional outputs determined by whats specified in the readme
 extra_files = {
     "bracken": expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
+    "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
+    "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
     "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
     "krona": expand(join(outdir, "krona/{samp}.html"), samp = sample_names),
     "mpa_heatmap": join(outdir, "mpa_reports/merge_metaphlan_heatmap.png"),
@@ -68,6 +77,7 @@ run_extra = [extra_files[f] for f in extra_run_list]
 
 rule all:
     input:
+        expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf'),
         run_extra
@@ -76,7 +86,6 @@ rule all:
 rule kraken:
     input: 
         reads = lambda wildcards: sample_reads[wildcards.samp],
-        # r2 = lambda wildcards: sample_reads[wildcards.samp][1]
     output:
         krak = join(outdir, "classification/{samp}.krak"),
         krak_report = join(outdir, "classification/{samp}.krak.report")
@@ -132,6 +141,39 @@ rule krona:
         ktImportTaxonomy -m 3 -s 0 -q 0 -t 5 -i {input} -o {output} \
         -tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy
         """
+
+# optional rule to extract unmapped reads
+rule extract_unmapped_paired:
+    input:
+        krak = join(outdir, "classification/{samp}.krak"),
+        r1 = lambda wildcards: sample_reads[wildcards.samp][0],
+        r2 = lambda wildcards: sample_reads[wildcards.samp][1],
+    output: 
+        r1 = join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"),
+        r2 = join(outdir, "unmapped_reads/{samp}_unmapped_2.fq")
+    params: 
+        taxid = str(0),
+        tempfile = "{samp}_" + str(0) + "_reads.txt"
+    shell: """
+        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+        filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
+        rm {params.tempfile}
+    """
+
+rule extract_unmapped_single:
+    input:
+        krak = join(outdir, "classification/{samp}.krak"),
+        r1 = lambda wildcards: sample_reads[wildcards.samp],
+    output: 
+        r1 = join(outdir, "unmapped_reads/{samp}_unmapped.fq"),
+    params: 
+        taxid = str(0),
+        tempfile = "{samp}_" + str(0) + "_reads.txt"
+    shell: """
+        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+        filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
+        rm {params.tempfile}
+    """
 
 '''
 # convert bracken to mpa syle report if desired 

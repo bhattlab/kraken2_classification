@@ -5,10 +5,9 @@ channels:
   - r
 dependencies:
   - kraken2
-  # - bracken
+  - bbmap
   - krona
   - python>3.5
-  - kraken
   - ncurses
   - datrie
   - r-ggplot2

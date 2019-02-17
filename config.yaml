@@ -22,13 +22,20 @@ run_bracken: True
 sample_groups_file: ''
 ###########################################################
 
+########### Extracting unmapped reads #####################
+# Can extract unmapped reads from this database for use with
+# another database. Will be in output folder $outdir/unmapped_reads
+extract_unmapped: False
+###########################################################
+
+
 ########### database alternatives (see README): ###########
 # NO BRACKEN YET: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom 
 # /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
 # /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/
-# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/
-# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/
-# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt
-# /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt
+# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/
+# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/
+# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt
+# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt
 ###########################################################
 
