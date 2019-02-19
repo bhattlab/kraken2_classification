@@ -95,11 +95,10 @@ rule kraken:
     threads: 8 
     resources:
         mem=48,
-        time=6
+        time=1
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads}
-        # and 
         """
 
 rule bracken: 
@@ -154,6 +153,8 @@ rule extract_unmapped_paired:
     params: 
         taxid = str(0),
         tempfile = "{samp}_" + str(0) + "_reads.txt"
+    resources: 
+        mem = 64
     shell: """
         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
