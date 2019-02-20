@@ -92,7 +92,7 @@ rule kraken:
     params: 
         db = config['database'],
         paired_string = paired_string
-    threads: 8 
+    threads: 4 
     resources:
         mem=48,
         time=1

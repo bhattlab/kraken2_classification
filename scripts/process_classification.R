@@ -1,4 +1,5 @@
 # toolkit for processing classification data
+options(stringsAsFactors = F)
 
 # simple reader for a kraken file
 kraken_file_to_df <- function(fname){
@@ -7,6 +8,12 @@ kraken_file_to_df <- function(fname){
   }
   df <- read.table(fname, sep='\t', quote='', header = F,
                    col.names=c('pct', 'reads.below','reads.direct','tax.level','taxid','name'))
+  # ensure names, if not add taxid
+  for (i in 1:nrow(df)){
+      if (trimws(df[i, 'name']) == ''){
+          df[i, 'name'] <- df[i, 'taxid']
+      }
+  }
   return(df)
 }
 
