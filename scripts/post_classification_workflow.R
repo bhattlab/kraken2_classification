@@ -18,18 +18,35 @@ use.bracken.report <- snakemake@params[['use_bracken_report']]
 classification.folder <- file.path(workflow.outdir, 'classification')
 outfolder.matrices <- file.path(workflow.outdir, 'processed_results')
 outfolder.plots <- file.path(outfolder.matrices, 'plots')
-
+scripts.folder <- snakemake@scriptdir
 # # Testing Args
 # scripts.folder <- '~/projects/kraken2_classification/scripts/'
-# sample.reads.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/samples.tsv' 
-# sample.groups.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/sample_groups.tsv' 
+# sample.reads.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/samples.tsv'
+# sample.groups.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/sample_groups.tsv'
 # classification.folder <- '~/scg_scratch/ssrc_conventional/kraken2_classify/kraken2_classification/'
 # use.bracken.report <- T
 # outfolder.matrices <- '~/scg_scratch/ssrc_conventional/kraken2_classify/processed_results'
 # outfolder.plots <- file.path(outfolder.matrices, 'plots')
 
-source.script.1 <- file.path(snakemake@scriptdir, 'process_classification.R')
-source.script.2 <- file.path(snakemake@scriptdir, 'plotting_classification.R')
+# # for segata debug
+scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples_2018_unmapped.tsv'
+sample.groups.f <- ''
+classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/classification/'
+use.bracken.report <- F
+outfolder.matrices <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/processed_results/'
+outfolder.plots <- file.path(outfolder.matrices, 'plots')
+# # for segata debug
+scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
+sample.groups.f <- ''
+classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
+use.bracken.report <- F
+outfolder.matrices <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results/'
+outfolder.plots <- file.path(outfolder.matrices, 'plots')
+
+source.script.1 <- file.path(scripts.folder, 'process_classification.R')
+source.script.2 <- file.path(scripts.folder, 'plotting_classification.R')
 if (!(file.exists(source.script.1) & file.exists(source.script.2))){
     stop('Specify right source script dir')
 }
@@ -68,34 +85,56 @@ if (!(all(file.exists(flist)))){
 # fraction of classified reads
 # fraction of reads classified at this level
 # print(flist)
-bracken.species.reads <- many_files_to_matrix(flist)
-bracken.genus.reads <- many_files_to_matrix(flist,filter.tax.level = 'G')
-bracken.species.fraction <- reads_matrix_to_percentages(bracken.species.reads)
-bracken.genus.fraction <- reads_matrix_to_percentages(bracken.genus.reads)
+
+# read in all as a list of matrices instead - much quicker and can do all tax levels
+tax.level.names <- c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
+tax.level.abbrev <- c('D','P','C','O','F','G','S')
+bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev)
+# normalize to percentages
+bracken.fraction.matrix.list <- lapply(bracken.reads.matrix.list, reads_matrix_to_percentages)
+names(bracken.reads.matrix.list) <- tax.level.names
+names(bracken.fraction.matrix.list) <- tax.level.names
+
 # save matrices
 if (use.bracken.report){mat.name <- 'bracken'} else {mat.name <- 'kraken'}
-out.mat.1 <- file.path(outfolder.matrices, paste(mat.name, 'species_reads.txt', sep='_'))
-out.mat.2 <- file.path(outfolder.matrices, paste(mat.name, 'genus_reads.txt', sep='_'))
-out.mat.3 <- file.path(outfolder.matrices, paste(mat.name, 'species_percentage.txt', sep='_'))
-out.mat.4 <- file.path(outfolder.matrices, paste(mat.name, 'genus_percentage.txt', sep='_'))
-write.table(bracken.species.reads, out.mat.1, sep='\t', quote=F, row.names = T, col.names = T)
-write.table(bracken.genus.reads, out.mat.2, sep='\t', quote=F, row.names = T, col.names = T)
-write.table(bracken.species.fraction, out.mat.3, sep='\t', quote=F, row.names = T, col.names = T)
-write.table(bracken.genus.fraction, out.mat.4, sep='\t', quote=F, row.names = T, col.names = T)
-
+for (tn in tax.level.names){
+    out.mat.reads <- file.path(outfolder.matrices, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
+    out.mat.fraction <- file.path(outfolder.matrices, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
+    write.table(bracken.reads.matrix.list[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
+    write.table(bracken.fraction.matrix.list[[tn]], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
+}
 
 #################################################################################
 ## Diversity calculation and plots ##############################################
 #################################################################################
 # diversity calculations
 div.methods <- c('shannon', 'simpson')
-div.list.species <- lapply(div.methods, function(x) diversity(bracken.species.reads, index=x, MARGIN = 2))
-div.list.genus <- lapply(div.methods, function(x) diversity(bracken.genus.reads, index=x, MARGIN = 2))
-div.df <- cbind(do.call(cbind, div.list.species), do.call(cbind, div.list.genus))
-colnames(div.df) <- paste(div.methods, rep(c('species', 'genus'), each=length(div.methods)), sep='_')
+div.tax.levels <- tax.level.names[2:7]
+# list of lists, oh my!
+div.level.method <- lapply(div.tax.levels, function(x) {
+    # if not enough valid rows
+    use.matrix <- bracken.reads.matrix.list[[x]]
+    if (nrow(use.matrix) <3){
+        dl <- lapply(div.methods, function(x) rep(NA, times=ncol(use.matrix)))
+    } else {
+        dl <- lapply(div.methods, function(y) diversity(use.matrix, index=y, MARGIN = 2))
+    }
+    names(dl) <- div.methods
+    dl
+})
+names(div.level.method) <- div.tax.levels
+# there's definitely a better way to do this...
+div.df <- as.data.frame(div.level.method)
+div.df <- cbind(data.frame(name=rownames(div.df)), div.df)
+div.df <- melt(div.df, id.vars = 'name')
+div.df$tax.level <- strsplit(as.character(div.df$variable), split="\\.")[[1]][1]
+div.df$method <- strsplit(as.character(div.df$variable) , split='\\.')[[1]][2]
+div.df <- div.df[,c('name', 'tax.level','method','value')]
+# round to a sensible number
+div.df$value <- round(div.df$value, 3)
 # write out dataframe
 out.div <- file.path(outfolder.matrices, 'diversity.txt')
-write.table(round(div.df,3), out.div, sep='\t', quote=F, row.names=T, col.names=T)
+write.table(div.df, out.div, sep='\t', quote=F, row.names=T, col.names=T)
 
 # barplot of diversity under different methods
 # one with everything, one separated by sample group
