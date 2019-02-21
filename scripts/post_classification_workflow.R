@@ -125,36 +125,36 @@ div.level.method <- lapply(div.tax.levels, function(x) {
 names(div.level.method) <- div.tax.levels
 # there's definitely a better way to do this...
 div.df <- as.data.frame(div.level.method)
-div.df <- cbind(data.frame(name=rownames(div.df)), div.df)
-div.df <- melt(div.df, id.vars = 'name')
-div.df$tax.level <- strsplit(as.character(div.df$variable), split="\\.")[[1]][1]
-div.df$method <- strsplit(as.character(div.df$variable) , split='\\.')[[1]][2]
-div.df <- div.df[,c('name', 'tax.level','method','value')]
+div.df <- cbind(data.frame(sample=rownames(div.df)), div.df)
+div.df <- melt(div.df, id.vars = 'sample')
+div.df$tax.level <- sapply(div.df$variable, function(x) strsplit(as.character(x), split="\\.")[[1]][1])
+div.df$method <- sapply(div.df$variable, function(x) strsplit(as.character(x), split="\\.")[[1]][2])
+div.df <- div.df[,c('sample', 'tax.level','method','value')]
 # round to a sensible number
 div.df$value <- round(div.df$value, 3)
 # write out dataframe
 out.div <- file.path(outfolder.matrices, 'diversity.txt')
-write.table(div.df, out.div, sep='\t', quote=F, row.names=T, col.names=T)
+write.table(div.df, out.div, sep='\t', quote=F, row.names=F, col.names=T)
 
 # barplot of diversity under different methods
 # one with everything, one separated by sample group
-div.df.melt <- melt(div.df)
-colnames(div.df.melt) <- c('sample','method','value')
-div.df.melt$sample <- factor(div.df.melt$sample, levels = sample.groups$sample)
+div.df$sample <- factor(div.df$sample, levels = sample.groups$sample)
 div.plot.list <- list()
 # print(sample.groups)
 # print(div.df.melt)
 for (g in unique(sample.groups$group)){
     plot.samples <- sample.groups[sample.groups$group==g, "sample"]
-    plot.df <- div.df.melt[div.df.melt$sample %in% plot.samples, ]
+    plot.df <- div.df[div.df$sample %in% plot.samples, ]
     p <- ggplot(plot.df, aes(x=sample, y=value)) + 
-            geom_bar(stat='identity') + 
-            facet_wrap(plot.df$method,dir = 'v', ncol=2, scales = 'fixed') +
-            theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-            labs(title=paste('Diversity for group:', g),
-                 y='Diversity', x='Sample')
+        geom_bar(stat='identity') + 
+        facet_grid(rows = vars(tax.level), cols= vars(method), scales = 'fixed') +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+        labs(title=paste('Diversity for group:', g),
+             y='Diversity', x='Sample')
     div.plot.list[[g]] <- p
 }
+
+
 # save one page for each group
 div.group.pdf <- file.path(outfolder.plots, 'diversity_by_group.pdf')
 pdf(div.group.pdf, height=8, width = 10)
@@ -163,10 +163,11 @@ dev.off()
 
 # also a big figure with one page for each method, all samples
 div.plot.all.list <- list()
-for (m in unique(div.df.melt$method)){
-    plot.df <- div.df.melt[div.df.melt$method == m, ]
+for (m in unique(div.df$method)){
+    plot.df <- div.df[div.df$method == m, ]
     p <- ggplot(plot.df, aes(x=sample, y=value)) + 
             geom_bar(stat='identity') + 
+            facet_grid(rows = vars(tax.level), cols= vars(method), scales = 'fixed') +
             theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
             labs(title=paste('Diversity for all samples:', m),
                  y='Diversity', x='Sample')
@@ -185,21 +186,25 @@ dev.off()
 ## Taxonomic Barplots ###########################################################
 #################################################################################
 # page in the pdf for each sample group
+for (tn in tax.level.names){
+    tax.pdf <- file.path(outfolder.plots, paste('taxonomy_barplot_', tn, '.pdf', sep=''))
+    plotlist <- list()
+    for (g in unique(sample.groups$group)){
+        plot.samples <- sample.groups[sample.groups$group==g, "sample"]
+        # species level
+        div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon',]
+        rownames(div.df.sub) <- div.df.sub$sample
+        div.df.sub <- div.df.sub[plot.samples, ]
+        plot.title <- paste('Taxonomy and diversity:', g, tn)
+        plotlist[[g]] <- plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples], div.df.g.species, plot.title = plot.title)
+        
+    }
+
+}
 tax.pdf.species <- file.path(outfolder.plots, 'taxonomy_barplot_species.pdf')
 tax.pdf.genus <- file.path(outfolder.plots, 'taxonomy_barplot_genus.pdf')
 plotlist.species <- list()
 plotlist.genus <- list()
-for (g in unique(sample.groups$group)){
-    plot.samples <- sample.groups[sample.groups$group==g, "sample"]
-    # species level
-    div.df.g.species <- data.frame(plot.samples, div.df[plot.samples, 'shannon_species'])
-    plot.title.species <- paste('Taxonomy and diversity:', g, 'species')
-    plotlist.species[[g]] <- plot_many_samples_with_diversity_barplot(bracken.species.fraction[,plot.samples], div.df.g.species, plot.title = plot.title.species)
-    # genus level
-    div.df.g.genus <- data.frame(plot.samples, div.df[plot.samples, 'shannon_genus'])
-    plot.title.genus <- paste('Taxonomy and diversity:', g, 'genus')
-    plotlist.genus[[g]] <- plot_many_samples_with_diversity_barplot(bracken.genus.fraction[,plot.samples], div.df.g.genus, plot.title = plot.title.genus, scale.name='Genus')
-}
 
 # width of plot = 9 + quarter inch for each sample over 10
 max.samps <- max(table(sample.groups$group))
