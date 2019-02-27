@@ -29,25 +29,25 @@ scripts.folder <- snakemake@scriptdir
 # use.bracken.report <- T
 
 # # for segata debug
-scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples_2018_unmapped.tsv'
-sample.groups.f <- ''
-classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/classification/'
-use.bracken.report <- F
-result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/processed_results/'
-outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
-outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
-outfolder.plots <- file.path(result.dir, 'plots')
-# # for segata debug
-scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
-sample.groups.f <- ''
-classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
-use.bracken.report <- F
-result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results/'
-outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
-outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
-outfolder.plots <- file.path(result.dir, 'plots')
+# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+# sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples_2018_unmapped.tsv'
+# sample.groups.f <- ''
+# classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/classification/'
+# use.bracken.report <- F
+# result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/processed_results/'
+# outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
+# outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
+# outfolder.plots <- file.path(result.dir, 'plots')
+# # # for segata debug
+# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+# sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
+# sample.groups.f <- ''
+# classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
+# use.bracken.report <- F
+# result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results/'
+# outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
+# outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
+# outfolder.plots <- file.path(result.dir, 'plots')
 
 source.script.1 <- file.path(scripts.folder, 'process_classification.R')
 source.script.2 <- file.path(scripts.folder, 'plotting_classification.R')
@@ -66,7 +66,6 @@ sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment
 colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
 
 ## 
-sample.reads <- sample.reads[1:10,]
 ##
 # if a groups file is specified, read it. Otherwise assign everything to one group
 if (sample.groups.f != '') {
@@ -75,8 +74,18 @@ if (sample.groups.f != '') {
 } else {
     sample.groups <- data.frame(sample=sample.reads$sample, group='All')
 }
+## FOR TESTING
+# sample.reads <- sample.reads[order(sample.reads$sample),]
+# sample.groups <- sample.groups[order(sample.groups$sample),]
+# sample.reads <- sample.reads[1:10,]
+# sample.groups <- sample.groups[1:10,]
+
 # ensure reads and groups have the same data
 if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
+    # print(sample.groups)
+    # print(sample.reads)
+    # print(sample.groups$sample[!(sample.groups$sample %in% sample.reads$sample)])
+    # print(sample.reads$sample[!(sample.reads$sample %in% sample.groups$sample)])
     stop('Sample reads and sample groups dont contain the same samples... check inputs')
 }
 
@@ -100,7 +109,8 @@ if (!(all(file.exists(flist)))){
 tax.level.names <- c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
 tax.level.abbrev <- c('D','P','C','O','F','G','S')
 # need something to limit to Segata database
-segata <- T
+test.df <- kraken_file_to_df(flist[1])
+segata <- F
 if (segata){
     tax.level.names <- c('Species')
     tax.level.abbrev <- c('S')
@@ -131,7 +141,7 @@ div.level.method <- lapply(div.tax.levels, function(x) {
     # if not enough valid rows
     use.matrix <- bracken.reads.matrix.list[[x]]
     if (nrow(use.matrix) <3){
-        dl <- lapply(div.methods, function(x) rep(NA, times=ncol(use.matrix)))
+        dl <- lapply(div.methods, function(x) rep(0, times=ncol(use.matrix)))
     } else {
         dl <- lapply(div.methods, function(y) diversity(use.matrix, index=y, MARGIN = 2))
     }
@@ -209,10 +219,11 @@ for (tn in tax.level.names){
     # print(tn)
     for (g in unique(sample.groups$group)){
         plot.samples <- sample.groups[sample.groups$group==g, "sample"]
-        div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon',]
+        div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
+        # print(div.df.sub)
         div.df.plot <- div.df.sub[, c('sample', 'value')]        
-        rownames(div.df.sub) <- div.df.sub$sample
-        div.df.sub <- div.df.sub[plot.samples, ]
+        rownames(div.df.plot) <- div.df.plot$sample
+        # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
         group.plots[[g]] <- plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples],
                                                                   div.df.plot, plot.title = plot.title)
@@ -237,7 +248,7 @@ for (tn in tax.level.names){
 # do for each tax level
 plotlist.nolabels <- list()
 plotlist.labels <- list()
-for (tn in tax.level.names){
+for (tn in tax.level.names[2:length(tax.level.names)]){
     fraction.mat <- bracken.fraction.matrix.list[[tn]]
     pcoa.res <- capscale(t(fraction.mat)~1, distance='bray')
     pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
