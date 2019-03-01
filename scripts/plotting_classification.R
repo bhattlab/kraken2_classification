@@ -40,14 +40,19 @@ plot_many_samples <- function(kraken.mat, n.colors=12, scale.name = 'Species'){
         stop('Must give normalized percent matrix')
     }
 
+    # ncolors must be equal or less to nrow kraken.mat
+    n.colors <- min(n.colors, nrow(kraken.mat))
+    
     nmax <- 12
     cols <- c(colorRampPalette(brewer.pal(12,'Paired'))(nmax)[1:n.colors], 'grey80')
     # replace 11th color
     cols[11] <-  colorRampPalette(brewer.pal(12,'Paired')[11:12])(4)[2]
+    # limit to ncolors 
+    cols <- cols[1:(n.colors+1)]
     
     # kraken.mat <- bracken.species.fraction
-    abundance.threshold <- sort(rowSums(kraken.mat), decreasing = T)[n.colors]
-    kraken.mat <- as.matrix(kraken.mat[rowSums(kraken.mat) >= abundance.threshold,])
+    keep.rows <- names(sort(rowSums(kraken.mat), decreasing = T))[1:n.colors]
+    kraken.mat <- as.matrix(kraken.mat[keep.rows,])
     kraken.mat <- rbind(kraken.mat, 100 - colSums(kraken.mat))
     rownames(kraken.mat)[nrow(kraken.mat)] <- 'Other'
     toplot.genus <- melt(kraken.mat, varnames = c('taxa', 'sample'))
@@ -114,8 +119,9 @@ plot_many_samples_with_diversity_barplot <- function(kraken.mat, diversity.df, y
               # plot.margin = unit(c(0,0,0,0),'lines')) +
         ylim(0, max(diversity.df$shannon)*1.20) +
         labs(y=y.title)
-    # print(taxplot)
-    # print(divplot)
+    
+    print(taxplot)
+    print(divplot)
     
     figure <- ggarrange(divplot, taxplot,ncol=1, align = 'v', nrow=2, heights = c(1,4),legend = 'right', common.legend = T)
     if (plot.title!=''){
