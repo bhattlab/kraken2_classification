@@ -36,11 +36,6 @@ parse_kraken_report <- function(df, filter.tax.level="S", include.unmapped=F, re
         report.column <- 'name'
     }
     
-    valid.tax.levels <- c('D','P','C','O','F','G','S')
-    if(!(filter.tax.level %in% valid.tax.levels)) {
-        stop(paste('filter tax.level must be in', paste(valid.tax.levels, collapse = ', ')))
-    }
-    
     # if domain, add in Kingdom too becuase theyre all classified that way...
     if (filter.tax.level == 'D'){
         filter.tax.levels <- c('D','K')
@@ -56,12 +51,12 @@ parse_kraken_report <- function(df, filter.tax.level="S", include.unmapped=F, re
     add.df <- data.frame()
     below.levels <- valid.tax.levels[(which(valid.tax.levels %in% filter.tax.levels)+1):length(valid.tax.levels)]
     below.sublevels <- paste(below.levels, rep(1:9, each=length(below.levels)), sep='')
-    ilter.tax.sublevels <- paste(filter.tax.level, 1:9, sep='')
+    filter.tax.sublevels <- paste(filter.tax.level, 1:9, sep='')
     for (i in 1:nrow(df)){
         this.level <- df[i, 'tax.level']
         if (this.level %in% filter.tax.levels){
             found.level <- T
-        } else if (!(this.level %in% c(ilter.tax.sublevels, below.levels, below.sublevels))){
+        } else if (!(this.level %in% c(filter.tax.sublevels, below.levels, below.sublevels))){
             found.level <- F
             last.line <- df[i,]
         }
@@ -84,8 +79,17 @@ parse_kraken_report <- function(df, filter.tax.level="S", include.unmapped=F, re
     }
 
     # add unmpped if desired
+    # first is unmapped totally - unclassified reads
+    # second is reads unclassified at this level
+    # that's (all reads - (unclassified + classified at given level)) 
     if (include.unmapped){ 
-        df.filter <- rbind(df.filter, df[df$taxid==0,])}
+        # print(df[df$taxid==0,])
+        unclassified.completely <- df[df$taxid==0, 'reads.direct']
+        unclassified.thislevel <- max(0, sum(df$reads.direct) - (sum(df.filter$reads.below) + unclassified.completely))
+        unclassified.df <- data.frame(pct=NA, reads.below=c(unclassified.completely, unclassified.thislevel),
+                                      reads.direct=c(unclassified.completely, unclassified.thislevel), 
+                                      taxid=0, tax.level=NA, name=c('unclassified completely', 'unclassified at this level'))
+        df.filter <- rbind(df.filter, unclassified.df)}
     df.filter <- df.filter[,c(report.column, 'reads.below')]
     # strip whitespace from name
     df.filter[,1] <- trimws(df.filter[,1])

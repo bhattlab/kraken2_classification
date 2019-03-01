@@ -35,7 +35,11 @@ if(F){
 
 # plot many samples in a barplot horizontally
 # samples must be in normalized fraction first
-plot_many_samples <- function(kraken.mat, n.colors=12, scale.name = 'Species'){
+# include.unclassified: add unmpped reads into the mix barplot
+# expects two rows in the matrix named 'unclassified completely' and 
+#  'unclassified at this level'
+# plots them in shades of grey and changes y axis name
+plot_many_samples <- function(kraken.mat, n.colors=12, scale.name = 'Species', include.unclassified =T){
     if (any(kraken.mat > 100)){
         stop('Must give normalized percent matrix')
     }
@@ -50,14 +54,32 @@ plot_many_samples <- function(kraken.mat, n.colors=12, scale.name = 'Species'){
     # limit to ncolors 
     cols <- cols[1:(n.colors+1)]
     
-    # kraken.mat <- bracken.species.fraction
-    keep.rows <- names(sort(rowSums(kraken.mat), decreasing = T))[1:n.colors]
-    kraken.mat <- as.matrix(kraken.mat[keep.rows,])
-    kraken.mat <- rbind(kraken.mat, 100 - colSums(kraken.mat))
-    rownames(kraken.mat)[nrow(kraken.mat)] <- 'Other'
-    toplot.genus <- melt(kraken.mat, varnames = c('taxa', 'sample'))
+    # proceed with classified reads here    
+    unclassified.rownames <- c('unclassified completely', 'unclassified at this level')
+    kraken.mat.classified <- kraken.mat[!(rownames(kraken.mat) %in% unclassified.rownames),]
+    keep.rows <- names(sort(rowSums(kraken.mat.classified), decreasing = T))[1:n.colors]
+    kraken.mat.plot <- as.matrix(kraken.mat.classified[keep.rows,])
 
-    taxplot <- ggplot(data=toplot.genus, aes(x = sample, y = value, fill = taxa)) + 
+    # add unclassified taxa if desired
+    if (include.unclassified){
+        if (!(all(unclassified.rownames %in% rownames(kraken.mat)))){
+            stop('Must have unclassified rows in matrix')
+        }
+        kraken.mat.plot <- rbind(kraken.mat.plot, kraken.mat[unclassified.rownames,])
+        cols <- c(cols, 'grey60', 'grey40')
+        # kraken.mat.plot['Other',] <- 100 - colSums(kraken.mat.plot)
+        
+    } else{ 
+        # renorm percentages
+        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
+        kraken.mat.plot <- (kraken.mat.plot / (colSums(kraken.mat.plot)) * 100
+    }
+    rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other'
+    
+    
+    toplot.df <- melt(kraken.mat.plot, varnames = c('taxa', 'sample'))
+
+    taxplot <- ggplot(data=toplot.df, aes(x = sample, y = value, fill = taxa)) + 
         geom_bar(stat = 'identity') +
         scale_fill_manual(values = cols, name = scale.name) +
         # theme_bw() + 

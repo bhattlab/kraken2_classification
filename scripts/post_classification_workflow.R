@@ -39,15 +39,15 @@ scripts.folder <- snakemake@scriptdir
 # outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 # outfolder.plots <- file.path(result.dir, 'plots')
 # # # for segata debug
-# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-# sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
-# sample.groups.f <- ''
-# classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
-# use.bracken.report <- F
-# result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results/'
-# outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
-# outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
-# outfolder.plots <- file.path(result.dir, 'plots')
+scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
+sample.groups.f <- ''
+classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
+use.bracken.report <- F
+result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results_TESTING/'
+outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
+outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
+outfolder.plots <- file.path(result.dir, 'plots')
 
 source.script.1 <- file.path(scripts.folder, 'process_classification.R')
 source.script.2 <- file.path(scripts.folder, 'plotting_classification.R')
@@ -75,10 +75,11 @@ if (sample.groups.f != '') {
     sample.groups <- data.frame(sample=sample.reads$sample, group='All')
 }
 ## FOR TESTING
-# sample.reads <- sample.reads[order(sample.reads$sample),]
-# sample.groups <- sample.groups[order(sample.groups$sample),]
-# sample.reads <- sample.reads[1:10,]
-# sample.groups <- sample.groups[1:10,]
+sample.reads <- sample.reads[order(sample.reads$sample),]
+sample.groups <- sample.groups[order(sample.groups$sample),]
+sample.reads <- sample.reads[1:10,]
+sample.groups <- sample.groups[1:10,]
+sample.groups[6:10, 'group'] <- 'TWO'
 
 # ensure reads and groups have the same data
 if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
@@ -115,7 +116,12 @@ if (segata){
     tax.level.names <- c('Species')
     tax.level.abbrev <- c('S')
 }
-bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev)
+bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev, include.unmapped = T)
+# separate matrices including classified and unclassified
+# god this naming scheme is getting ugly
+unclassified.rownames <- c('unclassified completely', 'unclassified at this level')
+bracken.reads.matrix.list.nounclass <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames), ])
+
 # normalize to percentages
 bracken.fraction.matrix.list <- lapply(bracken.reads.matrix.list, reads_matrix_to_percentages)
 names(bracken.reads.matrix.list) <- tax.level.names
@@ -232,7 +238,7 @@ for (tn in tax.level.names){
 }
 
 # save pdfs
-# width of plot = 9 + quarter inch for each sample over 10
+# width of plot = 9 + quarter inch for each sample over 10  
 max.samps <- max(table(sample.groups$group))
 pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
 for (tn in tax.level.names){
