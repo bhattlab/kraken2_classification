@@ -18,6 +18,7 @@ use.bracken.report <- snakemake@params[['use_bracken_report']]
 classification.folder <- file.path(workflow.outdir, 'classification')
 result.dir <- file.path(workflow.outdir, 'processed_results')
 outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
+outfolder.matrices.taxonomy.classified <- file.path(result.dir, 'taxonomy_matrices_classified_only')
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 outfolder.plots <- file.path(result.dir, 'plots')
 scripts.folder <- snakemake@scriptdir
@@ -38,14 +39,25 @@ scripts.folder <- snakemake@scriptdir
 # outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 # outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 # outfolder.plots <- file.path(result.dir, 'plots')
-# # # for segata debug
-scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+# # # for  debug
+# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+scripts.folder <- '~/projects/kraken2_classification/scripts/'
 sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
 sample.groups.f <- ''
 classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
 use.bracken.report <- F
 result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results_TESTING/'
+
+# # FOR FIONA TESTING
+# sample.reads.f <- '~/scg/fiona_debug/3.kraken2/samples.tsv'
+# sample.groups.f <- ''
+# classification.folder <- '~/scg/fiona_debug/3.kraken2/kraken2_classification/classification/'
+# use.bracken.report <- T
+# result.dir <- '~/scg/fiona_debug/3.kraken2/kraken2_classification/processed_results_BAS'
+
+
 outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
+outfolder.matrices.taxonomy.classified <- file.path(result.dir, 'taxonomy_matrices_classified_only')
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 outfolder.plots <- file.path(result.dir, 'plots')
 
@@ -57,7 +69,8 @@ if (!(file.exists(source.script.1) & file.exists(source.script.2))){
 
 source(source.script.1)
 source(source.script.2)
-for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy, outfolder.plots)){
+for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy,
+            outfolder.matrices.taxonomy.classified, outfolder.plots)){
     if (!dir.exists(f)){ dir.create(f, recursive = T)}
 }
 
@@ -65,8 +78,6 @@ for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy, ou
 sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
 colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
 
-## 
-##
 # if a groups file is specified, read it. Otherwise assign everything to one group
 if (sample.groups.f != '') {
     sample.groups <- read.table(sample.groups.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
@@ -116,16 +127,20 @@ if (segata){
     tax.level.names <- c('Species')
     tax.level.abbrev <- c('S')
 }
-bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev, include.unmapped = T)
+bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev, include.unclassified = T)
 # separate matrices including classified and unclassified
 # god this naming scheme is getting ugly
-unclassified.rownames <- c('unclassified completely', 'unclassified at this level')
-bracken.reads.matrix.list.nounclass <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames), ])
+unclassified.rownames <- c('Unclassified', 'Classified at a higher level')
+bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames), ])
 
 # normalize to percentages
 bracken.fraction.matrix.list <- lapply(bracken.reads.matrix.list, reads_matrix_to_percentages)
 names(bracken.reads.matrix.list) <- tax.level.names
 names(bracken.fraction.matrix.list) <- tax.level.names
+# for classified only
+bracken.fraction.matrix.list.classified <- lapply(bracken.reads.matrix.list.classified, reads_matrix_to_percentages)
+names(bracken.reads.matrix.list.classified) <- tax.level.names
+names(bracken.fraction.matrix.list.classified) <- tax.level.names
 
 # save matrices
 if (use.bracken.report){mat.name <- 'bracken'} else {mat.name <- 'kraken'}
@@ -135,6 +150,14 @@ for (tn in tax.level.names){
     write.table(bracken.reads.matrix.list[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
     write.table(bracken.fraction.matrix.list[[tn]], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
 }
+# save classified only also 
+for (tn in tax.level.names){
+    out.mat.reads <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
+    out.mat.fraction <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
+    write.table(bracken.reads.matrix.list.classified[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
+    write.table(bracken.fraction.matrix.list.classified[[tn]], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
+}
+
 
 #################################################################################
 ## Diversity calculation and plots ##############################################
@@ -145,7 +168,7 @@ div.tax.levels <- tax.level.names
 # list of lists, oh my!
 div.level.method <- lapply(div.tax.levels, function(x) {
     # if not enough valid rows
-    use.matrix <- bracken.reads.matrix.list[[x]]
+    use.matrix <- bracken.reads.matrix.list.classified[[x]]
     if (nrow(use.matrix) <3){
         dl <- lapply(div.methods, function(x) rep(0, times=ncol(use.matrix)))
     } else {
@@ -220,9 +243,7 @@ dev.off()
 # page in the pdf for each sample group
 taxlevel.plots <- list()
 for (tn in tax.level.names){
-    tax.pdf <- file.path(outfolder.plots, paste('taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
     group.plots <- list()
-    # print(tn)
     for (g in unique(sample.groups$group)){
         plot.samples <- sample.groups[sample.groups$group==g, "sample"]
         div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
@@ -232,7 +253,9 @@ for (tn in tax.level.names){
         # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
         group.plots[[g]] <- plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples],
-                                                                  div.df.plot, plot.title = plot.title)
+                                                                  div.df.plot, plot.title = plot.title, include.unclassified=T, tax.level.name = tn)
+        # plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples],
+        #                                          div.df.plot, plot.title = plot.title, include.unclassified=T)
     }
     taxlevel.plots[[tn]] <- group.plots
 }
@@ -248,58 +271,106 @@ for (tn in tax.level.names){
     dev.off()
 }
 
+# REDO for classified only
+taxlevel.plots.classified <- list()
+for (tn in tax.level.names){
+    group.plots <- list()
+    # print(tn)
+    for (g in unique(sample.groups$group)){
+        plot.samples <- sample.groups[sample.groups$group==g, "sample"]
+        div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
+        # print(div.df.sub)
+        div.df.plot <- div.df.sub[, c('sample', 'value')]        
+        rownames(div.df.plot) <- div.df.plot$sample
+        # div.df.sub <- div.df.sub[plot.samples, ]
+        plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
+        group.plots[[g]] <- plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list.classified[[tn]][,plot.samples],
+                                                                  div.df.plot, plot.title = plot.title, include.unclassified=F, tax.level.name = tn)
+    }
+    taxlevel.plots.classified[[tn]] <- group.plots
+}
+
+# save pdfs
+# width of plot = 9 + quarter inch for each sample over 10  
+max.samps <- max(table(sample.groups$group))
+pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
+for (tn in tax.level.names){
+    tax.pdf <- file.path(outfolder.plots, paste('classified_taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
+    pdf(tax.pdf, height=6, width=pdf.width)
+    for (p in taxlevel.plots.classified[[tn]]){print(p)}
+    dev.off()
+}
+
+
 #################################################################################
 ## PCoA plots ###################################################################
 #################################################################################
-# do for each tax level
-plotlist.nolabels <- list()
-plotlist.labels <- list()
-for (tn in tax.level.names[2:length(tax.level.names)]){
-    fraction.mat <- bracken.fraction.matrix.list[[tn]]
-    pcoa.res <- capscale(t(fraction.mat)~1, distance='bray')
-    pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
-    pcoa.df.melt <- melt(pcoa.df)
-    pcoa.variance <- summary(pcoa.res)$cont$importance[2,1:2]
-    # set colors based on number of groups
-    ng <- length(unique(sample.groups$group))
-    if (ng <10){cols <- brewer.pal(max(ng,3), 'Set1')} else {cols <- colorRampPalette(brewer.pal(9,'Set1'))(ng)}
+# only do this if we have >=3 samples
+if (nrow(sample.reads) >=3){
+    # do for each tax level
+    plotlist.nolabels <- list()
+    plotlist.labels <- list()
+    for (tn in tax.level.names[2:length(tax.level.names)]){
+        print(tn)
+        fraction.mat <- bracken.fraction.matrix.list.classified[[tn]]
+        pcoa.res <- capscale(t(fraction.mat)~1, distance='bray')
+        pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
+        pcoa.df.melt <- melt(pcoa.df)
+        pcoa.variance <- summary(pcoa.res)$cont$importance[2,1:2]
+        # set colors based on number of groups
+        ng <- length(unique(sample.groups$group))
+        if (ng <10){cols <- brewer.pal(max(ng,3), 'Set1')} else {cols <- colorRampPalette(brewer.pal(9,'Set1'))(ng)}
+        
+        plotlist.nolabels[[tn]] <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
+            geom_point(size=3) +
+            # scale_color_brewer(palette='Set1') +
+            scale_color_manual(values = cols) +
+            theme_bw() +
+            labs(title=paste('Microbiome beta diversity, Bray-Curtis, ', tn, sep=''),
+                 subtitle='Principal Coordinates Analysis plot',
+                 x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
+                 y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) + 
+            xlim(c(min(pcoa.df$MDS1), max(pcoa.df$MDS1) * 1.25)) +
+            ylim(c(min(pcoa.df$MDS2), max(pcoa.df$MDS2) * 1.15)) +
+            guides(color=guide_legend(title='Group'))
+        
+        # add a version with labels above the points
+        nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
+        nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
+        plotlist.labels[[tn]] <- plotlist.nolabels[[tn]] + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
+    }
     
-    plotlist.nolabels[[tn]] <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
-        geom_point(size=3) +
-        # scale_color_brewer(palette='Set1') +
-        scale_color_manual(values = cols) +
-        theme_bw() +
-        labs(title=paste('Microbiome beta diversity, Bray-Curtis, ', tn, sep=''),
-             subtitle='Principal Coordinates Analysis plot',
-             x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
-             y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) + 
-        xlim(c(min(pcoa.df$MDS1), max(pcoa.df$MDS1) * 1.25)) +
-        ylim(c(min(pcoa.df$MDS2), max(pcoa.df$MDS2) * 1.15)) +
-        guides(color=guide_legend(title='Group'))
-    
-    # add a version with labels above the points
-    nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
-    nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
-    plotlist.labels[[tn]] <- plotlist.nolabels[[tn]] + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
+    # save plot
+    pcoa.pdf.nolabels <- file.path(outfolder.plots, 'PCoA_2D_plot_nolabels.pdf')
+    pdf(pcoa.pdf.nolabels, height=6.5, width=9)
+    for (tn in rev(tax.level.names)){
+        print(plotlist.nolabels[[tn]])
+    }
+    dev.off()
+    pcoa.pdf.labels <- file.path(outfolder.plots, 'PCoA_2D_plot_labels.pdf')
+    pdf(pcoa.pdf.labels, height=6.5, width=9)
+    for (tn in rev(tax.level.names)){
+        print(plotlist.labels[[tn]])
+    }
+    dev.off()
+} else {
+    # warn the user and make fake plots
+    warning('Less than 3 samples, not doing PCoA plots')
+    pcoa.pdf.nolabels <- file.path(outfolder.plots, 'PCoA_2D_plot_nolabels.pdf')
+    pdf(pcoa.pdf.nolabels, height=6.5, width=9)
+    plot(0,0, col='white')
+    text(0,0, 'Not enough samples for PCoA plot', col='firebrick')
+    dev.off()
+    pcoa.pdf.labels <- file.path(outfolder.plots, 'PCoA_2D_plot_labels.pdf')
+    pdf(pcoa.pdf.labels, height=6.5, width=9)
+    plot(0,0, col='white')
+    text(0,0, 'Not enough samples for PCoA plot', col='firebrick')
+    dev.off()
 }
-
-# save plot
-pcoa.pdf.nolabels <- file.path(outfolder.plots, 'PCoA_2D_plot_nolabels.pdf')
-pdf(pcoa.pdf.nolabels, height=6.5, width=9)
-for (tn in rev(tax.level.names)){
-    print(plotlist.nolabels[[tn]])
-}
-dev.off()
-pcoa.pdf.labels <- file.path(outfolder.plots, 'PCoA_2D_plot_labels.pdf')
-pdf(pcoa.pdf.labels, height=6.5, width=9)
-for (tn in rev(tax.level.names)){
-    print(plotlist.labels[[tn]])
-}
-dev.off()
 
 # simple bray curtis distance metrics
 for (tn in tax.level.names){
-    bray.dist <- as.matrix(vegdist(t(bracken.fraction.matrix.list[[tn]])))
+    bray.dist <- as.matrix(vegdist(t(bracken.fraction.matrix.list.classified[[tn]])))
     out.bray <- file.path(outfolder.matrices.bray, paste('braycurtis_distance_', tolower(tn), '.txt', sep=''))
     write.table(bray.dist, out.bray, sep='\t', quote=F, row.names = T, col.names = T)
 }
