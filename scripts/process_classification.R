@@ -127,7 +127,7 @@ merge_kraken_df_list <- function(df.list){
     }
 
     # Reduce to merge list of data frames into one
-    merge.temp <- Reduce(function(x,y) merge(x, y, all=TRUE, by=merge.colname, sort=F), df.list)
+    merge.temp <- suppressWarnings(Reduce(function(x,y) merge(x, y, all=TRUE, by=merge.colname, sort=F), df.list))
     
     rownames(merge.temp) <- merge.temp[,1]
     merge.mat <- as.matrix(merge.temp[,c(-1)])

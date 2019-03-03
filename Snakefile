@@ -75,6 +75,15 @@ extra_files = {
 run_extra = [extra_files[f] for f in extra_run_list]
 # print("run Extra files: " + str(run_extra))
 
+# set some resource requirements
+if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold':
+    kraken_memory = 256
+    kraken_threads = 8
+else: 
+    kraken_memory = 64
+    kraken_threads = 4
+
+
 rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
@@ -92,9 +101,9 @@ rule kraken:
     params: 
         db = config['database'],
         paired_string = paired_string
-    threads: 4 
+    threads: kraken_threads 
     resources:
-        mem=48,
+        mem=kraken_memory,
         time=1
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \

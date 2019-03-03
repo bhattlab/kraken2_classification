@@ -1,7 +1,7 @@
 # plotting tools for kraken classification results
 # uses input matrices from the process_classification.R script
-library(RColorBrewer)
-library(ggpubr)
+suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(ggpubr, quietly = TRUE, warn.conflicts = FALSE))
 
 # testing color pal stuff
 if(F){
