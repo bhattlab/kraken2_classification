@@ -1,7 +1,7 @@
 # plotting tools for kraken classification results
 # uses input matrices from the process_classification.R script
-library(RColorBrewer)
-library(ggpubr)
+suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(ggpubr, quietly = TRUE, warn.conflicts = FALSE))
 
 # testing color pal stuff
 if(F){
@@ -35,36 +35,65 @@ if(F){
 
 # plot many samples in a barplot horizontally
 # samples must be in normalized fraction first
-plot_many_samples <- function(kraken.mat, n.colors=12, scale.name = 'Species'){
+# include.unclassified: add unmpped reads into the mix barplot
+# expects two rows in the matrix named 'Unclassified' and 
+#  'Classified at a higher level'
+# plots them in shades of grey and changes y axis name
+plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species', include.unclassified =T){
     if (any(kraken.mat > 100)){
         stop('Must give normalized percent matrix')
     }
+    # proceed with classified reads here    
+    unclassified.rownames <- c('Classified at a higher level', 'Unclassified')
+    # renorm percentages
+    kraken.mat.classified <- kraken.mat[!(rownames(kraken.mat) %in% unclassified.rownames),]
+    kraken.mat.classified <- apply(kraken.mat.classified, 2, function(x) x/sum(x) * 100)
 
     # ncolors must be equal or less to nrow kraken.mat
-    n.colors <- min(n.colors, nrow(kraken.mat))
+    n.colors <- min(n.colors, nrow(kraken.mat.classified))
     
     nmax <- 12
-    cols <- c(colorRampPalette(brewer.pal(12,'Paired'))(nmax)[1:n.colors], 'grey80')
+    cols <- colorRampPalette(brewer.pal(12,'Paired'))(nmax)[1:n.colors]
     # replace 11th color
     cols[11] <-  colorRampPalette(brewer.pal(12,'Paired')[11:12])(4)[2]
     # limit to ncolors 
-    cols <- cols[1:(n.colors+1)]
+    cols <- cols[1:(n.colors)]
     
-    # kraken.mat <- bracken.species.fraction
-    keep.rows <- names(sort(rowSums(kraken.mat), decreasing = T))[1:n.colors]
-    kraken.mat <- as.matrix(kraken.mat[keep.rows,])
-    kraken.mat <- rbind(kraken.mat, 100 - colSums(kraken.mat))
-    rownames(kraken.mat)[nrow(kraken.mat)] <- 'Other'
-    toplot.genus <- melt(kraken.mat, varnames = c('taxa', 'sample'))
+    # filter rows to most abundant taxa
+    keep.rows <- names(sort(rowSums(kraken.mat.classified), decreasing = T))[1:n.colors]
 
-    taxplot <- ggplot(data=toplot.genus, aes(x = sample, y = value, fill = taxa)) + 
+    # add unclassified taxa if desired
+    if (include.unclassified){
+        if (!(all(unclassified.rownames %in% rownames(kraken.mat)))){
+            stop('Must have unclassified rows in matrix')
+        }
+        kraken.mat.plot <- as.matrix(kraken.mat[c(keep.rows, unclassified.rownames),])
+        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
+        rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other classified at this level'
+        # reorder last rows
+        kraken.mat.plot <- kraken.mat.plot[c(keep.rows, 'Other classified at this level', unclassified.rownames), ]
+        cols <- c(cols, 'grey50', 'grey60', 'grey80')
+        # print(dim(kraken.mat.plot))
+        # print(cols)
+        use.ylab <- 'Percent of reads'
+    } else{ 
+        kraken.mat.plot <- kraken.mat.classified[keep.rows, ]
+        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
+        rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other classified at this level'
+        use.ylab <- 'Percent of reads classified at this level'
+        cols <- c(cols, 'grey80')
+    }
+    
+    # melt to df and plot
+    toplot.df <- melt(kraken.mat.plot, varnames = c('taxa', 'sample'))
+    taxplot <- ggplot(data=toplot.df, aes(x = sample, y = value, fill = taxa)) + 
         geom_bar(stat = 'identity') +
-        scale_fill_manual(values = cols, name = scale.name) +
+        scale_fill_manual(values = cols, name = tax.level.name) +
         # theme_bw() + 
         # theme(panel.border = element_rect(), axis.text.x = element_text(angle = 90, hjust = 1)) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
               # plot.margin = unit(c(0,0,0,0),'lines')) +
-        labs(x='Sample', y='Percent of classified reads') 
+        labs(x='Sample', y=use.ylab) 
         # guides(fill=FALSE)
     # taxplot
     return(taxplot)
@@ -72,6 +101,7 @@ plot_many_samples <- function(kraken.mat, n.colors=12, scale.name = 'Species'){
 
 
 plot_many_samples_with_diversity <- function(kraken.mat, diversity.df, y.title='Shannon Diversity', ...){
+    stop('Depricated')
     if (ncol(diversity.df) != 2){
         stop('Must be two column dataframe: sample names in 1, diversity in 2')
     }
@@ -98,7 +128,7 @@ plot_many_samples_with_diversity <- function(kraken.mat, diversity.df, y.title='
 # annotate_figure(figure, top = text_grob('TEST', size=14))
 # figure
 # 
-# taxplot <- plot_many_samples(bracken.species.fraction, scale.name = 'Species') #+ labs(title = 'TEST')
+# taxplot <- plot_many_samples(bracken.species.fraction, tax.level.name = 'Species') #+ labs(title = 'TEST')
 # diversity.df <- data.frame(sample=names(div.list.species$shannon), shannon=div.list.species$shannon)
 
 
@@ -120,8 +150,8 @@ plot_many_samples_with_diversity_barplot <- function(kraken.mat, diversity.df, y
         ylim(0, max(diversity.df$shannon)*1.20) +
         labs(y=y.title)
     
-    print(taxplot)
-    print(divplot)
+    # print(taxplot)
+    # print(divplot)
     
     figure <- ggarrange(divplot, taxplot,ncol=1, align = 'v', nrow=2, heights = c(1,4),legend = 'right', common.legend = T)
     if (plot.title!=''){

@@ -113,7 +113,6 @@ tax.level.abbrev <- c('D','P','C','O','F','G','S')
 # need something to limit to Segata database
 test.df <- kraken_file_to_df(flist[1])
 # like number of genus classifications is zero or something
-
 segata <- F
 if (sum(sum(test.df$tax.level=='G')) ==0){
     segata <- T
