@@ -148,7 +148,7 @@ for (tn in tax.level.names){
     write.table(bracken.reads.matrix.list[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
     write.table(bracken.fraction.matrix.list[[tn]], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
 }
-# save classified only also 
+# save classified only also
 for (tn in tax.level.names){
     out.mat.reads <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
     out.mat.fraction <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
@@ -161,6 +161,10 @@ for (tn in tax.level.names){
 ## Diversity calculation and plots ##############################################
 #################################################################################
 message('Doing diversity calculations and saving figures...')
+
+#plot a rarefaction curve.
+plot_rarefaction_curve(bracken.reads.matrix.list, file.path(outfolder.plots, 'rarefaction_curve.pdf'))
+
 # diversity calculations
 div.methods <- c('shannon', 'simpson')
 div.tax.levels <- tax.level.names
@@ -190,6 +194,7 @@ div.df$value <- round(div.df$value, 3)
 out.div <- file.path(result.dir, 'diversity.txt')
 write.table(div.df, out.div, sep='\t', quote=F, row.names=F, col.names=T)
 
+
 # barplot of diversity under different methods
 # one with everything, one separated by sample group
 div.df$sample <- factor(div.df$sample, levels = sample.groups$sample)
@@ -199,10 +204,10 @@ div.plot.list <- list()
 for (g in unique(sample.groups$group)){
     plot.samples <- sample.groups[sample.groups$group==g, "sample"]
     plot.df <- div.df[div.df$sample %in% plot.samples, ]
-    p <- ggplot(plot.df, aes(x=sample, y=value)) + 
-        geom_bar(stat='identity') + 
+    p <- ggplot(plot.df, aes(x=sample, y=value)) +
+        geom_bar(stat='identity') +
         facet_grid(rows = vars(tax.level), cols= vars(method), scales = 'fixed') +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         labs(title=paste('Diversity for group:', g),
              y='Diversity', x='Sample')
     div.plot.list[[g]] <- p
@@ -219,10 +224,10 @@ trash <- dev.off()
 div.plot.all.list <- list()
 for (m in unique(div.df$method)){
     plot.df <- div.df[div.df$method == m, ]
-    p <- ggplot(plot.df, aes(x=sample, y=value)) + 
-            geom_bar(stat='identity') + 
+    p <- ggplot(plot.df, aes(x=sample, y=value)) +
+            geom_bar(stat='identity') +
             facet_grid(rows = vars(tax.level), cols= vars(method), scales = 'fixed') +
-            theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+            theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
             labs(title=paste('Diversity for all samples:', m),
                  y='Diversity', x='Sample')
     div.plot.all.list[[m]] <- p
@@ -236,6 +241,7 @@ pdf(div.all.pdf, height=5, width = pdf.width)
 for(p in div.plot.all.list){print(p)}
 trash <- dev.off()
 
+
 #################################################################################
 ## Taxonomic Barplots ###########################################################
 #################################################################################
@@ -248,7 +254,7 @@ for (tn in tax.level.names){
         plot.samples <- sample.groups[sample.groups$group==g, "sample"]
         div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
         # print(div.df.sub)
-        div.df.plot <- div.df.sub[, c('sample', 'value')]        
+        div.df.plot <- div.df.sub[, c('sample', 'value')]
         rownames(div.df.plot) <- div.df.plot$sample
         # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
@@ -261,7 +267,7 @@ for (tn in tax.level.names){
 }
 
 # save pdfs
-# width of plot = 9 + quarter inch for each sample over 10  
+# width of plot = 9 + quarter inch for each sample over 10
 max.samps <- max(table(sample.groups$group))
 pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
 for (tn in tax.level.names){
@@ -280,7 +286,7 @@ for (tn in tax.level.names){
         plot.samples <- sample.groups[sample.groups$group==g, "sample"]
         div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
         # print(div.df.sub)
-        div.df.plot <- div.df.sub[, c('sample', 'value')]        
+        div.df.plot <- div.df.sub[, c('sample', 'value')]
         rownames(div.df.plot) <- div.df.plot$sample
         # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
@@ -291,7 +297,7 @@ for (tn in tax.level.names){
 }
 
 # save pdfs
-# width of plot = 9 + quarter inch for each sample over 10  
+# width of plot = 9 + quarter inch for each sample over 10
 max.samps <- max(table(sample.groups$group))
 pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
 for (tn in tax.level.names){
@@ -311,7 +317,7 @@ if (nrow(sample.reads) >=3){
     # do for each tax level
     plotlist.nolabels <- list()
     plotlist.labels <- list()
-    # don't do for domain 
+    # don't do for domain
     do.tn <- tax.level.names[tax.level.names!='Domain']
     for (tn in do.tn){
         # print(paste('    for:', tn))
@@ -323,7 +329,7 @@ if (nrow(sample.reads) >=3){
         # set colors based on number of groups
         ng <- length(unique(sample.groups$group))
         if (ng <10){cols <- brewer.pal(max(ng,3), 'Set1')} else {cols <- colorRampPalette(brewer.pal(9,'Set1'))(ng)}
-        
+
         plotlist.nolabels[[tn]] <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
             geom_point(size=3) +
             # scale_color_brewer(palette='Set1') +
@@ -332,17 +338,17 @@ if (nrow(sample.reads) >=3){
             labs(title=paste('Microbiome beta diversity, Bray-Curtis, ', tn, sep=''),
                  subtitle='Principal Coordinates Analysis plot',
                  x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
-                 y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) + 
+                 y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) +
             xlim(c(min(pcoa.df$MDS1), max(pcoa.df$MDS1) * 1.25)) +
             ylim(c(min(pcoa.df$MDS2), max(pcoa.df$MDS2) * 1.15)) +
             guides(color=guide_legend(title='Group'))
-        
+
         # add a version with labels above the points
         nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
         nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
         plotlist.labels[[tn]] <- plotlist.nolabels[[tn]] + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
     }
-    
+
     # save plot
     pcoa.pdf.nolabels <- file.path(outfolder.plots, 'PCoA_2D_plot_nolabels.pdf')
     pdf(pcoa.pdf.nolabels, height=6.5, width=9)
@@ -377,5 +383,5 @@ for (tn in tax.level.names){
     out.bray <- file.path(outfolder.matrices.bray, paste('braycurtis_distance_', tolower(tn), '.txt', sep=''))
     write.table(bray.dist, out.bray, sep='\t', quote=F, row.names = T, col.names = T)
 }
-    
-message('Done! :)')
+
+message('Done! :D')
