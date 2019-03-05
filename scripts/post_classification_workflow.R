@@ -124,11 +124,18 @@ if (sum(sum(test.df$tax.level=='G')) ==0){
 message(paste('Loading data from ', length(flist), ' kraken/bracken results.', sep=''))
 message(paste('Processing at taxonomic levels: ', paste(tax.level.names, collapse=', '), sep=''))
 bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev, include.unclassified = T)
-
 # separate matrices including classified and unclassified
 # god this naming scheme is getting ugly
 unclassified.rownames <- c('Unclassified', 'Classified at a higher level')
-bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames), ])
+# special case for one sample
+if (ncol(bracken.reads.matrix.list[[1]]) ==1){
+    bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) {
+        y <- as.matrix(x[!(rownames(x) %in% unclassified.rownames), ])
+        colnames(y) <- colnames(x)
+        y})
+    } else {
+    bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames), ])
+}
 
 # normalize to percentages
 bracken.fraction.matrix.list <- lapply(bracken.reads.matrix.list, reads_matrix_to_percentages)
@@ -146,14 +153,18 @@ for (tn in tax.level.names){
     out.mat.reads <- file.path(outfolder.matrices.taxonomy, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
     out.mat.fraction <- file.path(outfolder.matrices.taxonomy, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
     write.table(bracken.reads.matrix.list[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
-    write.table(bracken.fraction.matrix.list[[tn]], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
+    # now only write rows of pct matrix that are nonzero
+    # that is, at least one sample has 0.001 fraction (due to rounding)
+    write.table(bracken.fraction.matrix.list[[tn]][rowSums(bracken.fraction.matrix.list[[tn]])>0,,drop=FALSE], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
 }
 # save classified only also 
 for (tn in tax.level.names){
     out.mat.reads <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
     out.mat.fraction <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
     write.table(bracken.reads.matrix.list.classified[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
-    write.table(bracken.fraction.matrix.list.classified[[tn]], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
+    # now only write rows of pct matrix that are nonzero
+    # that is, at least one sample has 0.001 fraction (due to rounding)
+    write.table(bracken.fraction.matrix.list.classified[[tn]][rowSums(bracken.fraction.matrix.list.classified[[tn]])>0,,drop=FALSE], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
 }
 
 
@@ -177,8 +188,10 @@ div.level.method <- lapply(div.tax.levels, function(x) {
     dl
 })
 names(div.level.method) <- div.tax.levels
+
 # there's definitely a better way to do this...
 div.df <- as.data.frame(div.level.method)
+rownames(div.df) <- sample.reads$sample
 div.df <- cbind(data.frame(sample=rownames(div.df)), div.df)
 div.df <- melt(div.df, id.vars = 'sample')
 div.df$tax.level <- sapply(div.df$variable, function(x) strsplit(as.character(x), split="\\.")[[1]][1])
@@ -194,8 +207,6 @@ write.table(div.df, out.div, sep='\t', quote=F, row.names=F, col.names=T)
 # one with everything, one separated by sample group
 div.df$sample <- factor(div.df$sample, levels = sample.groups$sample)
 div.plot.list <- list()
-# print(sample.groups)
-# print(div.df.melt)
 for (g in unique(sample.groups$group)){
     plot.samples <- sample.groups[sample.groups$group==g, "sample"]
     plot.df <- div.df[div.df$sample %in% plot.samples, ]
@@ -252,7 +263,10 @@ for (tn in tax.level.names){
         rownames(div.df.plot) <- div.df.plot$sample
         # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
-        group.plots[[g]] <- plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples],
+        plot.mat <- bracken.fraction.matrix.list[[tn]][,plot.samples, drop=FALSE]
+        # colnames(plot.mat) <- plot.samples
+        # print(head(plot.mat))
+        group.plots[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
                                                                   div.df.plot, plot.title = plot.title, include.unclassified=T, tax.level.name = tn)
         # plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples],
         #                                          div.df.plot, plot.title = plot.title, include.unclassified=T)
@@ -284,7 +298,9 @@ for (tn in tax.level.names){
         rownames(div.df.plot) <- div.df.plot$sample
         # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
-        group.plots[[g]] <- plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list.classified[[tn]][,plot.samples],
+        plot.mat <- bracken.fraction.matrix.list.classified[[tn]][,plot.samples, drop=FALSE]
+
+        group.plots[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
                                                                   div.df.plot, plot.title = plot.title, include.unclassified=F, tax.level.name = tn)
     }
     taxlevel.plots.classified[[tn]] <- group.plots
@@ -378,4 +394,4 @@ for (tn in tax.level.names){
     write.table(bray.dist, out.bray, sep='\t', quote=F, row.names = T, col.names = T)
 }
     
-message('Done! :)')
+message('Done! :)') 

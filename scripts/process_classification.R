@@ -150,7 +150,14 @@ many_files_to_matrix_list <- function(files, filter.tax.levels=c("S"), include.u
     for (filter.tax.level in filter.tax.levels){
       report.list <- lapply(df.list, function(x) parse_kraken_report(x, filter.tax.level, include.unclassified, report.taxid))
       names(report.list) <- names(files)
-      merge.mat <- merge_kraken_df_list(report.list)
+      # only merge if >1 sample
+      if (length(report.list) >1){
+        merge.mat <- merge_kraken_df_list(report.list)
+      } else {
+        merge.mat <- matrix(report.list[[1]][,2], ncol=1)
+        rownames(merge.mat) <- report.list[[1]][,1]
+        colnames(merge.mat) <- names(report.list)
+      }
       if (percentages){
           merge.mat <- reads_matrix_to_percentages(merge.mat)
       }
