@@ -46,9 +46,9 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
     # proceed with classified reads here
     unclassified.rownames <- c('Classified at a higher level', 'Unclassified')
     # renorm percentages
-    kraken.mat.classified <- kraken.mat[!(rownames(kraken.mat) %in% unclassified.rownames),]
+    kraken.mat.classified <- as.matrix(kraken.mat[!(rownames(kraken.mat) %in% unclassified.rownames),, drop=FALSE])
     kraken.mat.classified <- apply(kraken.mat.classified, 2, function(x) x/sum(x) * 100)
-
+    # print(kraken.mat.classified)
     # ncolors must be equal or less to nrow kraken.mat
     n.colors <- min(n.colors, nrow(kraken.mat.classified))
 
@@ -67,25 +67,29 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
         if (!(all(unclassified.rownames %in% rownames(kraken.mat)))){
             stop('Must have unclassified rows in matrix')
         }
-        kraken.mat.plot <- as.matrix(kraken.mat[c(keep.rows, unclassified.rownames),])
+        kraken.mat.plot <- as.matrix(kraken.mat[c(keep.rows, unclassified.rownames),,drop=FALSE])
         kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
         rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other classified at this level'
         # reorder last rows
-        kraken.mat.plot <- kraken.mat.plot[c(keep.rows, 'Other classified at this level', unclassified.rownames), ]
+        kraken.mat.plot <- kraken.mat.plot[c(keep.rows, 'Other classified at this level', unclassified.rownames),,drop=FALSE]
         cols <- c(cols, 'grey50', 'grey60', 'grey80')
-        # print(dim(kraken.mat.plot))
-        # print(cols)
         use.ylab <- 'Percent of reads'
     } else{
-        kraken.mat.plot <- kraken.mat.classified[keep.rows, ]
+        kraken.mat.plot <- kraken.mat.classified[keep.rows,,drop=FALSE]
         kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
         rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other classified at this level'
         use.ylab <- 'Percent of reads classified at this level'
-        cols <- c(cols, 'grey80')
+        cols <- c(cols, 'grey50')
     }
 
     # melt to df and plot
-    toplot.df <- melt(kraken.mat.plot, varnames = c('taxa', 'sample'))
+    if (ncol(kraken.mat.plot) ==1 ){
+        toplot.df <- data.frame(taxa=rownames(kraken.mat.plot),
+                                sample=colnames(kraken.mat.plot),
+                                value=kraken.mat.plot[,1])
+    } else{
+        toplot.df <- melt(kraken.mat.plot, varnames = c('taxa', 'sample'))
+    }
     taxplot <- ggplot(data=toplot.df, aes(x = sample, y = value, fill = taxa)) +
         geom_bar(stat = 'identity') +
         scale_fill_manual(values = cols, name = tax.level.name) +
