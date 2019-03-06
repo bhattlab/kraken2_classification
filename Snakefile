@@ -51,9 +51,9 @@ else:
 # add bracken to extra files
 if run_bracken:
     extra_run_list.append('bracken')
-    downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
+    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
 else:
-    downsteam_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
+    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
     
 # do we want to extract unmapped reads?
 if config['extract_unmapped']:
@@ -129,9 +129,9 @@ rule bracken:
         -l {params.level} -t {params.threshold}
         """
 
-rule downsteam_processing:
+rule downstream_processing:
     input:
-        downsteam_processing_input
+        downstream_processing_input
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],

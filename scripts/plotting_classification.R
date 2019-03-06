@@ -105,18 +105,18 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
 
 
 plot_rarefaction_curve = function(class_counts, pdf_location, pdf_width = 8, pdf_height=8, tax.level.name = 'Species', steps = 30){
-	class = as.matrix(class_counts[[tax.level.name]], drop = FALSE) #extract classifications of the desired taxonomic level
-	class = class[rownames(class) != 'Unclassified',,drop=FALSE] #remove unclassified
-	stepsize = max(apply(class, 2, sum)/steps) #calculate read count increase per subsample size step
+    class = as.matrix(class_counts[[tax.level.name]], drop = FALSE) #extract classifications of the desired taxonomic level
+    class = class[rownames(class) != 'Unclassified',,drop=FALSE] #remove unclassified
+    stepsize = max(apply(class, 2, sum)/steps) #calculate read count increase per subsample size step
 
-	#shut the hell up
-	options(warn=-1)
+    #shut the hell up
+    options(warn=-1)
 
-	pdf(pdf_location, pdf_width, pdf_height)
-	rarecurve(t(class), step = stepsize)
-	dev.off()
+    pdf(pdf_location, pdf_width, pdf_height)
+    rarecurve(t(class), step = stepsize)
+    dev.off()
 
-	options(warn=0)
+    options(warn=0)
 }
 
 plot_many_samples_with_diversity <- function(kraken.mat, diversity.df, y.title='Shannon Diversity', ...){
