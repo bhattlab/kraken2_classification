@@ -13,7 +13,8 @@ suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
 scripts.folder <- snakemake@params[['scripts_folder']]
 sample.reads.f <- snakemake@params[['sample_reads']]
 sample.groups.f <- snakemake@params[['sample_groups']]
-workflow.outdir <- snakemake@params[['outdir']]
+workflow.outdir <- snakemake@params[['workflow_outdir']]
+result.dir <- snakemake@params[['result_dir']]
 use.bracken.report <- snakemake@params[['use_bracken_report']]
 scripts.folder <- snakemake@scriptdir
 
@@ -53,7 +54,7 @@ scripts.folder <- snakemake@scriptdir
 
 # set up directories and make those that don't exist
 classification.folder <- file.path(workflow.outdir, 'classification')
-result.dir <- file.path(workflow.outdir, 'processed_results')
+# result.dir <- file.path(workflow.outdir, 'processed_results')
 outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 outfolder.matrices.taxonomy.classified <- file.path(result.dir, 'taxonomy_matrices_classified_only')
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')

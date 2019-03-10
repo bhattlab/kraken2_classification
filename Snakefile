@@ -51,6 +51,7 @@ else:
 # add bracken to extra files
 if run_bracken:
     extra_run_list.append('bracken')
+    extra_run_list.append('krakenonly_processed')
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
 else:
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
@@ -65,12 +66,14 @@ if config['extract_unmapped']:
 # additional outputs determined by whats specified in the readme
 extra_files = {
     "bracken": expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
+    "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf'),
     "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
     "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
     "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
     "krona": expand(join(outdir, "krona/{samp}.html"), samp = sample_names),
     "mpa_heatmap": join(outdir, "mpa_reports/merge_metaphlan_heatmap.png"),
-    "biom_file": join(outdir, "table.biom")
+    "biom_file": join(outdir, "table.biom"),
+
 }
 run_extra = [extra_files[f] for f in extra_run_list]
 # print("run Extra files: " + str(run_extra))
@@ -135,10 +138,25 @@ rule downstream_processing:
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
-        outdir = outdir,
+        workflow_outdir = outdir,
+        result_dir = join(outdir, 'processed_results'),
         use_bracken_report = run_bracken
     output:
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
+    script:
+        'scripts/post_classification_workflow.R'
+
+rule downstream_processing_krakenonly:
+    input:
+        downstream_processing_input
+    params:
+        sample_reads = config["sample_file"],
+        sample_groups = config["sample_groups_file"],
+        workflow_outdir = outdir,
+        result_dir = join(outdir, 'processed_results_krakenonly'),
+        use_bracken_report = False
+    output:
+        join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf')
     script:
         'scripts/post_classification_workflow.R'
 
