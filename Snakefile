@@ -17,13 +17,13 @@ def get_sample_reads(sample_file):
             # paired end specified
             if (len(s)==3):
                 reads = [s[1],s[2]]
-                if paired_end != '' and not paired_end: 
+                if paired_end != '' and not paired_end:
                     sys.exit('All samples must be paired or single ended.')
                 paired_end = True
             # single end specified
             elif len(s)==2:
                 reads=s[1]
-                if paired_end != '' and paired_end: 
+                if paired_end != '' and paired_end:
                     sys.exit('All samples must be paired or single ended.')
                 paired_end = False
             if sample in sample_reads:
@@ -32,11 +32,11 @@ def get_sample_reads(sample_file):
     return (sample_reads, paired_end)
 
 
-# read in sample info and reads from the sample_file 
+# read in sample info and reads from the sample_file
 sample_reads, paired_end = get_sample_reads(config['sample_file'])
-if paired_end: 
+if paired_end:
     paired_string = '--paired'
-else: 
+else:
     paired_string = ''
 sample_names = sample_reads.keys()
 
@@ -46,7 +46,7 @@ extra_run_list =[]
 if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom':
     print('NO Bracken database for this option yet. Disabling Bracken.')
     run_bracken = False
-else: 
+else:
     run_bracken = config['run_bracken']
 # add bracken to extra files
 if run_bracken:
@@ -55,7 +55,7 @@ if run_bracken:
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
 else:
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
-    
+
 # do we want to extract unmapped reads?
 if config['extract_unmapped']:
     if paired_end:
@@ -82,7 +82,7 @@ run_extra = [extra_files[f] for f in extra_run_list]
 if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold':
     kraken_memory = 256
     kraken_threads = 8
-else: 
+else:
     kraken_memory = 64
     kraken_threads = 4
 
@@ -96,29 +96,29 @@ rule all:
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
 rule kraken:
-    input: 
+    input:
         reads = lambda wildcards: sample_reads[wildcards.samp],
     output:
         krak = join(outdir, "classification/{samp}.krak"),
         krak_report = join(outdir, "classification/{samp}.krak.report")
-    params: 
+    params:
         db = config['database'],
         paired_string = paired_string
-    threads: kraken_threads 
+    threads: kraken_threads
     resources:
         mem=kraken_memory,
         time=1
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
-        --report {output.krak_report} {params.paired_string} {input.reads}
+        --report {output.krak_report} {params.paired_string} {input.reads} --use-names
         """
 
-rule bracken: 
+rule bracken:
     input:
         rules.kraken.output
     output:
         join(outdir, "classification/{samp}.krak.report.bracken")
-    params: 
+    params:
         db = config['database'],
         readlen = config['read_length'],
         level = config['taxonomic_level'],
@@ -127,6 +127,7 @@ rule bracken:
     resources:
         mem = 64,
         time = 1
+    singularity: "docker://quay.io/biocontainers/bracken:2.2--py35h2d50403_0"
     shell: """
         bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} \
         -l {params.level} -t {params.threshold}
@@ -174,13 +175,13 @@ rule extract_unmapped_paired:
         krak = join(outdir, "classification/{samp}.krak"),
         r1 = lambda wildcards: sample_reads[wildcards.samp][0],
         r2 = lambda wildcards: sample_reads[wildcards.samp][1],
-    output: 
+    output:
         r1 = join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"),
         r2 = join(outdir, "unmapped_reads/{samp}_unmapped_2.fq")
-    params: 
+    params:
         taxid = str(0),
         tempfile = "{samp}_" + str(0) + "_reads.txt"
-    resources: 
+    resources:
         mem = 64
     shell: """
         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
@@ -192,9 +193,9 @@ rule extract_unmapped_single:
     input:
         krak = join(outdir, "classification/{samp}.krak"),
         r1 = lambda wildcards: sample_reads[wildcards.samp],
-    output: 
+    output:
         r1 = join(outdir, "unmapped_reads/{samp}_unmapped.fq"),
-    params: 
+    params:
         taxid = str(0),
         tempfile = "{samp}_" + str(0) + "_reads.txt"
     shell: """
@@ -204,7 +205,7 @@ rule extract_unmapped_single:
     """
 
 '''
-# convert bracken to mpa syle report if desired 
+# convert bracken to mpa syle report if desired
 rule convert_bracken_mpa:
     input:
         rules.bracken.output
@@ -215,7 +216,7 @@ rule convert_bracken_mpa:
 
 
 rule norm_mpa:
-    input: 
+    input:
         rules.convert_bracken_mpa.output
     output:
         "outputs/mpa_reports/{samp}.krak.report.bracken.mpa.norm"
@@ -226,7 +227,7 @@ rule norm_mpa:
         """
 
 rule merge_mpa:
-    input: 
+    input:
         expand("outputs/mpa_reports/{samp}.krak.report.bracken.mpa.norm", samp=sample_names)
     output:
         merge = "outputs/mpa_reports/merge_metaphlan.txt",
@@ -247,13 +248,13 @@ rule hclust_mpa:
     shell:
         """
         source activate biobakery2
-        metaphlan_hclust_heatmap.py --in {input} --top 25 --minv 0.1 -s log --out {output.heatmap1} -f braycurtis -d braycurtis -c viridis 
+        metaphlan_hclust_heatmap.py --in {input} --top 25 --minv 0.1 -s log --out {output.heatmap1} -f braycurtis -d braycurtis -c viridis
         metaphlan_hclust_heatmap.py --in {input} --top 150 --minv 0.1 -s log --out {output.heatmap2} -f braycurtis -d braycurtis -c viridis
         """
 
 # make biom formatted tables for use with Qiime2
 rule make_biom:
-    input: 
+    input:
         expand("outputs/{samp}.krak.report.bracken", samp=sample_names)
     output:
         "outputs/table.biom"

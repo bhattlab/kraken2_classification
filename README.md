@@ -25,7 +25,7 @@ kraken2 --db "$DB" --threads 2 --output out.krak --report out.krak.report --pair
 bracken -d "$DB" -i out.krak.report -o out out.krak.report.bracken -r "$read_length"
 # Snakemake workflow - change options in config.yaml first
 source activate classification2
-snakemake -s path/to/Snakefile --configfile config.yaml
+snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ '
 ```
 
 ## Parsing output reports
