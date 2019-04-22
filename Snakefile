@@ -127,7 +127,7 @@ rule bracken:
     resources:
         mem = 64,
         time = 1
-    singularity: "docker://quay.io/biocontainers/bracken:2.2--py35h2d50403_0"
+    singularity: “docker://quay.io/biocontainers/bracken:2.2--py27h2d50403_1” 
     shell: """
         bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} \
         -l {params.level} -t {params.threshold}

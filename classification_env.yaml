@@ -21,4 +21,4 @@ dependencies:
   - r-stringi
   - pip
   - pip:
-    - snakemake==5.3.0
+    - snakemake
