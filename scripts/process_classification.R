@@ -171,3 +171,25 @@ many_files_to_matrix <- function(files, filter.tax.level="S"){
  return(many_files_to_matrix_list(files, filter.tax.levels = c(filter.tax.level), 
         include.unclassified=F, report.taxid=F, percentages=F)[[1]])
 }
+
+# load up all matching bracken/kraken files in a folder and return a list 
+# if reads=F, return percentage matrices
+# search.string can be specified for kraken/bracken matrices
+read_processed_kraken_matrices <- function(dir, reads=TRUE, search.string='bracken'){
+    tax.level.names <- tolower(c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'))
+    matrix.list <- list()
+    found.files <- list.files(dir, pattern=search.string)
+    if(reads){
+        reads.str <- 'reads'
+    } else {
+        reads.str <- 'percentage'
+    }
+    for (tax.level in tax.level.names){
+        file.str <- paste(tax.level, reads.str, sep='_')
+        read.file <- file.path(dir, grep(file.str, found.files, value=T))
+        mat <- as.matrix(read.table(read.file, sep='\t', quote='', header = T, row.names = 1))
+        matrix.list[[tax.level]] <- mat
+    }
+    return(matrix.list)
+}
+
