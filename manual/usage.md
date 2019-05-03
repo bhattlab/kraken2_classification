@@ -8,21 +8,29 @@ sample_3_name   /path/to/s3_read_1.fq   /path/to/s3_read_2.fq
 sample_4_name	/path/to/s4_read_1.fq	/path/to/s4_read_2.fq
 ```
 
-Run the following in an interactive session, or submit it as a job.  Do not add `--profile scg` as is typically done with other workflows. By default, samples are classified using the high quality genbank database (see Databases section below).
+To run Kraken2, either get an interactive session on the cluster, or submit batch jobs by adding the `--profile scg  --jobs 999` flags to the commands below. 
 
 ```
+# Snakemake workflow - change options in config.yaml first
 source activate classification2
-snakemake -s path/to/Snakefile --configfile config.yaml
+snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ '
+
+# Or if you want to run on the command line
+# get an interactive session first. 256Gb mem necessary for this database
+DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
+threads=8
+read_length=150   # must be 150 or 100
+kraken2 --db "$DB" --threads "$threads" --output out.krak --report out.krak.report --paired r1.fq r2.fq
+bracken -d "$DB" -t "$threads" -i out.krak.report -o out out.krak.report.bracken -r "$read_length"
 ```
-The database stays in memory after loading, so it's very quick to run many samples consecutively. This is why it is faster to run the workflow on a single node than parallelizing.
 
 _Refresher_ To get an interactive session, run something like this (change cores and time to suit you needs):
 ```
-srun -t 1:00:00 -p interactive  -n 1 -c 8 --mem=64000 --pty bash
+srun -t 1:00:00 -p interactive  -n 1 -c 8 --mem=256000 --pty bash
 ```
 
 ### Downstream processing
-Kraken/Bracken reports are processed into matrices containing read counts classified at the genus and species level, as well as relative proportions. Several plots are produced with taxonomic barplots and diversity metrics. You must provide the location of the `scripts` directory from this repository, or a symlinked folder for downstream processing to work. Samples can be split into separate groups for a patient, treatment group, etc. To do so, specify a tab delimited file with sample names and groups. Sample names must match the `samples.tsv` above. By default this is called `sample_groups.tsv` Example:
+Kraken/Bracken reports are processed into matrices containing read counts classified at the genus and species level, as well as relative proportions. Several plots are produced with taxonomic barplots and diversity metrics. Samples can be split into separate groups for a patient, treatment group, etc. To do so, specify a tab delimited file with sample names and groups. Sample names must match the `samples.tsv` above. By default this is called `sample_groups.tsv` Example:
 ```
 sample_1_name   group_1
 sample_2_name   group_1

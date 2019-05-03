@@ -15,17 +15,22 @@ Short read classification with the kraken2 program
 *Install*
 ```
 conda env create -f classification_env.yaml
+# then install [Bracken](https://github.com/jenniferlu717/Bracken/) manually because it doesn't work with conda. 
+# Alternatively, just run the Snakemake workflow with the singularity flags as specified below to pull the image to use Bracken.
 ```
 *Run*
 ```
-# Shell command
-DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
-read_length=150   # must be 150 or 100
-kraken2 --db "$DB" --threads 2 --output out.krak --report out.krak.report --paired r1.fq r2.fq
-bracken -d "$DB" -i out.krak.report -o out out.krak.report.bracken -r "$read_length"
 # Snakemake workflow - change options in config.yaml first
 source activate classification2
 snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ '
+
+# Or if you want to run on the command line
+# get an interactive session first. 256Gb mem necessary for this database
+DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
+threads=8
+read_length=150   # must be 150 or 100
+kraken2 --db "$DB" --threads "$threads" --output out.krak --report out.krak.report --paired r1.fq r2.fq
+bracken -d "$DB" -t "$threads" -i out.krak.report -o out out.krak.report.bracken -r "$read_length"
 ```
 
 ## Parsing output reports

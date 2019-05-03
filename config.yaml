@@ -3,15 +3,15 @@
 #    sample_name  read1_file  [read2_file]
 #    if paired end, all samples must be paired end
 #    if single end, all samples must be single end
-# is also outputted at the end of the preprocessing workflow as 
-#   preprocessing/01_processing/classification_input.txt 
-sample_file: samples.tsv
+# is also outputted at the end of the preprocessing workflow as
+#   preprocessing/01_processing/classification_input.txt
+sample_file: classification_input.txt
 # output base directory - will contain subfolders for reports, plots, etc
 outdir: kraken2_classification
 read_length: 150 #or 100
-taxonomic_level: 'S' #options: D,P,C,O,F,G,S
+taxonomic_level: 'S' # For bracken results. Probably dont need to chage. Options: D,P,C,O,F,G,S
 # see database options below, or manual/databases.md
-database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
+database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
 
 ############# Downstream processing #######################
 # Do Bracken calculations and use it in downstream processing
@@ -30,13 +30,13 @@ extract_unmapped: False
 
 
 ########### database alternatives (see README): ###########
-# databse with lots more genomes: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
-# NO BRACKEN YET: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom 
-# /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
-# /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria_complete/
-# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard/
-# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/standard_protein/
-# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/nt
-# NOT CURRENTLY AVAILABLE: /labs/asbhatt/data/program_indices/kraken2/kraken_unmod/env_nt
+# Slow, but has sequenced genomes of all quality. Best classification results:
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
+# Fast, but only high quality genomes, misses some things: 
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
+# Viruses only:
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/viral
+# Viruses only, standard crassphage replaced with Guerin et. al genomes:
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/viral_guerin_crassphage
 ###########################################################
 
