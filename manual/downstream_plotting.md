@@ -4,17 +4,17 @@
 
 - Kraken and Bracken reports
 - Matrices of taxonomic classification
- - Every species level
- - Read counds, or relative abundance
- - Normalized to only include classified reads, or all reads
- - Kraken only (without running Bracken, to look for unique read mappings) results too
+    - Every species level
+    - Read counds, or relative abundance
+    - Normalized to only include classified reads, or all reads
+    - Kraken only (without running Bracken, to look for unique read mappings) results too
 - Bray-curtis distance matrices for all taxonomic levels
 - PLOTS, which can be separated by the sample_groups option
- - Taxonomic barplots for each taxonomic level
-  - Normalized to only include classified reads, or all reads
- - Plots of diversity estimates 
- - Rarefaction curves
- - PCoA 2D plot based on Bray-Curtis distances 
+    - Taxonomic barplots for each taxonomic level
+        - Normalized to only include classified reads, or all reads
+    - Plots of diversity estimates 
+    - Rarefaction curves
+    - PCoA 2D plot based on Bray-Curtis distances 
 
 If that isn't enough, see below for more options (mostly older stuff before it was all automated)
 
