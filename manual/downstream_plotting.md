@@ -16,6 +16,8 @@
     - Rarefaction curves
     - PCoA 2D plot based on Bray-Curtis distances 
 
+![default_barplot](../images/taxonomic_barplot.png "Default taxonomic barplot output")
+
 If that isn't enough, see below for more options (mostly older stuff before it was all automated)
 
 
@@ -62,17 +64,3 @@ metaphlan_hclust_heatmap.py --in merge_metaphlan.txt  --top 25 --minv 0.1 -s log
 metaphlan_hclust_heatmap.py --in merge_metaphlan.txt  --top 150 --minv 0.1 -s log --out merge_metaphlan_heatmap_big -f braycurtis -d braycurtis -c viridis
 ```
 ![metaphlan2_heatmap](../images/metaphlan2_heatmap.png "Using metaphlan2-style heatmaps from Kraken2 data.")
-
-### Taxonomic barplots
-To use Eli's taxonomic barplot workflow, add a datasets table specified below, and add it to the config.yaml. The input data are specified in the form of a tab-delimited table taking the below form:
-```
-Sample  Timepoint   Condition   Reads1.fq[.gz][,Reads2.fq[.gz]]
-a   1   control a_1.fq,a_2.fq
-b   2   case    b_1.fq,b_2.fq
-c   1   case    c_1.fq.gz,c_2.fq.gz
-d   2   case    d_1.fq.gz,d_2.fq.gz
-```
-
-This yields a barplot that looks like this:
-
-![example barplot](../images/taxonomic_composition.png "barplot!")
