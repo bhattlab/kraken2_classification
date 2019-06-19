@@ -138,7 +138,14 @@ merge_kraken_df_list <- function(df.list){
 
 # convert a merged table of reads to a merged table of percentages
 reads_matrix_to_percentages <- function(reads.matrix){
-    return(round(apply(reads.matrix, 2, function(x) (x / sum(x)*100)), 3))
+        # catch edge case with one row
+    if (nrow(reads.matrix) >1 ) {
+        reads.matrix.pct <- apply(reads.matrix, 2, function(x) x/sum(x) * 100)
+    } else {
+        reads.matrix.pct <- reads.matrix
+        reads.matrix.pct[reads.matrix.pct>0] <- 100
+    }
+    return(reads.matrix.pct)
 }
 
 # takes in a named vecor of files

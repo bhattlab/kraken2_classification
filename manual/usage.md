@@ -13,9 +13,9 @@ To run Kraken2, either get an interactive session on the cluster, or submit batc
 ```
 # Snakemake workflow - change options in config.yaml first
 source activate classification2
-snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ '
+snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ --bind /scratch --bind /home/' --profile scg --jobs 99
 
-# Or if you want to run on the command line
+# Or if you want to run on the command line and have kraken/bracken installed
 # get an interactive session first. 256Gb mem necessary for this database
 DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
 threads=8

@@ -45,9 +45,17 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
     }
     # proceed with classified reads here
     unclassified.rownames <- c('Classified at a higher level', 'Unclassified')
+    # if(!all(unclassified.rownames %in% rownames(kraken.mat))){
+    #     return(NA)
+    # }
     # renorm percentages
     kraken.mat.classified <- as.matrix(kraken.mat[!(rownames(kraken.mat) %in% unclassified.rownames),, drop=FALSE])
-    kraken.mat.classified <- apply(kraken.mat.classified, 2, function(x) x/sum(x) * 100)
+    # catch edge case with one row
+    if (nrow(kraken.mat.classified) >1 ) {
+        kraken.mat.classified <- apply(kraken.mat.classified, 2, function(x) x/sum(x) * 100)
+    } else {
+        kraken.mat.classified[kraken.mat.classified>0] <- 100
+    }
     # print(kraken.mat.classified)
     # ncolors must be equal or less to nrow kraken.mat
     n.colors <- min(n.colors, nrow(kraken.mat.classified))
@@ -61,7 +69,6 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
 
     # filter rows to most abundant taxa
     keep.rows <- names(sort(rowSums(kraken.mat.classified), decreasing = T))[1:n.colors]
-
     # add unclassified taxa if desired
     if (include.unclassified){
         if (!(all(unclassified.rownames %in% rownames(kraken.mat)))){
@@ -154,6 +161,9 @@ plot_many_samples_with_diversity <- function(kraken.mat, diversity.df, y.title='
 plot_many_samples_with_diversity_barplot <- function(kraken.mat, diversity.df, y.title='Shannon Diversity', plot.title='', ...){
     if (ncol(diversity.df) != 2){
         stop('Must be two column dataframe: sample names in 1, diversity in 2')
+    }
+    if (is.null(dim(kraken.mat))){
+        stop('Must be matrix of positive dim')
     }
     colnames(diversity.df) <- c('sample', 'shannon')
     taxplot <- plot_many_samples(kraken.mat, ...)

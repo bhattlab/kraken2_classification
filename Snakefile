@@ -108,6 +108,7 @@ rule kraken:
     resources:
         mem=kraken_memory,
         time=1
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} --use-names
@@ -142,6 +143,7 @@ rule downstream_processing:
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results'),
         use_bracken_report = run_bracken
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2_processing"
     output:
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
     script:
@@ -156,6 +158,7 @@ rule downstream_processing_krakenonly:
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results_krakenonly'),
         use_bracken_report = False
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2_processing"
     output:
         join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf')
     script:
@@ -183,6 +186,7 @@ rule extract_unmapped_paired:
         tempfile = "{samp}_" + str(0) + "_reads.txt"
     resources:
         mem = 64
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
@@ -198,6 +202,7 @@ rule extract_unmapped_single:
     params:
         taxid = str(0),
         tempfile = "{samp}_" + str(0) + "_reads.txt"
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}

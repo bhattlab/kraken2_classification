@@ -135,7 +135,7 @@ if (ncol(bracken.reads.matrix.list[[1]]) ==1){
         colnames(y) <- colnames(x)
         y})
     } else {
-    bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames), ])
+    bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames),,drop=FALSE])
 }
 
 # normalize to percentages
@@ -165,7 +165,8 @@ for (tn in tax.level.names){
     write.table(bracken.reads.matrix.list.classified[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
     # now only write rows of pct matrix that are nonzero
     # that is, at least one sample has 0.001 fraction (due to rounding)
-    write.table(bracken.fraction.matrix.list.classified[[tn]][rowSums(bracken.fraction.matrix.list.classified[[tn]])>0,,drop=FALSE], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
+    keep.idx <- rowSums(bracken.fraction.matrix.list.classified[[tn]])>0
+    write.table(bracken.fraction.matrix.list.classified[[tn]][keep.idx,,drop=FALSE], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
 }
 
 

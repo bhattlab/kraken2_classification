@@ -13,25 +13,19 @@ Short read classification with the kraken2 program
 
 ## Quickstart
 *Install*
+Most of this work will take place on SCG. Thanks to Singularity, all you need to have installed is snakemake. See the instructions [here](https://github.com/bhattlab/bhattlab_workflows/) to set up snakemake and set up a profile to submit jobs to the cluster. 
+
+Then clone the repo wherever is convenient for you. I use a directory in `~/projects`
 ```
-conda env create -f classification_env.yaml
-# then install [Bracken](https://github.com/jenniferlu717/Bracken/) manually because it doesn't work with conda. 
-# Alternatively, just run the Snakemake workflow with the singularity flags as specified below to pull the image to use Bracken.
+cd ~/projects
+git clone git@github.com:bhattlab/kraken2_classification.git
 ```
 *Run*
+Copy the `config.yaml` file into the working directory for your samples. Change the options to suit your projects and make sure you specify the right `samples.tsv` file. See [Usage](manual/usage.md) for more detail. You can then lauch the workflow with a snakemake command like so:
 ```
 # Snakemake workflow - change options in config.yaml first
-source activate classification2
-snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ '
-
-# Or if you want to run on the command line
-# get an interactive session first. 256Gb mem necessary for this database
-DB=/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
-threads=8
-read_length=150   # must be 150 or 100
-kraken2 --db "$DB" --threads "$threads" --output out.krak --report out.krak.report --paired r1.fq r2.fq
-bracken -d "$DB" -t "$threads" -i out.krak.report -o out out.krak.report.bracken -r "$read_length"
+snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ --bind /scratch --bind /home/' --profile scg --jobs 99
 ```
 
 ## Parsing output reports
-The Kraken reports (sample.krak.report) and bracken reports (sample.kraK_bracken.report) are the best for downstream analysis. See [Downstream processing and plotting](manual/downstream_plotting.md) for details on using the data in R. 
+The Kraken reports `classification/sample.krak.report`, bracken reports `sample.krak_bracken.report`, and data matrices in the `processed_results` folder are the best for downstream analysis. See [Downstream processing and plotting](manual/downstream_plotting.md) for details on using the data in R. 
