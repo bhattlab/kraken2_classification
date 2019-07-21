@@ -10,6 +10,7 @@ Short read classification with the kraken2 program
 3. [Available databases](manual/databases.md)
 4. [Downstream processing and plotting](manual/downstream_plotting.md)
 5. [Additional considerations](manual/extra.md)
+6. [Custom database construction](manual/db_construction.md)
 
 ## Quickstart
 *Install*
