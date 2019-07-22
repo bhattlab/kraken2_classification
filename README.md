@@ -10,16 +10,17 @@ Short read classification with the kraken2 program
 3. [Available databases](manual/databases.md)
 4. [Downstream processing and plotting](manual/downstream_plotting.md)
 5. [Additional considerations](manual/extra.md)
-6. [Custom database construction](manual/db_construction.md)
+6. [Expanded database construction](manual/db_construction.md)
+7. [Using metagenome assembled genomes as a database](manual/mag_db.md)
 
 ## Quickstart
 *Install*
-Most of this work will take place on SCG. Thanks to Singularity, all you need to have installed is snakemake. See the instructions [here](https://github.com/bhattlab/bhattlab_workflows/) to set up snakemake and set up a profile to submit jobs to the cluster. 
+If you're in the Bhatt lab, most of this work will take place on the SCG cluster. Otherwise, set this up on your own cluster or local machine (with a small database only). You will have to [build a database](manual/db_construction.md) and set the database options if you're not in the Bhatt lab. Thanks to Singularity, all you need to have installed is snakemake. See the instructions [here](https://github.com/bhattlab/bhattlab_workflows/) to set up snakemake and set up a profile to submit jobs to the cluster. 
 
 Then clone the repo wherever is convenient for you. I use a directory in `~/projects`
 ```
 cd ~/projects
-git clone git@github.com:bhattlab/kraken2_classification.git
+git clone https://github.com/bhattlab/kraken2_classification.git
 ```
 *Run*
 Copy the `config.yaml` file into the working directory for your samples. Change the options to suit your projects and make sure you specify the right `samples.tsv` file. See [Usage](manual/usage.md) for more detail. You can then lauch the workflow with a snakemake command like so:
