@@ -1,4 +1,4 @@
-#Creating Kraken2 databses from Metagenome Assembled Genomes
+# Creating Kraken2 databses from Metagenome Assembled Genomes
 Metagenome Assembled Genomes (MAGs) help with the fact that reference databases for microbiome research are incomplete. By assembling and binning genomes from many studies, MAG databases have been used to classify new organisms and find new microbial associations with disease. For a more detailed summary, check out my [blog post on the topic](https://www.bsiranosian.com/bioinformatics/metagenome-assembled-genomes-enhance-short-read-classification/).
 
 In the Bhatt lab, we were interested in using MAG databases for short read metagenomic classification with Kraken2. Here's how you set up a Kraken2 database from a collection of MAGs, using Almeida et al. (2019) as an example. This uses the Unclassified MAGs (UMGS) that represent new candidate species. The species are set up in a flat taxonomy - every bin is a species that links directly to root. In the future, you could use some of the taxonomy information provided in the paper to create a better taxonomy for the databse.
