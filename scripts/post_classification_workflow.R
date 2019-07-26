@@ -1,13 +1,12 @@
-# what to do with kraken results once they're done any set of samples
+# Processing kraken results into matrices and plots
+# Ben Siranosian - Bhatt lab - Stanford Genetics 
+# bsiranosian@gmail.com
+# January 2019 - July 2019
+
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(vegan, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(reshape2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
-
-# 1) parse into matrix at species and genus level
-# 2) diversity calculations at species and genus level
-# 3) taxonomic barplot with diversity at species and genus level
-# 4) pcoa plot?
 
 # options we need from snakemake
 scripts.folder <- snakemake@params[['scripts_folder']]
@@ -76,31 +75,34 @@ suppressMessages(source(source.script.2))
 # read sample groups file
 sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
 colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
+# ensure we skip first row as 'sample'
+if(tolower(sample.reads[1,'sample'] == 'sample')){
+    sample.reads <- sample.reads[2:nrow(sample.reads), ]
+}
 
 # if a groups file is specified, read it. Otherwise assign everything to one group
 if (sample.groups.f != '') {
     sample.groups <- read.table(sample.groups.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
     colnames(sample.groups) <- c('sample', 'group')
     # if first sample is sample, discard the line
-    if(tolower(sample.groups[1,'sample']) %in% c('sample')){
+    if(tolower(sample.groups[1,'sample']) == 'sample'){
         sample.groups <- sample.groups[2:nrow(sample.groups),]
     }
 } else {
     sample.groups <- data.frame(sample=sample.reads$sample, group='All')
 }
-## FOR TESTING
-# sample.reads <- sample.reads[order(sample.reads$sample),]
-# sample.groups <- sample.groups[order(sample.groups$sample),]
-# sample.reads <- sample.reads[1:10,]
-# sample.groups <- sample.groups[1:10,]
-# sample.groups[6:10, 'group'] <- 'TWO'
+
 
 # ensure reads and groups have the same data
 if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
-    # print(sample.groups)
-    # print(sample.reads)
-    # print(sample.groups$sample[!(sample.groups$sample %in% sample.reads$sample)])
-    # print(sample.reads$sample[!(sample.reads$sample %in% sample.groups$sample)])
+    message('sample.reads:')
+    print(sample.reads)
+    message('sample.groups:')
+    print(sample.groups)
+    message('sample.groups$sample[!(sample.groups$sample %in% sample.reads$sample)]')
+    print(sample.groups$sample[!(sample.groups$sample %in% sample.reads$sample)])
+    message('sample.reads$sample[!(sample.reads$sample %in% sample.groups$sample)]')
+    print(sample.reads$sample[!(sample.reads$sample %in% sample.groups$sample)])
     stop('Sample reads and sample groups dont contain the same samples... check inputs')
 }
 
@@ -109,6 +111,9 @@ if (use.bracken.report){f.ext <- '.krak_bracken.report'} else {f.ext <- '.krak.r
 flist <- sapply(sample.groups$sample, function(x) file.path(classification.folder, paste(x, f.ext, sep='')))
 names(flist) <- sample.groups$sample
 if (!(all(file.exists(flist)))){
+    # print which files don't exist 
+    message('The follwing files do not exist:')
+    print(flist[!sapply(flist, file.exists)])
     stop("Some classification files do not exist!")
 }
 
