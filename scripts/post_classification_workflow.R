@@ -81,6 +81,10 @@ colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
 if (sample.groups.f != '') {
     sample.groups <- read.table(sample.groups.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
     colnames(sample.groups) <- c('sample', 'group')
+    # if first sample is sample, discard the line
+    if(tolower(sample.groups[1,'sample']) %in% c('sample')){
+        sample.groups <- sample.groups[2:nrow(sample.groups),]
+    }
 } else {
     sample.groups <- data.frame(sample=sample.reads$sample, group='All')
 }
