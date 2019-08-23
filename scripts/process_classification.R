@@ -200,3 +200,109 @@ read_processed_kraken_matrices <- function(dir, reads=TRUE, search.string='brack
     return(matrix.list)
 }
 
+
+# 2019-08-22 
+# new parsing based on processed taxonomy 
+# with one example kraken file 
+# and start to work with cmapR !
+library(cmapR)
+df1 <- kraken_file_to_df('~/scg_lab/transmission_10x/kraken2_classification/classification/bas_bb_spri.krak_bracken.report')
+df2 <- kraken_file_to_df('~/scg_lab/transmission_10x/kraken2_classification/classification/bas_hmw_bp.krak_bracken.report')
+tax.array <- read.table('~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv', sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
+colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
+rownames(tax.array) <- tax.array$taxid
+
+
+# some sample data
+# can be sample groups or other metadata
+sample.metadata <- data.frame(id=c('bb', 'hmw'), extraction_method = c('bead beating', 'HMW'))
+
+# do we merge all files first into a matrix then subset the gct to what they have?
+# might also want to aply some sanity filtering on the numebrs of reads. 
+# only keep taxid and reads.below
+keep.cols <- c('taxid', 'reads.below')
+df.list <- list(df1[,keep.cols], df2[,keep.cols])
+names(df.list) <- c('bb', 'hmw')
+if((class(df.list) != "list") | length(df.list) <2){
+    stop('Must be a list longer than 1')
+}
+if(is.null(names(df.list))){
+    warning('Names of list is null, colnames of result will be empty')
+}
+
+# merge on the taxid column
+merge.colname <- 'taxid'
+# Reduce to merge list of data frames into one
+merge.temp <- suppressWarnings(Reduce(function(x,y) merge(x, y, all=TRUE, by=merge.colname, sort=F), df.list))
+rownames(merge.temp) <- merge.temp[,1]
+merge.mat <- as.matrix(merge.temp[,c(-1)])
+colnames(merge.mat) <- names(df.list)
+merge.mat[is.na(merge.mat)] <- 0
+
+# subset tax array
+# can have an option to keep all taxids
+common.taxids <- intersect(tax.array$taxid, rownames(merge.mat))
+tax.array.subset <- tax.array[common.taxids, ]
+
+# set this to a gct
+dfg <- new('GCT')
+dfg@rdesc <- tax.array.subset
+dfg@rid <- tax.array.subset$id
+dfg@mat <- merge.mat[common.taxids, ]
+dfg@cid <- colnames(merge.mat)
+dfg@cdesc <- sample.metadata
+
+# and now a new suite of functions to filter this to a specific tax level
+subset_to_level <- function(tax.gct, level){
+    valid.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
+    if (!(level %in% valid.levels)){
+        stop(paste(level, 'not in valid tax levels:', paste(valid.levels, collapse= ', ')))
+    }
+    if (level == 'subspecies'){
+        below.levels <- ''
+    } else {
+        below.levels <- valid.levels[(which(valid.levels == level) +1):length(valid.levels)]
+    }
+    keep.inds <- which(tax.gct@rdesc[,level] != '' & apply(tax.gct@rdesc[, below.levels,drop=FALSE], 1, function(x) all(x == '')))
+    if(length(keep.inds)==0){
+        warning('No valid ids in the taxonomy, returning NA')
+        return(NA)
+    }
+    return(subset.gct(tax.gct, rid=keep.inds))
+}
+
+subset.gct(dfg, rid='Homo sapiens')
+subset_to_level(dfg, 'subspecies')
+subset_to_level(dfg, 'kingdom')
+subset_to_level(dfg, 'phylum')
+subset_to_level(dfg, 'class')
+subset_to_level(dfg, 'order')
+subset_to_level(dfg, 'family')
+subset_to_level(dfg, 'genus')
+subset_to_level(dfg, 'species')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
