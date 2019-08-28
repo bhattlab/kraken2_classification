@@ -1,12 +1,13 @@
 # Processing kraken results into matrices and plots
-# Ben Siranosian - Bhatt lab - Stanford Genetics 
+# Ben Siranosian - Bhatt lab - Stanford Genetics
 # bsiranosian@gmail.com
-# January 2019 - July 2019
+# January 2019 - September 2019
 
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(vegan, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(reshape2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(cmapR, quietly = TRUE, warn.conflicts = FALSE))
 
 # options we need from snakemake
 scripts.folder <- snakemake@params[['scripts_folder']]
@@ -16,13 +17,16 @@ workflow.outdir <- snakemake@params[['workflow_outdir']]
 result.dir <- snakemake@params[['result_dir']]
 use.bracken.report <- snakemake@params[['use_bracken_report']]
 scripts.folder <- snakemake@scriptdir
-
-# # Testing Args
-# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-# sample.reads.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/samples.tsv'
-# sample.groups.f <- '~/scg_scratch/ssrc_conventional/kraken2_classify/sample_groups.tsv'
-# classification.folder <- '~/scg_scratch/ssrc_conventional/kraken2_classify/kraken2_classification/'
-# use.bracken.report <- T
+tax.array.file <- snakemake@input[['tax_array']]
+############ Testing Args ############################################################################
+sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples.tsv'
+sample.groups.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/sample_groups.tsv'
+workflow.outdir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/kraken2_classification_feb2019/'
+result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out/'
+use.bracken.report <- T
+scripts.folder <- '~/projects/kraken2_classification/scripts/'
+tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
+######################################################################################################
 
 # # for segata debug
 # scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
@@ -44,13 +48,6 @@ scripts.folder <- snakemake@scriptdir
 # workflow.outdir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/'
 # result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results_TESTING/'
 
-# # FOR FIONA TESTING
-# sample.reads.f <- '~/scg/fiona_debug/3.kraken2/samples.tsv'
-# sample.groups.f <- ''
-# classification.folder <- '~/scg/fiona_debug/3.kraken2/kraken2_classification/classification/'
-# use.bracken.report <- T
-# result.dir <- '~/scg/fiona_debug/3.kraken2/kraken2_classification/processed_results_BAS'
-
 # set up directories and make those that don't exist
 classification.folder <- file.path(workflow.outdir, 'classification')
 # result.dir <- file.path(workflow.outdir, 'processed_results')
@@ -64,13 +61,13 @@ for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy,
 }
 
 # load other data processing and plotting scripts
-source.script.1 <- file.path(scripts.folder, 'process_classification.R')
-source.script.2 <- file.path(scripts.folder, 'plotting_classification.R')
-if (!(file.exists(source.script.1) & file.exists(source.script.2))){
+source.script.process <- file.path(scripts.folder, 'process_classification.R')
+source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
+if (!(file.exists(source.script.process) & file.exists(source.script.plot))){
     stop('Specify right source script dir')
 }
-suppressMessages(source(source.script.1))
-suppressMessages(source(source.script.2))
+suppressMessages(source(source.script.process))
+suppressMessages(source(source.script.plot))
 
 # read sample groups file
 sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
@@ -92,6 +89,12 @@ if (sample.groups.f != '') {
     sample.groups <- data.frame(sample=sample.reads$sample, group='All')
 }
 
+# get taxonomy array
+# classification at each level for each entry in the database.
+# simplified after processing krakens default taxonomy
+tax.array <- read.table(tax.array.file, sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
+colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
+rownames(tax.array) <- tax.array$taxid
 
 # ensure reads and groups have the same data
 if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
@@ -111,7 +114,7 @@ if (use.bracken.report){f.ext <- '.krak_bracken.report'} else {f.ext <- '.krak.r
 flist <- sapply(sample.groups$sample, function(x) file.path(classification.folder, paste(x, f.ext, sep='')))
 names(flist) <- sample.groups$sample
 if (!(all(file.exists(flist)))){
-    # print which files don't exist 
+    # print which files don't exist
     message('The follwing files do not exist:')
     print(flist[!sapply(flist, file.exists)])
     stop("Some classification files do not exist!")
@@ -130,10 +133,23 @@ if (sum(sum(test.df$tax.level=='G')) ==0){
     tax.level.abbrev <- c('S')
 }
 
-# load into list of matrices, one for each tax level
+# load classification results from each sample and process into gct format
 message(paste('Loading data from ', length(flist), ' kraken/bracken results.', sep=''))
-message(paste('Processing at taxonomic levels: ', paste(tax.level.names, collapse=', '), sep=''))
-bracken.reads.matrix.list <- many_files_to_matrix_list(flist, filter.tax.levels = tax.level.abbrev, include.unclassified = T)
+df.list <- lapply(flist, function(x) kraken_file_to_df(x))
+# merge classification matrix
+merge.mat <- merge_kraken_df_list(df.list)
+# sample metadata just has groups for now
+sample.metadata <- data.frame(id=sample.groups$sample, group=sample.groups$sample)
+# construct gct obejct from reads matrix, sample metadata, row metadata
+kgct <- make_gct_from_kraken(merge.mat, sample.metadata, tax.array)
+# filter to each of the taxonomy levels
+filter.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
+kgct.filtered.list <- lapply(filter.levels, function(level) subset_gct_to_level(kgct, level))
+names(kgct.filtered.list) <- filter.levels
+
+
+
+
 # separate matrices including classified and unclassified
 # god this naming scheme is getting ugly
 unclassified.rownames <- c('Unclassified', 'Classified at a higher level')
