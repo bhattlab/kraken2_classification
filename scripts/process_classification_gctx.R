@@ -37,8 +37,8 @@ kraken_file_to_df <- function(fname){
 # names will be taken from the names of the list
 # output will have taxonmic name in rows, sample in columns
 merge_kraken_df_list <- function(df.list){
-    if(length(df.list) <2){
-        stop('Must be a list longer than 1 - TODO implement this with one element')}
+    # if(length(df.list) <2){
+    #     stop('Must be a list longer than 1 - TODO implement this with one element')}
     if(is.null(names(df.list))){
         warning('Names of list is null, colnames of result will be empty')}
 
@@ -50,15 +50,11 @@ merge_kraken_df_list <- function(df.list){
     # Reduce to merge list of data frames into one
     merge.temp <- suppressWarnings(Reduce(function(x,y) merge(x, y, all=TRUE, by=merge.colname, sort=F), df.list.simple))
     rownames(merge.temp) <- merge.temp[,1]
-    merge.mat <- as.matrix(merge.temp[,c(-1)])
+    merge.mat <- as.matrix(merge.temp[,c(-1),drop=FALSE])
     colnames(merge.mat) <- names(df.list)
     merge.mat[is.na(merge.mat)] <- 0
     return(merge.mat)
 }
-
-# sample metadata from the names and groups
-
-
 
 # construct new GCT from three pieces of data
 # matrix of classified reads, sample metadata and taxonomy metadata
@@ -66,11 +62,12 @@ make_gct_from_kraken <- function(merge.mat, sample.metadata, tax.array){
     # subset tax array for making the gctx
     # TODO: option to keep all taxids?
     common.taxids <- intersect(tax.array$taxid, rownames(merge.mat))
-    tax.array.subset <- tax.array[common.taxids, ]
+    tax.array.subset <- tax.array[common.taxids,]
     kgct <- new('GCT')
     kgct@rdesc <- tax.array.subset
+    rownames(kgct@rdesc) <- tax.array.subset$id
     kgct@rid <- tax.array.subset$id
-    kgct@mat <- merge.mat[common.taxids, ]
+    kgct@mat <- merge.mat[common.taxids,,drop=FALSE]
     rownames(kgct@mat) <- tax.array.subset$id
     kgct@cid <- colnames(merge.mat)
     kgct@cdesc <- sample.metadata
@@ -79,10 +76,10 @@ make_gct_from_kraken <- function(merge.mat, sample.metadata, tax.array){
 
 # and now a new suite of functions to filter this to a specific tax level
 # TODO: include classified above this level (as an option?)
-subset_gct_to_level <- function(kgct, level){
+subset_kgct_to_level <- function(kgct, level){
     # must do this on taxonomy with root
     if (!('root' %in% kgct@rid)){
-        stop('subset must be done on root ')}
+        stop('subset must be done on gct that contains root ')}
     # print(level)
     valid.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
     if (!(level %in% valid.levels)){
@@ -95,46 +92,52 @@ subset_gct_to_level <- function(kgct, level){
     }
     # to filter to a level, tax entry at that level must be nonempty
     # and all levels BELOW musst be empty
-    keep.inds <- which(kgct@rdesc[,level] != '' & apply(kgct@rdesc[, below.levels,drop=FALSE], 1, function(x) all(x == '')))
+    # print(level)
+    # print(below.levels)
+    keep.inds <- which((kgct@rdesc[, level] != '') &
+                       (apply(kgct@rdesc[, below.levels, drop=FALSE], 1, function(x) all(x == ''))))
     # always keep unclassified
     if ('unclassified' %in% kgct@rid){
         keep.inds <- c(which(kgct@rid == 'unclassified'), keep.inds)
     }
     if(length(keep.inds)==0){
-        stop('No valid ids in the taxonomy')
+        stop('No valid ids at this level in the taxonomy')
     }
-
+    # names(keep.inds) <- NULL
+    # print(keep.inds)
+    # subset to thse indices
     kgct.subset <- subset.gct(kgct, rid=keep.inds)
 
     # something to deal with reads unclassified, and classified above this level
     # convention: reads classified above this level have taxid -1
-    if ('unclassified' %in% kgct@rid){
-        total.reads <- colSums(kgct@mat[c('unclassified', 'root'),])
-        total.reads.subset <- colSums(kgct.subset@mat)
+    if ('unclassified' %in% kgct.subset@rid){
+        total.reads <- apply(kgct@mat[c('unclassified', 'root'),,drop=FALSE],2,sum)
+        total.reads.subset <- apply(kgct.subset@mat,2,sum)
         classified.higher <- total.reads - total.reads.subset
         # add this to kgct.subset
         kgct.subset@mat <- rbind(classified.higher, kgct.subset@mat)
         rownames(kgct.subset@mat)[1] <- 'classified at a higher level'
         kgct.subset@rid <- c('classified at a higher level',  kgct.subset@rid)
-        kgct.subset@rdesc <- rbind(c('classified at a higher level', '-1', '', '','','','','','',''),  kgct.subset@rdesc)
+        kgct.subset@rdesc <- rbind(c('classified at a higher level', '-1', '', '','','','','','','',''),  kgct.subset@rdesc)
     }
     return(kgct.subset)
 }
 
 # check if the gct has been filtered to a particular taxonomic level
 # return T/F
-check_gct_filtered <- function(kcgt){
+check_gct_filtered <- function(kgct){
     if (class(kgct) != 'GCT'){
         stop('Call on GCT object')
     }
     # work on the rdesc, look at each column from the back
     # and see if all are filled.
+    # can't do this on unclassified rows!
     valid.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
     test.colnames <- rev(colnames(kgct@rdesc))
     test.colnames <- test.colnames[test.colnames %in% valid.levels]
     for (n in test.colnames){
-        # print(n)
-        this.vec <- kgct@rdesc[, n]
+        remove.ids <- c('unclassified', 'classified at a higher level')
+        this.vec <- kgct@rdesc[!(kgct@rdesc$id %in% remove.ids), n]
         if (all(this.vec=='')){
             next
         } else if (all(this.vec != '')){
@@ -147,7 +150,7 @@ check_gct_filtered <- function(kcgt){
 
 # normalize a gct matrix
 # from reads to percentages
-normalize_gct <- function(kgct){
+normalize_kgct <- function(kgct){
     # this can only be done at a specific taxonomic level
     if (!check_gct_filtered(kgct)) {
         stop('GCT must be filtered to a single tax level before normalizing')

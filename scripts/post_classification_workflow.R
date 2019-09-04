@@ -19,10 +19,11 @@ use.bracken.report <- snakemake@params[['use_bracken_report']]
 scripts.folder <- snakemake@scriptdir
 tax.array.file <- snakemake@input[['tax_array']]
 ############ Testing Args ############################################################################
-sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples.tsv'
-sample.groups.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/sample_groups.tsv'
+sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples_1.tsv'
+# sample.groups.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/sample_groups.tsv'
+sample.groups.f <- ''
 workflow.outdir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/kraken2_classification_feb2019/'
-result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out/'
+result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out_1/'
 use.bracken.report <- T
 scripts.folder <- '~/projects/kraken2_classification/scripts/'
 tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
@@ -38,30 +39,24 @@ tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
 # outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 # outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 # outfolder.plots <- file.path(result.dir, 'plots')
-# # # for  debug
-# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-# scripts.folder <- '~/projects/kraken2_classification/scripts/'
-# sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples.tsv'
-# sample.groups.f <- ''
-# classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/classification/'
-# use.bracken.report <- F
-# workflow.outdir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019/'
-# result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_genbank2019//processed_results_TESTING/'
 
 # set up directories and make those that don't exist
 classification.folder <- file.path(workflow.outdir, 'classification')
 # result.dir <- file.path(workflow.outdir, 'processed_results')
 outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 outfolder.matrices.taxonomy.classified <- file.path(result.dir, 'taxonomy_matrices_classified_only')
+outfolder.gctx.taxonomy <- file.path(result.dir, 'taxonomy_gctx')
+outfolder.gctx.taxonomy.classified <- file.path(result.dir, 'taxonomy_gctx_classified_only')
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 outfolder.plots <- file.path(result.dir, 'plots')
 for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy,
-            outfolder.matrices.taxonomy.classified, outfolder.plots)){
+            outfolder.matrices.taxonomy.classified, outfolder.gctx.taxonomy,
+            outfolder.gctx.taxonomy.classified, outfolder.plots)){
     if (!dir.exists(f)){ dir.create(f, recursive = T)}
 }
 
 # load other data processing and plotting scripts
-source.script.process <- file.path(scripts.folder, 'process_classification.R')
+source.script.process <- file.path(scripts.folder, 'process_classification_gctx.R')
 source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
 if (!(file.exists(source.script.process) & file.exists(source.script.plot))){
     stop('Specify right source script dir')
@@ -95,6 +90,12 @@ if (sample.groups.f != '') {
 tax.array <- read.table(tax.array.file, sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
 colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
 rownames(tax.array) <- tax.array$taxid
+# some duplicate names in this. if so, change them to include the tax level
+dup.ids <- tax.array$id[duplicated(tax.array$id)]
+dup.inds <- which(tax.array$id %in% dup.ids)
+# fix these by adding taxid to the name
+tax.array[tax.array$id %in% dup.ids, "id"] <- paste(tax.array[tax.array$id %in% dup.ids, "id"],
+                                                    ' (', tax.array[tax.array$id %in% dup.ids, "taxid"], ')', sep='')
 
 # ensure reads and groups have the same data
 if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
@@ -120,18 +121,11 @@ if (!(all(file.exists(flist)))){
     stop("Some classification files do not exist!")
 }
 
-# read in all as a list of matrices instead - much quicker and can do all tax levels
-tax.level.names <- c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species')
-tax.level.abbrev <- c('D','P','C','O','F','G','S')
+# special case for MAG databases.
 # need something to limit to Segata database
 test.df <- kraken_file_to_df(flist[1])
 # like number of genus classifications is zero or something
-segata <- F
-if (sum(sum(test.df$tax.level=='G')) ==0){
-    segata <- T
-    tax.level.names <- c('Species')
-    tax.level.abbrev <- c('S')
-}
+segata <- sum(sum(test.df$tax.level=='G')) == 0
 
 # load classification results from each sample and process into gct format
 message(paste('Loading data from ', length(flist), ' kraken/bracken results.', sep=''))
@@ -139,59 +133,53 @@ df.list <- lapply(flist, function(x) kraken_file_to_df(x))
 # merge classification matrix
 merge.mat <- merge_kraken_df_list(df.list)
 # sample metadata just has groups for now
-sample.metadata <- data.frame(id=sample.groups$sample, group=sample.groups$sample)
+sample.metadata <- data.frame(id=sample.groups$sample, group=sample.groups$group)
 # construct gct obejct from reads matrix, sample metadata, row metadata
 kgct <- make_gct_from_kraken(merge.mat, sample.metadata, tax.array)
 # filter to each of the taxonomy levels
-filter.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
-kgct.filtered.list <- lapply(filter.levels, function(level) subset_gct_to_level(kgct, level))
+if (segata){ filter.levels <- c('species') } else {
+    filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species') }
+kgct.filtered.list <- lapply(filter.levels, function(level) subset_kgct_to_level(kgct, level))
 names(kgct.filtered.list) <- filter.levels
-
-
-
-
-# separate matrices including classified and unclassified
-# god this naming scheme is getting ugly
-unclassified.rownames <- c('Unclassified', 'Classified at a higher level')
-# special case for one sample
-if (ncol(bracken.reads.matrix.list[[1]]) ==1){
-    bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) {
-        y <- as.matrix(x[!(rownames(x) %in% unclassified.rownames), ])
-        colnames(y) <- colnames(x)
-        y})
-    } else {
-    bracken.reads.matrix.list.classified <- lapply(bracken.reads.matrix.list, function(x) x[!(rownames(x) %in% unclassified.rownames),,drop=FALSE])
-}
+# subset to classified taxa only
+unclassified.rownames <- c('unclassified', 'classified at a higher level')
+kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset.gct(x, rid=x@rid[!(x@rid %in% unclassified.rownames)]))
 
 # normalize to percentages
-bracken.fraction.matrix.list <- lapply(bracken.reads.matrix.list, reads_matrix_to_percentages)
-names(bracken.reads.matrix.list) <- tax.level.names
-names(bracken.fraction.matrix.list) <- tax.level.names
-# for classified only
-bracken.fraction.matrix.list.classified <- lapply(bracken.reads.matrix.list.classified, reads_matrix_to_percentages)
-names(bracken.reads.matrix.list.classified) <- tax.level.names
-names(bracken.fraction.matrix.list.classified) <- tax.level.names
+kgct.filtered.percentage.list <- lapply(kgct.filtered.list, normalize_kgct)
+kgct.filtered.classified.percentage.list <- lapply(kgct.filtered.classified.list, normalize_kgct)
 
 message('Saving classification matrices...')
-# save matrices
+# save matrices and gctx objects
 if (use.bracken.report){mat.name <- 'bracken'} else {mat.name <- 'kraken'}
-for (tn in tax.level.names){
-    out.mat.reads <- file.path(outfolder.matrices.taxonomy, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
-    out.mat.fraction <- file.path(outfolder.matrices.taxonomy, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
-    write.table(bracken.reads.matrix.list[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
+for (tn in filter.levels){
+    outf.mat.reads <- file.path(outfolder.matrices.taxonomy, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
+    outf.mat.percentage <- file.path(outfolder.matrices.taxonomy, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
+    outf.mat.reads.classified <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
+    outf.mat.percentage.classified <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
+    # gctx names
+    outf.gctx.reads <- file.path(outfolder.gctx.taxonomy, paste(mat.name, tolower(tn), 'reads.gctx', sep='_'))
+    outf.gctx.percentage <- file.path(outfolder.gctx.taxonomy, paste(mat.name, tolower(tn), 'percentage.gctx', sep='_'))
+    outf.gctx.reads.classified <- file.path(outfolder.gctx.taxonomy.classified, paste(mat.name, tolower(tn), 'reads.gctx', sep='_'))
+    outf.gctx.percentage.classified <- file.path(outfolder.gctx.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.gctx', sep='_'))
+
+    # save matrices
+    write.table(kgct.filtered.list[[tn]]@mat, outf.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
+    write.table(kgct.filtered.classified.list[[tn]]@mat, outf.mat.reads.classified, sep='\t', quote=F, row.names = T, col.names = T)
     # now only write rows of pct matrix that are nonzero
     # that is, at least one sample has 0.001 fraction (due to rounding)
-    write.table(bracken.fraction.matrix.list[[tn]][rowSums(bracken.fraction.matrix.list[[tn]])>0,,drop=FALSE], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
-}
-# save classified only also
-for (tn in tax.level.names){
-    out.mat.reads <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'reads.txt', sep='_'))
-    out.mat.fraction <- file.path(outfolder.matrices.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.txt', sep='_'))
-    write.table(bracken.reads.matrix.list.classified[[tn]], out.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
-    # now only write rows of pct matrix that are nonzero
-    # that is, at least one sample has 0.001 fraction (due to rounding)
-    keep.idx <- rowSums(bracken.fraction.matrix.list.classified[[tn]])>0
-    write.table(bracken.fraction.matrix.list.classified[[tn]][keep.idx,,drop=FALSE], out.mat.fraction, sep='\t', quote=F, row.names = T, col.names = T)
+    mat.percentage <- kgct.filtered.percentage.list[[tn]]@mat[rowSums(kgct.filtered.percentage.list[[tn]]@mat)>0,,drop=FALSE]
+    mat.percentage <- round(mat.percentage, 5)
+    mat.percentage.classified <- kgct.filtered.classified.percentage.list[[tn]]@mat[rowSums(kgct.filtered.classified.percentage.list[[tn]]@mat)>0,,drop=FALSE]
+    mat.percentage.classified <- round(mat.percentage.classified, 5)
+    write.table(mat.percentage, outf.mat.percentage, sep='\t', quote=F, row.names = T, col.names = T)
+    write.table(mat.percentage.classified, outf.mat.percentage.classified, sep='\t', quote=F, row.names = T, col.names = T)
+
+    # save gctx
+    suppressMessages(write.gctx(kgct.filtered.list[[tn]], outf.gctx.reads, appenddim = F))
+    suppressMessages(write.gctx(kgct.filtered.percentage.list[[tn]], outf.gctx.percentage, appenddim = F))
+    suppressMessages(write.gctx(kgct.filtered.classified.list[[tn]], outf.gctx.reads.classified, appenddim = F))
+    suppressMessages(write.gctx(kgct.filtered.classified.percentage.list[[tn]], outf.gctx.percentage.classified, appenddim = F))
 }
 
 
@@ -200,16 +188,16 @@ for (tn in tax.level.names){
 #################################################################################
 message('Doing diversity calculations and saving figures...')
 
-#plot a rarefaction curve.
-plot_rarefaction_curve(bracken.reads.matrix.list, file.path(outfolder.plots, 'rarefaction_curve.pdf'))
+# plot a rarefaction curve
+plot_rarefaction_curve(kgct.filtered.classified.list$species@mat,
+                       file.path(outfolder.plots, 'rarefaction_curve.pdf'))
 
 # diversity calculations
 div.methods <- c('shannon', 'simpson')
-div.tax.levels <- tax.level.names
-# list of lists, oh my!
-div.level.method <- lapply(div.tax.levels, function(x) {
-    # if not enough valid rows
-    use.matrix <- bracken.reads.matrix.list.classified[[x]]
+# calculate for each tax level
+div.level.method <- lapply(filter.levels, function(x) {
+    use.matrix <- kgct.filtered.classified.list[[x]]@mat
+    # if not enough valid rows, skip it
     if (nrow(use.matrix) <3){
         dl <- lapply(div.methods, function(x) rep(0, times=ncol(use.matrix)))
     } else {
@@ -218,8 +206,9 @@ div.level.method <- lapply(div.tax.levels, function(x) {
     names(dl) <- div.methods
     dl
 })
-names(div.level.method) <- div.tax.levels
+names(div.level.method) <- filter.levels
 
+# coerce forcefully into a dataframe
 # there's definitely a better way to do this...
 div.df <- as.data.frame(div.level.method)
 rownames(div.df) <- sample.reads$sample
@@ -233,7 +222,6 @@ div.df$value <- round(div.df$value, 3)
 # write out dataframe
 out.div <- file.path(result.dir, 'diversity.txt')
 write.table(div.df, out.div, sep='\t', quote=F, row.names=F, col.names=T)
-
 
 # barplot of diversity under different methods
 # one with everything, one separated by sample group
@@ -250,7 +238,6 @@ for (g in unique(sample.groups$group)){
              y='Diversity', x='Sample')
     div.plot.list[[g]] <- p
 }
-
 
 # save one page for each group
 div.group.pdf <- file.path(outfolder.plots, 'diversity_by_group.pdf')
@@ -279,15 +266,16 @@ pdf(div.all.pdf, height=5, width = pdf.width)
 for(p in div.plot.all.list){print(p)}
 trash <- dev.off()
 
-
 #################################################################################
 ## Taxonomic Barplots ###########################################################
 #################################################################################
 message('Generating taxonomic barplots...')
 # page in the pdf for each sample group
 taxlevel.plots <- list()
-for (tn in tax.level.names){
+taxlevel.plots.classified <- list()
+for (tn in filter.levels){
     group.plots <- list()
+    group.plots.classified <- list()
     for (g in unique(sample.groups$group)){
         plot.samples <- sample.groups[sample.groups$group==g, "sample"]
         div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
@@ -296,60 +284,32 @@ for (tn in tax.level.names){
         rownames(div.df.plot) <- div.df.plot$sample
         # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
-        plot.mat <- bracken.fraction.matrix.list[[tn]][,plot.samples, drop=FALSE]
+        plot.mat <- kgct.filtered.percentage.list[[tn]]@mat[,plot.samples, drop=FALSE]
         # colnames(plot.mat) <- plot.samples
         # print(head(plot.mat))
         group.plots[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
-                                                                  div.df.plot, plot.title = plot.title, include.unclassified=T, tax.level.name = tn)
-        # plot_many_samples_with_diversity_barplot(bracken.fraction.matrix.list[[tn]][,plot.samples],
-        #                                          div.df.plot, plot.title = plot.title, include.unclassified=T)
+                            div.df.plot, plot.title = plot.title, include.unclassified=T, tax.level.name = tn)
+        group.plots.classified[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
+                            div.df.plot, plot.title = plot.title, include.unclassified=F, tax.level.name = tn)
     }
     taxlevel.plots[[tn]] <- group.plots
+    taxlevel.plots.classified[[tn]] <- group.plots.classified
 }
 
 # save pdfs
 # width of plot = 9 + quarter inch for each sample over 10
 max.samps <- max(table(sample.groups$group))
 pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
-for (tn in tax.level.names){
+for (tn in filter.levels){
     tax.pdf <- file.path(outfolder.plots, paste('taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
     pdf(tax.pdf, height=6, width=pdf.width)
     for (p in taxlevel.plots[[tn]]){print(p)}
     trash <- dev.off()
-}
-
-# REDO for classified only
-taxlevel.plots.classified <- list()
-for (tn in tax.level.names){
-    group.plots <- list()
-    # print(tn)
-    for (g in unique(sample.groups$group)){
-        plot.samples <- sample.groups[sample.groups$group==g, "sample"]
-        div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
-        # print(div.df.sub)
-        div.df.plot <- div.df.sub[, c('sample', 'value')]
-        rownames(div.df.plot) <- div.df.plot$sample
-        # div.df.sub <- div.df.sub[plot.samples, ]
-        plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
-        plot.mat <- bracken.fraction.matrix.list.classified[[tn]][,plot.samples, drop=FALSE]
-
-        group.plots[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
-                                                                  div.df.plot, plot.title = plot.title, include.unclassified=F, tax.level.name = tn)
-    }
-    taxlevel.plots.classified[[tn]] <- group.plots
-}
-
-# save pdfs
-# width of plot = 9 + quarter inch for each sample over 10
-max.samps <- max(table(sample.groups$group))
-pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
-for (tn in tax.level.names){
-    tax.pdf <- file.path(outfolder.plots, paste('classified_taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
-    pdf(tax.pdf, height=6, width=pdf.width)
+    tax.pdf.classified <- file.path(outfolder.plots, paste('classified_taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
+    pdf(tax.pdf.classified, height=6, width=pdf.width)
     for (p in taxlevel.plots.classified[[tn]]){print(p)}
     trash <- dev.off()
 }
-
 
 #################################################################################
 ## PCoA plots ###################################################################
@@ -360,11 +320,11 @@ if (nrow(sample.reads) >=3){
     # do for each tax level
     plotlist.nolabels <- list()
     plotlist.labels <- list()
-    # don't do for domain
-    do.tn <- tax.level.names[tax.level.names!='Domain']
+    # don't do for kingdom
+    do.tn <- filter.levels[filter.levels!='kingdom']
     for (tn in do.tn){
         # print(paste('    for:', tn))
-        fraction.mat <- bracken.fraction.matrix.list.classified[[tn]]
+        fraction.mat <- kgct.filtered.classified.percentage.list[[tn]]@mat
         pcoa.res <- capscale(t(fraction.mat)~1, distance='bray')
         pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
         pcoa.df.melt <- melt(pcoa.df, id.vars = c('sample','group'))
@@ -421,10 +381,16 @@ if (nrow(sample.reads) >=3){
 }
 
 # simple bray curtis distance metrics
-for (tn in tax.level.names){
-    bray.dist <- as.matrix(vegdist(t(bracken.fraction.matrix.list.classified[[tn]])))
+for (tn in filter.levels){
+    bray.dist <- as.matrix(vegdist(t(kgct.filtered.classified.percentage.list[[tn]]@mat)))
     out.bray <- file.path(outfolder.matrices.bray, paste('braycurtis_distance_', tolower(tn), '.txt', sep=''))
     write.table(bray.dist, out.bray, sep='\t', quote=F, row.names = T, col.names = T)
 }
+
+#################################################################################
+## Compositional data analysis and plots ########################################
+#################################################################################
+# TODO!
+# source those modules and scripts
 
 message('Done! :D')
