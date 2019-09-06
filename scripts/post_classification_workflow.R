@@ -8,6 +8,11 @@ suppressMessages(library(vegan, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(reshape2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(cmapR, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(compositions, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(zCompositions, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(ALDEx2, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(ggpubr, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(CoDaSeq, quietly = TRUE, warn.conflicts = FALSE))
 
 # options we need from snakemake
 scripts.folder <- snakemake@params[['scripts_folder']]
@@ -19,14 +24,16 @@ use.bracken.report <- snakemake@params[['use_bracken_report']]
 scripts.folder <- snakemake@scriptdir
 tax.array.file <- snakemake@input[['tax_array']]
 ############ Testing Args ############################################################################
-sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples_1.tsv'
+# sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples.tsv'
 # sample.groups.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/sample_groups.tsv'
-sample.groups.f <- ''
-workflow.outdir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/kraken2_classification_feb2019/'
-result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out_1/'
-use.bracken.report <- T
-scripts.folder <- '~/projects/kraken2_classification/scripts/'
-tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
+# # sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples_1.tsv'
+# # sample.groups.f <- ''
+# workflow.outdir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/kraken2_classification_feb2019/'
+# result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out/'
+# # result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out_1/'
+# use.bracken.report <- T
+# scripts.folder <- '~/projects/kraken2_classification/scripts/'
+# tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
 ######################################################################################################
 
 # # for segata debug
@@ -49,9 +56,10 @@ outfolder.gctx.taxonomy <- file.path(result.dir, 'taxonomy_gctx')
 outfolder.gctx.taxonomy.classified <- file.path(result.dir, 'taxonomy_gctx_classified_only')
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 outfolder.plots <- file.path(result.dir, 'plots')
+outfolder.aldex <- file.path(result.dir, 'ALDEx2_differential_abundance')
 for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy,
             outfolder.matrices.taxonomy.classified, outfolder.gctx.taxonomy,
-            outfolder.gctx.taxonomy.classified, outfolder.plots)){
+            outfolder.gctx.taxonomy.classified, outfolder.plots, outfolder.aldex)){
     if (!dir.exists(f)){ dir.create(f, recursive = T)}
 }
 
@@ -94,8 +102,8 @@ rownames(tax.array) <- tax.array$taxid
 dup.ids <- tax.array$id[duplicated(tax.array$id)]
 dup.inds <- which(tax.array$id %in% dup.ids)
 # fix these by adding taxid to the name
-tax.array[tax.array$id %in% dup.ids, "id"] <- paste(tax.array[tax.array$id %in% dup.ids, "id"],
-                                                    ' (', tax.array[tax.array$id %in% dup.ids, "taxid"], ')', sep='')
+tax.array[tax.array$id %in% dup.ids, "id"] <-
+    paste(tax.array[tax.array$id %in% dup.ids, "id"], ' (', tax.array[tax.array$id %in% dup.ids, "taxid"], ')', sep='')
 
 # ensure reads and groups have the same data
 if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
@@ -390,7 +398,159 @@ for (tn in filter.levels){
 #################################################################################
 ## Compositional data analysis and plots ########################################
 #################################################################################
-# TODO!
-# source those modules and scripts
+if (length(unique(sample.groups$group)) != 2){
+    warning('Will not do ALDEx2 differential abundance with !=2 groups')}
+
+pca.plot.list <- list()
+do.tax.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
+print('Compositional data analysis....')
+for (tax.level in do.tax.levels){
+    print(paste('.....', tax.level))
+    # AT A SPECIFIC TAX LEVEL: filtering
+    # keep only those samples with > min.reads
+    min.reads <- 5000
+    # keep only OTUs with an abundance of at least 0.01
+    min.prop = 0.01
+    # keep OTUs that are found in at least 30% of samples
+    cutoff = .3
+    reads.filtered <- codaSeq.filter(kgct.filtered.classified.list[[tax.level]]@mat,
+        min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE)
+    if(nrow(reads.filtered) > 0){
+        # replace 0 values with an estimate of the probability that the zero is not 0
+        # only if necessary
+        # at this point samples are by row, and variables are by column
+        # we can use the GBM or CZM methods. Function from zCompositions.
+        if (sum(reads.filtered==0)>0){
+            rfz <- t(cmultRepl(t(reads.filtered),  label=0, method="CZM", output="p-counts"))
+            # round to integers and round anything low to 1
+            rfz <- round(rfz)
+            rfz[rfz==0] <- 1
+        }
+
+        # convert to CLR
+        clr.aldex <- aldex.clr(rfz, conds=NA, mc.samples=128, denom = 'all', verbose = F)
+        # get clr from mean of the MC instances
+        rfz.clr <- sapply(clr.aldex@analysisData , function(x) rowMeans(x))
+        # save CLR matrix
+        outf <- file.path(outfolder.matrices.taxonomy.classified, paste('clr_values_', tax.level, '.tsv', sep=''))
+        write.table(round(rfz.clr, 4), outf, sep='\t', quote=F, row.names = T, col.names = T)
+
+        rfz.clr.pca <- prcomp(rfz.clr)
+        rfz.clr.mvar <- mvar(rfz.clr)
+
+        # PCA biplot
+        plot.df <- data.frame(rfz.clr.pca$rotation[,1:5], group=sample.groups$group)
+        pc1.var <- round(sum(rfz.clr.pca$sdev[1]^2)/rfz.clr.mvar * 100, 1)
+        pc2.var <- round(sum(rfz.clr.pca$sdev[2]^2)/rfz.clr.mvar * 100, 1)
+        pca.plot <- ggplot(plot.df, aes(x=PC1, y=PC2, col=group)) +
+            geom_point(size=3) +
+            # geom_text(label=plot.df$sample.id, nudge_x = 2, nudge_y = 2) +
+            theme_bw() +
+            labs(x=paste("PC1: ", pc1.var, "% of variace", sep=""),
+                 y=paste("PC2: ", pc2.var, "% of variace", sep=""),
+                 title=paste('Compositional PCA,', tax.level)) +
+            scale_color_brewer(palette='Set1')
+        pca.plot.list[[tax.level]] <- pca.plot
+
+
+        # need to limit to two groups for aldex
+        if (length(unique(sample.groups$group)) == 2){
+            # get two groups
+            group.pos <- unique(sample.groups$group)[1]
+            group.neg <- unique(sample.groups$group)[2]
+            s.pos <- sample.groups$sample[sample.groups$group==group.pos]
+            s.neg <- sample.groups$sample[sample.groups$group==group.neg]
+
+            # aldex differential expression between groups
+            aldex.res <- aldex(rfz[,c(s.pos, s.neg)],
+                conditions = c(rep(group.pos, length(s.pos)), rep(group.neg, length(s.neg))),
+                mc.samples=128, test="t", effect=TRUE, include.sample.summary=FALSE,
+                denom="all", verbose=FALSE)
+
+            # scatterplot
+            outf.scatter <- file.path(outfolder.aldex, paste('aldex_scatter_', tax.level, '.pdf', sep=''))
+            pdf(outf.scatter, width = 7, height = 4)
+            mypar(1,2, mar = c(3.5, 3.5, 2.5, 1.1))
+            aldex.plot(aldex.res, type="MW", test="wilcox", xlab="Dispersion",ylab="Difference")
+            mtext(paste(tax.level, ', wilcox', sep=''), line=0.25, cex=1.25)
+            aldex.plot(aldex.res, type="MW", test="welch", xlab="Dispersion",ylab="Difference")
+            mtext(paste(tax.level, ', welch', sep=''), line=0.25, cex=1.25)
+            dev.off()
+
+            # improve dataframe
+            aldex.res <- signif(aldex.res, 4)
+            # add sample numbers
+            aldex.res$n.pos <- length(s.pos)
+            aldex.res$n.neg <- length(s.neg)
+            # add in name
+            aldex.res$taxa <- rownames(aldex.res)
+            # reorder
+            aldex.res <- aldex.res[, c('taxa', 'n.pos', 'n.neg', colnames(aldex.res)[1:11])]
+            aldex.res <- aldex.res[order(aldex.res$we.eBH),]
+            # add abs effect
+            aldex.res$abs.effect <- abs(aldex.res$effect)
+
+            # save dataframe of differential results
+            outf.res <- file.path(outfolder.aldex, paste('aldex_result_', tax.level, '.tsv', sep=''))
+            write.table(aldex.res, outf.res, sep='\t', quote=F, row.names = F, col.names = T)
+
+            # make boxplots
+            # make plots from everything with this value or less
+            plot.thresh <- 0.1
+            plot.thresh.col <- 'we.eBH'
+            aldex.res.plot <- aldex.res[aldex.res[, plot.thresh.col] <= plot.thresh, ]
+            outf.boxplot <- file.path(outfolder.aldex, paste('aldex_significant_boxplots_', tax.level, '.pdf', sep=''))
+            if (nrow(aldex.res.plot) >0 ){
+                # make clr values
+                m.prop <-  apply(rfz, 2, function(x) x/sum(x))
+                # rfz.clr <- t(codaSeq.clr(rfz, samples.by.row=FALSE))
+                clr.aldex <- aldex.clr(rfz[,c(s.pos, s.neg)],
+                    conds = c(rep(group.pos, length(s.pos)), rep(group.neg, length(s.neg))),
+                    mc.samples=128, denom = 'all', verbose = F)
+                # get clr from mean of the MC instances
+                rfz.clr <- sapply(clr.aldex@analysisData , function(x) rowMeans(x))
+
+                # save all significant in one boxplot
+                pdf(outf.boxplot, height=5, width = 6, onefile=TRUE)
+                toplot <- min(nrow(aldex.res.plot), 50)
+                for ( i in 1:toplot){
+                    g <- aldex.res.plot[i, 'taxa']
+                    test.df <- data.frame(detected = c(rep('positive', length(s.pos)), rep('negative', length(s.neg))),
+                      sample = c(s.pos, s.neg),
+                      proportion = c(m.prop[g, s.pos], m.prop[g, s.neg]),
+                      clr = c(rfz.clr[g, s.pos], rfz.clr[g, s.neg]))
+
+
+                    g1 <- ggplot(test.df, aes(x=detected, y=proportion, fill=detected)) +
+                    geom_boxplot() +
+                    theme_bw() +
+                    labs(subtitle=g) +
+                    ylim(c(0,max(test.df$proportion)*1.2)) +
+                    stat_compare_means(method = 'wilcox') +
+                    stat_compare_means(method = 't.test', label.y.npc = 0.95) + guides(fill=FALSE)
+
+                    g2 <- ggplot(test.df, aes(x=detected, y=clr, fill=detected)) +
+                    geom_boxplot() +
+                    theme_bw() +
+                    labs(subtitle=g) +
+                    ylim(c(min(test.df$clr), max(test.df$clr)*1.2)) +
+                    stat_compare_means(method = 'wilcox') +
+                    stat_compare_means(method = 't.test', label.y.npc = 0.95)
+
+                    print(ggarrange(g1,g2,widths = c(1,1), common.legend = T))
+                }
+                dev.off()
+            }
+        }
+    }
+}
+
+# save pca plots from each level
+pdf(file.path(outfolder.plots, 'compositional_PCA_plot.pdf'), height=6.5, width=9)
+for (tn in rev(do.tax.levels)){
+    print(plotlist.nolabels[[tn]])
+}
+trash <- dev.off()
+
 
 message('Done! :D')
