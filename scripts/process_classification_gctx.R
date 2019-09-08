@@ -1,12 +1,11 @@
 # processing classification results - new version that uses cmapR
-
 suppressMessages(library(cmapR, quietly = TRUE, warn.conflicts = FALSE))
 # need this taxonomy file defined from processing the database
 # should be loaded in workflow from snakemake arg
-tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
-tax.array <- read.table(tax.array.file, sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
-colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
-rownames(tax.array) <- tax.array$taxid
+# tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
+# tax.array <- read.table(tax.array.file, sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
+# colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
+# rownames(tax.array) <- tax.array$taxid
 
 # simple reader for a kraken report file
 kraken_file_to_df <- function(fname){

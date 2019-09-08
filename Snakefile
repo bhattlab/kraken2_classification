@@ -2,8 +2,23 @@
 # Does classification, plotting, etc
 from os.path import join
 import sys
+import snakemake
 # output base directory
 outdir = config['outdir']
+
+#perform a check on the Lathe git repo and warn if not up to date
+onstart:
+    print("Checking for updates or modifications to workflow")
+    import git
+    repo_dir = os.path.dirname(workflow.snakefile)
+    repo = git.Repo(repo_dir)
+    assert not repo.bare
+    repo_git = repo.git
+    stat = repo_git.diff('origin/master')
+    if stat != "":
+        print('WARNING: Differences to latest version detected. Please reset changes and/or pull repo.')
+    else:
+        print("No updates or modifications found")
 
 def get_sample_reads(sample_file):
     sample_reads = {}
@@ -138,7 +153,7 @@ rule downstream_processing:
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results'),
         use_bracken_report = config['run_bracken']
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2_processing"
+    singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
     script:
@@ -154,7 +169,7 @@ rule downstream_processing_krakenonly:
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results_krakenonly'),
         use_bracken_report = False
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2_processing"
+    singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf')
     script:

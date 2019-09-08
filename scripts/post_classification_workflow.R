@@ -4,6 +4,7 @@
 # January 2019 - September 2019
 
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
+suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(vegan, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(reshape2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE))
@@ -12,7 +13,7 @@ suppressMessages(library(compositions, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(zCompositions, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(ALDEx2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(ggpubr, quietly = TRUE, warn.conflicts = FALSE))
-suppressMessages(library(CoDaSeq, quietly = TRUE, warn.conflicts = FALSE))
+# suppressMessages(library(CoDaSeq, quietly = TRUE, warn.conflicts = FALSE))
 
 # options we need from snakemake
 scripts.folder <- snakemake@params[['scripts_folder']]
@@ -66,11 +67,13 @@ for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy,
 # load other data processing and plotting scripts
 source.script.process <- file.path(scripts.folder, 'process_classification_gctx.R')
 source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
-if (!(file.exists(source.script.process) & file.exists(source.script.plot))){
+source.script.codaseq <- file.path(scripts.folder, 'CoDaSeq_functions.R')
+if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))){
     stop('Specify right source script dir')
 }
 suppressMessages(source(source.script.process))
 suppressMessages(source(source.script.plot))
+suppressMessages(source(source.script.codaseq))
 
 # read sample groups file
 sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
@@ -425,6 +428,8 @@ for (tax.level in do.tax.levels){
             # round to integers and round anything low to 1
             rfz <- round(rfz)
             rfz[rfz==0] <- 1
+        } else {
+            rfz <- reads.filtered
         }
 
         # convert to CLR
@@ -439,7 +444,7 @@ for (tax.level in do.tax.levels){
         rfz.clr.mvar <- mvar(rfz.clr)
 
         # PCA biplot
-        plot.df <- data.frame(rfz.clr.pca$rotation[,1:5], group=sample.groups$group)
+        plot.df <- data.frame(rfz.clr.pca$rotation[,1:2], group=sample.groups$group)
         pc1.var <- round(sum(rfz.clr.pca$sdev[1]^2)/rfz.clr.mvar * 100, 1)
         pc2.var <- round(sum(rfz.clr.pca$sdev[2]^2)/rfz.clr.mvar * 100, 1)
         pca.plot <- ggplot(plot.df, aes(x=PC1, y=PC2, col=group)) +
@@ -515,7 +520,7 @@ for (tax.level in do.tax.levels){
                 toplot <- min(nrow(aldex.res.plot), 50)
                 for ( i in 1:toplot){
                     g <- aldex.res.plot[i, 'taxa']
-                    test.df <- data.frame(detected = c(rep('positive', length(s.pos)), rep('negative', length(s.neg))),
+                    test.df <- data.frame(group = c(rep(group.pos, length(s.pos)), rep(group.neg, length(s.neg))),
                       sample = c(s.pos, s.neg),
                       proportion = c(m.prop[g, s.pos], m.prop[g, s.neg]),
                       clr = c(rfz.clr[g, s.pos], rfz.clr[g, s.neg]))
