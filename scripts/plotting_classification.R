@@ -44,7 +44,7 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
         stop('Must give normalized percent matrix')
     }
     # proceed with classified reads here
-    unclassified.rownames <- c('Classified at a higher level', 'Unclassified')
+    unclassified.rownames <- c('classified at a higher level', 'unclassified')
     # if(!all(unclassified.rownames %in% rownames(kraken.mat))){
     #     return(NA)
     # }
@@ -72,10 +72,10 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
     # add unclassified taxa if desired
     if (include.unclassified){
         if (!(all(unclassified.rownames %in% rownames(kraken.mat)))){
-            stop('Must have unclassified rows in matrix')
+            stop('Must have unclassified rows in matrix if using default option include.unclassified')
         }
         kraken.mat.plot <- as.matrix(kraken.mat[c(keep.rows, unclassified.rownames),,drop=FALSE])
-        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
+        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - apply(kraken.mat.plot,2,sum))
         rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other classified at this level'
         # reorder last rows
         kraken.mat.plot <- kraken.mat.plot[c(keep.rows, 'Other classified at this level', unclassified.rownames),,drop=FALSE]
@@ -83,7 +83,7 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
         use.ylab <- 'Percent of reads'
     } else{
         kraken.mat.plot <- kraken.mat.classified[keep.rows,,drop=FALSE]
-        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - colSums(kraken.mat.plot))
+        kraken.mat.plot <- rbind(kraken.mat.plot, 100 - apply(kraken.mat.plot,2,sum))
         rownames(kraken.mat.plot)[nrow(kraken.mat.plot)] <- 'Other classified at this level'
         use.ylab <- 'Percent of reads classified at this level'
         cols <- c(cols, 'grey50')
@@ -111,9 +111,8 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
 }
 
 
-plot_rarefaction_curve = function(class_counts, pdf_location, pdf_width = 8, pdf_height=8, tax.level.name = 'Species', steps = 30){
-    class = as.matrix(class_counts[[tax.level.name]], drop = FALSE) #extract classifications of the desired taxonomic level
-    class = class[rownames(class) != 'Unclassified',,drop=FALSE] #remove unclassified
+plot_rarefaction_curve = function(class_counts, pdf_location, pdf_width = 8, pdf_height=8, steps = 30){
+    class = class_counts[!(rownames(class_counts) %in% c('unclassified', 'classified at a higher level')),,drop=FALSE] #remove unclassified
     stepsize = max(apply(class, 2, sum)/steps) #calculate read count increase per subsample size step
 
     #shut the hell up

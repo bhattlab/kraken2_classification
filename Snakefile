@@ -2,8 +2,23 @@
 # Does classification, plotting, etc
 from os.path import join
 import sys
+import snakemake
 # output base directory
 outdir = config['outdir']
+
+#perform a check on the Lathe git repo and warn if not up to date
+onstart:
+    print("Checking for updates or modifications to workflow")
+    import git
+    repo_dir = os.path.dirname(workflow.snakefile)
+    repo = git.Repo(repo_dir)
+    assert not repo.bare
+    repo_git = repo.git
+    stat = repo_git.diff('origin/master')
+    if stat != "":
+        print('WARNING: Differences to latest version detected. Please reset changes and/or pull repo.')
+    else:
+        print("No updates or modifications found")
 
 def get_sample_reads(sample_file):
     sample_reads = {}
@@ -42,14 +57,8 @@ sample_names = sample_reads.keys()
 
 # extra specified files to generate from the config file
 extra_run_list =[]
-# Do we want to run bracken?
-if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2019/genbank_custom':
-    print('NO Bracken database for this option yet. Disabling Bracken.')
-    run_bracken = False
-else:
-    run_bracken = config['run_bracken']
-# add bracken to extra files
-if run_bracken:
+# add bracken to extra files if running it
+if config['run_bracken']:
     extra_run_list.append('bracken')
     extra_run_list.append('krakenonly_processed')
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
@@ -73,10 +82,9 @@ extra_files = {
     "krona": expand(join(outdir, "krona/{samp}.html"), samp = sample_names),
     "mpa_heatmap": join(outdir, "mpa_reports/merge_metaphlan_heatmap.png"),
     "biom_file": join(outdir, "table.biom"),
-
 }
-run_extra = [extra_files[f] for f in extra_run_list]
-# print("run Extra files: " + str(run_extra))
+run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
+# print("run Extra files: " + str(run_extra_all_outputs))
 
 # set some resource requirements
 if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold':
@@ -92,7 +100,7 @@ rule all:
         expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf'),
-        run_extra
+        run_extra_all_outputs
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
 rule kraken:
@@ -134,16 +142,18 @@ rule bracken:
         -l {params.level} -t {params.threshold}
         """
 
+# must also have the processed taxonomy file generated manually 
 rule downstream_processing:
     input:
-        downstream_processing_input
+        downstream_processing_input,
+        tax_array = join(config['database'], 'taxonomy_array.tsv')
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results'),
-        use_bracken_report = run_bracken
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2_processing"
+        use_bracken_report = config['run_bracken']
+    singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
     script:
@@ -151,14 +161,15 @@ rule downstream_processing:
 
 rule downstream_processing_krakenonly:
     input:
-        downstream_processing_input
+        downstream_processing_input,
+        tax_array = join(config['database'], 'taxonomy_array.tsv')
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results_krakenonly'),
         use_bracken_report = False
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2_processing"
+    singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf')
     script:
