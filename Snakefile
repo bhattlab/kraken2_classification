@@ -76,7 +76,7 @@ if config['extract_unmapped']:
 # additional outputs determined by whats specified in the readme
 extra_files = {
     "bracken": expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
-    "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf'),
+    "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf'),
     "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
     "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
     "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
@@ -157,7 +157,7 @@ rule downstream_processing:
         use_bracken_report = config['run_bracken']
     singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
-        join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf')
+        join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf')
     script:
         'scripts/post_classification_workflow.R'
 
@@ -173,7 +173,7 @@ rule downstream_processing_krakenonly:
         use_bracken_report = False
     singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
-        join(outdir, 'processed_results_krakenonly/plots/taxonomy_barplot_species.pdf')
+        join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf')
     script:
         'scripts/post_classification_workflow.R'
 
