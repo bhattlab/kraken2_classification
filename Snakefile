@@ -100,7 +100,7 @@ rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
-        join(outdir, 'processed_results/plots/taxonomy_barplot_species.pdf'),
+        join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
@@ -127,7 +127,8 @@ rule bracken:
     input:
         rules.kraken.output
     output:
-        join(outdir, "classification/{samp}.krak.report.bracken")
+        join(outdir, "classification/{samp}.krak.report.bracken"),
+        join(outdir, "classification/{samp}.krak_bracken.report"),
     params:
         db = config['database'],
         readlen = config['read_length'],
@@ -139,7 +140,7 @@ rule bracken:
         time = 1
     singularity: "docker://quay.io/biocontainers/bracken:2.2--py27h2d50403_1"
     shell: """
-        bracken -d {params.db} -i {input[1]} -o {output} -r {params.readlen} \
+        bracken -d {params.db} -i {input[1]} -o {output[0]} -r {params.readlen} \
         -l {params.level} -t {params.threshold}
         """
 
