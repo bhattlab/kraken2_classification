@@ -108,6 +108,8 @@ plot_many_samples <- function(kraken.mat, n.colors=16, tax.level.name = 'Species
     if (include.unclassified){
         if (!(all(unclassified.rownames %in% rownames(kraken.mat)))){
             stop('Must have unclassified rows in matrix if using default option include.unclassified')
+            # kraken.mat <- rbind(kraken.mat, matrix(0, nrow=sum(!(unclassified.rownames %in% rownames(kraken.mat))),
+                                                   # ncol=ncol(kraken.mat), dimnames=list(unclassified.rownames[!(unclassified.rownames %in% rownames(kraken.mat))])))
         }
         kraken.mat.plot <- as.matrix(kraken.mat[c(keep.rows, unclassified.rownames),,drop=FALSE])
         kraken.mat.plot <- rbind(kraken.mat.plot, 100 - apply(kraken.mat.plot,2,sum))

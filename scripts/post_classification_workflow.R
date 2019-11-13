@@ -36,6 +36,15 @@ tax.array.file <- snakemake@input[['tax_array']]
 # use.bracken.report <- T
 # scripts.folder <- '~/projects/kraken2_classification/scripts/'
 # tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
+#
+# # chris testing
+# sample.reads.f <- '~/scg/Ctrl_preNov2019/controls_new.txt'
+# sample.groups.f <- ''
+# workflow.outdir <- '~/scg/Ctrl_preNov2019/'
+# result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out2/'
+# use.bracken.report <- T
+# scripts.folder <- '~/projects/kraken2_classification/scripts/'
+# tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
 
 # # for segata debug
 # scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
@@ -298,16 +307,17 @@ for (tn in filter.levels){
     for (g in unique(sample.groups$group)){
         plot.samples <- sample.groups[sample.groups$group==g, "sample"]
         div.df.sub <- div.df[div.df$tax.level==tn & div.df$method=='shannon' & div.df$sample %in% plot.samples,]
-        # print(div.df.sub)
         div.df.plot <- div.df.sub[, c('sample', 'value')]
         rownames(div.df.plot) <- div.df.plot$sample
-        # div.df.sub <- div.df.sub[plot.samples, ]
         plot.title <- paste('Taxonomy and diversity: ', g, ', ', tn, sep='')
         plot.mat <- kgct.filtered.percentage.list[[tn]]@mat[,plot.samples, drop=FALSE]
-        # colnames(plot.mat) <- plot.samples
-        # print(head(plot.mat))
+
+        # no longer doing include unclassifed with Bracken report
+        # because new version of report doesn't include this data
+        if (!use.bracken.report){
         group.plots[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
                             div.df.plot, plot.title = plot.title, include.unclassified=T, tax.level.name = tn)
+        }
         group.plots.classified[[g]] <- plot_many_samples_with_diversity_barplot(plot.mat,
                             div.df.plot, plot.title = plot.title, include.unclassified=F, tax.level.name = tn)
     }
@@ -320,10 +330,12 @@ for (tn in filter.levels){
 max.samps <- max(table(sample.groups$group))
 pdf.width <- max(9, (9 + (0.25 * (max.samps-10))))
 for (tn in filter.levels){
-    tax.pdf <- file.path(outfolder.plots, paste('taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
-    pdf(tax.pdf, height=6, width=pdf.width)
-    for (p in taxlevel.plots[[tn]]){print(p)}
-    trash <- dev.off()
+    if (!use.bracken.report){
+        tax.pdf <- file.path(outfolder.plots, paste('taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
+        pdf(tax.pdf, height=6, width=pdf.width)
+        for (p in taxlevel.plots[[tn]]){print(p)}
+        trash <- dev.off()
+    }
     tax.pdf.classified <- file.path(outfolder.plots, paste('classified_taxonomy_barplot_', tolower(tn), '.pdf', sep=''))
     pdf(tax.pdf.classified, height=6, width=pdf.width)
     for (p in taxlevel.plots.classified[[tn]]){print(p)}
@@ -462,12 +474,14 @@ for (tax.level in do.tax.levels[2:length(do.tax.levels)]){
         rfz.clr.mvar <- mvar(rfz.clr)
 
         # PCA biplot
-        plot.df <- data.frame(rfz.clr.pca$rotation[,1:2], group=sample.groups$group)
+        plot.df <- data.frame(rfz.clr.pca$rotation[,1:2], group=sample.groups[sample.groups$sample %in% colnames(rfz.clr), 'group'])
         pc1.var <- round(sum(rfz.clr.pca$sdev[1]^2)/rfz.clr.mvar * 100, 1)
         pc2.var <- round(sum(rfz.clr.pca$sdev[2]^2)/rfz.clr.mvar * 100, 1)
         pca.plot <- ggplot(plot.df, aes(x=PC1, y=PC2, col=group)) +
             geom_point(size=3) +
-            # geom_text(label=plot.df$sample.id, nudge_x = 2, nudge_y = 2) +
+            geom_text(label=rownames(plot.df),
+                      nudge_x = sum(abs(range(plot.df$PC1)))/ 50,
+                      nudge_y = sum(abs(range(plot.df$PC2)))/ 50) +
             theme_bw() +
             labs(x=paste("PC1: ", pc1.var, "% of variace", sep=""),
                  y=paste("PC2: ", pc2.var, "% of variace", sep=""),
@@ -571,7 +585,7 @@ for (tax.level in do.tax.levels[2:length(do.tax.levels)]){
 # save pca plots from each level
 pdf(file.path(outfolder.plots, 'compositional_PCA_plot.pdf'), height=6.5, width=9)
 for (tn in rev(do.tax.levels)){
-    print(plotlist.nolabels[[tn]])
+    print(pca.plot.list[[tn]])
 }
 trash <- dev.off()
 
