@@ -1,7 +1,7 @@
 # Processing kraken results into matrices and plots
 # Ben Siranosian - Bhatt lab - Stanford Genetics
 # bsiranosian@gmail.com
-# January 2019 - September 2019
+# January 2019 - November 2019
 
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
@@ -13,6 +13,7 @@ suppressMessages(library(compositions, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(zCompositions, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(ALDEx2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(ggpubr, quietly = TRUE, warn.conflicts = FALSE))
+options(stringsAsFactors = F)
 # suppressMessages(library(CoDaSeq, quietly = TRUE, warn.conflicts = FALSE))
 
 # options we need from snakemake
@@ -35,7 +36,6 @@ tax.array.file <- snakemake@input[['tax_array']]
 # use.bracken.report <- T
 # scripts.folder <- '~/projects/kraken2_classification/scripts/'
 # tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
-######################################################################################################
 
 # # for segata debug
 # scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
@@ -47,6 +47,7 @@ tax.array.file <- snakemake@input[['tax_array']]
 # outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 # outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 # outfolder.plots <- file.path(result.dir, 'plots')
+######################################################################################################
 
 # set up directories and make those that don't exist
 classification.folder <- file.path(workflow.outdir, 'classification')
@@ -145,7 +146,7 @@ df.list <- lapply(flist, function(x) kraken_file_to_df(x))
 merge.mat <- merge_kraken_df_list(df.list)
 # sample metadata just has groups for now
 sample.metadata <- data.frame(id=sample.groups$sample, group=sample.groups$group)
-# construct gct obejct from reads matrix, sample metadata, row metadata
+# construct gct object from reads matrix, sample metadata, row metadata
 kgct <- make_gct_from_kraken(merge.mat, sample.metadata, tax.array)
 # filter to each of the taxonomy levels
 if (segata){ filter.levels <- c('species') } else {
@@ -157,8 +158,9 @@ unclassified.rownames <- c('unclassified', 'classified at a higher level')
 kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset.gct(x, rid=x@rid[!(x@rid %in% unclassified.rownames)]))
 
 # normalize to percentages
-kgct.filtered.percentage.list <- lapply(kgct.filtered.list, normalize_kgct)
-kgct.filtered.classified.percentage.list <- lapply(kgct.filtered.classified.list, normalize_kgct)
+min.frac <- 0.001
+kgct.filtered.percentage.list <- lapply(kgct.filtered.list, function(x) normalize_kgct(x, min.frac=min.frac))
+kgct.filtered.classified.percentage.list <- lapply(kgct.filtered.classified.list, function(x) normalize_kgct(x, min.frac=min.frac))
 
 message('Saving classification matrices...')
 # save matrices and gctx objects
@@ -177,12 +179,18 @@ for (tn in filter.levels){
     # save matrices
     write.table(kgct.filtered.list[[tn]]@mat, outf.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
     write.table(kgct.filtered.classified.list[[tn]]@mat, outf.mat.reads.classified, sep='\t', quote=F, row.names = T, col.names = T)
-    # now only write rows of pct matrix that are nonzero
-    # that is, at least one sample has 0.001 fraction (due to rounding)
-    mat.percentage <- kgct.filtered.percentage.list[[tn]]@mat[rowSums(kgct.filtered.percentage.list[[tn]]@mat)>0,,drop=FALSE]
-    mat.percentage <- round(mat.percentage, 5)
-    mat.percentage.classified <- kgct.filtered.classified.percentage.list[[tn]]@mat[rowSums(kgct.filtered.classified.percentage.list[[tn]]@mat)>0,,drop=FALSE]
-    mat.percentage.classified <- round(mat.percentage.classified, 5)
+
+    mat.percentage <- kgct.filtered.percentage.list[[tn]]@mat
+    # order rows by mean abundance across samples
+    row.order <- rownames(mat.percentage)[order(rowMeans(mat.percentage), decreasing = T)]
+    row.order <- row.order[!(row.order %in% unclassified.rownames)]
+    row.order <- c(unclassified.rownames[unclassified.rownames %in% rownames(mat.percentage)], row.order)
+    mat.percentage <- mat.percentage[row.order,]
+    # classified only matrix
+    mat.percentage.classified <- kgct.filtered.classified.percentage.list[[tn]]@mat
+    row.order.classified <- order(rowMeans(mat.percentage.classified), decreasing = T)
+    mat.percentage.classified <- mat.percentage.classified[row.order.classified,]
+
     write.table(mat.percentage, outf.mat.percentage, sep='\t', quote=F, row.names = T, col.names = T)
     write.table(mat.percentage.classified, outf.mat.percentage.classified, sep='\t', quote=F, row.names = T, col.names = T)
 
@@ -199,9 +207,9 @@ for (tn in filter.levels){
 #################################################################################
 message('Doing diversity calculations and saving figures...')
 
-# plot a rarefaction curve
-plot_rarefaction_curve(kgct.filtered.classified.list$species@mat,
-                       file.path(outfolder.plots, 'rarefaction_curve.pdf'))
+# DISABLE rarefaction curve as it's useless with so many species
+# plot_rarefaction_curve(kgct.filtered.classified.list$species@mat,
+#                        file.path(outfolder.plots, 'rarefaction_curve.pdf'))
 
 # diversity calculations
 div.methods <- c('shannon', 'simpson')

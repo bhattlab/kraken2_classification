@@ -30,7 +30,51 @@ if(F){
     # old cols
     cols <- c(brewer.pal(12, 'Set3'), 'grey80')
     cols[9] = '#CD6155'
+}
 
+# new color scheme based on Paul Tol
+# modified from
+# https://personal.sron.nl/~pault/data/colourschemes.pdf
+paul.colors <- c("#E8ECFB", "#D9CCE3", "#D1BBD7", "#CAACCB", "#BA8DB4",
+                 "#AE76A3", "#AA6F9E", "#994F88", "#882E72", "#1965B0",
+                 "#437DBF", "#5289C7", "#6195CF", "#7BAFDE", "#4EB265",
+                 "#90C987", "#CAE0AB", "#F7F056", "#F7CB45", "#F6C141",
+                 "#F4A736", "#F1932D", "#EE8026", "#E8601C", "#E65518",
+                 "#DC050C", "#A5170E", "#72190E", "#42150A")
+# reorder palette from the original
+# only going to use up to 16 colors here
+paul.pals <- list(
+    c(10),
+    c(10,26),
+    c(10,18,26),
+    c(10,15,18,26),
+    c(14,10,15,18,26),
+    c(14,10,17,15,18,26),
+    c(14,10,17,15,18,26,9),
+    c(14,10,17,15,18,23,26,9),
+    c(14,10,17,15,18,23,26,28,9),
+    c(14,10,17,15,18,21,24,26,28,9),
+    c(14,12,10,17,15,18,21,24,26,28,9),
+    c(14,12,10,17,15,18,21,24,26,3,6,9),
+    c(14,12,10,17,16,15,18,21,24,26,3,6,9),
+    c(14,12,10,17,16,15,18,20,22,24,26,3,6,9),
+    c(14,12,10,17,16,15,18,20,22,24,26,28,3,6,9),
+    c(14,12,10,17,16,15,18,20,22,24,26,28,3,5,7,9),
+    c(3,5,7,8,9,10,12,14,15,16,17,18,20,22,24,26,28),
+    c(3,5,7,8,9,10,12,14,15,16,17,18,20,22,24,26,27,28),
+    c(2,4,5,7,8,9,10,12,14,15,16,17,18,20,22,24,26,27,28),
+    c(2,4,5,7,8,9,10,11,13,14,15,16,17,18,20,22,24,26,27,28),
+    c(2,4,5,7,8,9,10,11,13,14,15,16,17,18,19,21,23,25,26,27,28),
+    c(2,4,5,7,8,9,10,11,13,14,15,16,17,18,19,21,23,25,26,27,28,29))
+# helper function to get hex colors
+get_paul_pal <- function(n){
+    if (n <1){
+        return(get_paul_pal(1))
+    } else if (n > 22){
+        return(get_paul_pal(22))
+    } else {
+        return(paul.colors[paul.pals[[n]]])
+    }
 }
 
 # plot many samples in a barplot horizontally
@@ -39,15 +83,12 @@ if(F){
 # expects two rows in the matrix named 'Unclassified' and
 #  'Classified at a higher level'
 # plots them in shades of grey and changes y axis name
-plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species', include.unclassified =T){
+plot_many_samples <- function(kraken.mat, n.colors=16, tax.level.name = 'Species', include.unclassified =T){
     if (any(kraken.mat > 100)){
         stop('Must give normalized percent matrix')
     }
     # proceed with classified reads here
     unclassified.rownames <- c('classified at a higher level', 'unclassified')
-    # if(!all(unclassified.rownames %in% rownames(kraken.mat))){
-    #     return(NA)
-    # }
     # renorm percentages
     kraken.mat.classified <- as.matrix(kraken.mat[!(rownames(kraken.mat) %in% unclassified.rownames),, drop=FALSE])
     # catch edge case with one row
@@ -56,16 +97,10 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
     } else {
         kraken.mat.classified[kraken.mat.classified>0] <- 100
     }
-    # print(kraken.mat.classified)
-    # ncolors must be equal or less to nrow kraken.mat
-    n.colors <- min(n.colors, nrow(kraken.mat.classified))
 
-    nmax <- 12
-    cols <- colorRampPalette(brewer.pal(12,'Paired'))(nmax)[1:n.colors]
-    # replace 11th color
-    cols[11] <-  colorRampPalette(brewer.pal(12,'Paired')[11:12])(4)[2]
-    # limit to ncolors
-    cols <- cols[1:(n.colors)]
+    # n.colors must be equal or less to nrow kraken.mat
+    n.colors <- min(n.colors, nrow(kraken.mat.classified))
+    cols <- get_paul_pal(n.colors)
 
     # filter rows to most abundant taxa
     keep.rows <- names(sort(rowSums(kraken.mat.classified), decreasing = T))[1:n.colors]
@@ -103,10 +138,8 @@ plot_many_samples <- function(kraken.mat, n.colors=12, tax.level.name = 'Species
         # theme_bw() +
         # theme(panel.border = element_rect(), axis.text.x = element_text(angle = 90, hjust = 1)) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-              # plot.margin = unit(c(0,0,0,0),'lines')) +
+        # plot.margin = unit(c(0,0,0,0),'lines')) +
         labs(x='Sample', y=use.ylab)
-        # guides(fill=FALSE)
-    # taxplot
     return(taxplot)
 }
 
@@ -139,53 +172,36 @@ plot_many_samples_with_diversity <- function(kraken.mat, diversity.df, y.title='
         theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank()) +
-              # plot.margin = unit(c(0,0,0,0),'lines')) +
+        # plot.margin = unit(c(0,0,0,0),'lines')) +
         ylim(0, max(diversity.df$shannon)*1.20) +
         labs(y=y.title)
-    # divplot
 
     figure <- ggarrange(divplot, taxplot,ncol=1, align = 'v', nrow=2, heights = c(1,4),legend = 'right', common.legend = T)
     return(figure)
-
 }
-
-# figure <- plot_many_samples_with_diversity(bracken.species.fraction, diversity.df)
-# annotate_figure(figure, top = text_grob('TEST', size=14))
-# figure
-#
-# taxplot <- plot_many_samples(bracken.species.fraction, tax.level.name = 'Species') #+ labs(title = 'TEST')
-# diversity.df <- data.frame(sample=names(div.list.species$shannon), shannon=div.list.species$shannon)
-
 
 plot_many_samples_with_diversity_barplot <- function(kraken.mat, diversity.df, y.title='Shannon Diversity', plot.title='', ...){
     if (ncol(diversity.df) != 2){
-        stop('Must be two column dataframe: sample names in 1, diversity in 2')
-    }
+        stop('Must be two column dataframe: sample names in 1, diversity in 2')}
     if (is.null(dim(kraken.mat))){
-        stop('Must be matrix of positive dim')
-    }
+        stop('Must be matrix of positive dim')}
+
     colnames(diversity.df) <- c('sample', 'shannon')
     taxplot <- plot_many_samples(kraken.mat, ...)
     diversity.df[,1] <- factor(diversity.df[,1], levels=diversity.df[,1])
     divplot <- ggplot(diversity.df, aes(x=sample, group=1, y=shannon)) +
-        # as a bar plot instead?
+        # as a bar plot instead
         geom_bar(stat='identity', width = 0.5) +
-        # theme_bw() +
         theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank()) +
-              # plot.margin = unit(c(0,0,0,0),'lines')) +
+        # plot.margin = unit(c(0,0,0,0),'lines')) +
         ylim(0, max(diversity.df$shannon)*1.20) +
         labs(y=y.title)
-
-    # print(taxplot)
-    # print(divplot)
 
     figure <- ggarrange(divplot, taxplot,ncol=1, align = 'v', nrow=2, heights = c(1,4),legend = 'right', common.legend = T)
     if (plot.title!=''){
         figure <- annotate_figure(figure, top = text_grob(plot.title, size=14), fig.lab.pos='top.left')
-        # figure <- annotate_figure(figure, fig.lab=plot.title, fig.lab.pos='top.left')
     }
     return(figure)
-
 }

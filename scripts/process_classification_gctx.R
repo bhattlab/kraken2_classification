@@ -147,9 +147,9 @@ check_gct_filtered <- function(kgct){
     }
 }
 
-# normalize a gct matrix
-# from reads to percentages
-normalize_kgct <- function(kgct){
+# normalize a gct matrix from reads to percentages
+# and filter rows with minimal abundance
+normalize_kgct <- function(kgct, min.frac = 0.001){
     # this can only be done at a specific taxonomic level
     if (!check_gct_filtered(kgct)) {
         stop('GCT must be filtered to a single tax level before normalizing')
@@ -161,5 +161,14 @@ normalize_kgct <- function(kgct){
     } else {
         kgct@mat[kgct@mat>0] <- 100
     }
+    # round to x decimal places
+    round.places <- ceiling(-log10(min.frac))
+    kgct@mat <- round(kgct@mat, round.places)
+    # filter to only rows with > filter_thresh abundance in one sample
+    keep.rows <- kgct@rid[apply(kgct@mat, 1, function(x) sum(x>min.frac)>1)]
+    # must always have unclassified rows if starting with them
+    unclassified.rownames <- c('classified at a higher level', 'unclassified')
+    keep.rows <- unique(c(unclassified.rownames[unclassified.rownames %in% kgct@rid], keep.rows))
+    kgct <- subset.gct(kgct, keep.rows)
     return(kgct)
 }
