@@ -5,6 +5,7 @@ import sys
 import snakemake
 # output base directory
 outdir = config['outdir']
+localrules: downstream_processing, downstream_processing_krakenonly
 
 #perform a check on the Lathe git repo and warn if not up to date
 onstart:

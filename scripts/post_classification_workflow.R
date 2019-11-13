@@ -334,33 +334,38 @@ if (nrow(sample.reads) >=3){
     # don't do for kingdom
     do.tn <- filter.levels[filter.levels!='kingdom']
     for (tn in do.tn){
-        # print(paste('    for:', tn))
+        print(paste('    for:', tn))
         fraction.mat <- kgct.filtered.classified.percentage.list[[tn]]@mat
-        pcoa.res <- capscale(t(fraction.mat)~1, distance='bray')
-        pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
-        pcoa.df.melt <- melt(pcoa.df, id.vars = c('sample','group'))
-        pcoa.variance <- summary(pcoa.res)$cont$importance[2,1:2]
-        # set colors based on number of groups
-        ng <- length(unique(sample.groups$group))
-        if (ng <10){cols <- brewer.pal(max(ng,3), 'Set1')} else {cols <- colorRampPalette(brewer.pal(9,'Set1'))(ng)}
+        if(nrow(fraction.mat) > 2){
+            pcoa.res <- capscale(t(fraction.mat)~1, distance='bray')
+            pcoa.df <- data.frame(sample.groups, scores(pcoa.res)$sites)
+            pcoa.df.melt <- melt(pcoa.df, id.vars = c('sample','group'))
+            pcoa.variance <- summary(pcoa.res)$cont$importance[2,1:2]
+            # set colors based on number of groups
+            ng <- length(unique(sample.groups$group))
+            if (ng <10){cols <- brewer.pal(max(ng,3), 'Set1')} else {cols <- colorRampPalette(brewer.pal(9,'Set1'))(ng)}
 
-        plotlist.nolabels[[tn]] <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
-            geom_point(size=3) +
-            # scale_color_brewer(palette='Set1') +
-            scale_color_manual(values = cols) +
-            theme_bw() +
-            labs(title=paste('Microbiome beta diversity, Bray-Curtis, ', tn, sep=''),
-                 subtitle='Principal Coordinates Analysis plot',
-                 x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
-                 y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) +
-            xlim(c(min(pcoa.df$MDS1), max(pcoa.df$MDS1) * 1.25)) +
-            ylim(c(min(pcoa.df$MDS2), max(pcoa.df$MDS2) * 1.15)) +
-            guides(color=guide_legend(title='Group'))
+            plotlist.nolabels[[tn]] <- ggplot(pcoa.df, aes(x=MDS1, y=MDS2, color=group, label=sample)) +
+                geom_point(size=3) +
+                # scale_color_brewer(palette='Set1') +
+                scale_color_manual(values = cols) +
+                theme_bw() +
+                labs(title=paste('Microbiome beta diversity, Bray-Curtis, ', tn, sep=''),
+                     subtitle='Principal Coordinates Analysis plot',
+                     x = paste('PC1 (', round(pcoa.variance[1], 3) * 100, '% of variance)', sep=''),
+                     y = paste('PC2 (', round(pcoa.variance[2], 3) * 100, '% of variance)', sep='')) +
+                xlim(c(min(pcoa.df$MDS1), max(pcoa.df$MDS1) * 1.25)) +
+                ylim(c(min(pcoa.df$MDS2), max(pcoa.df$MDS2) * 1.15)) +
+                guides(color=guide_legend(title='Group'))
 
-        # add a version with labels above the points
-        nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
-        nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
-        plotlist.labels[[tn]] <- plotlist.nolabels[[tn]] + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
+            # add a version with labels above the points
+            nudge.x <- sum(abs(range(pcoa.df$MDS1))) / 12
+            nudge.y <- sum(abs(range(pcoa.df$MDS2))) / 30
+            plotlist.labels[[tn]] <- plotlist.nolabels[[tn]] + geom_text(nudge_x = nudge.x, nudge_y = nudge.y)
+        } else{
+            plotlist.nolabels[[tn]] <- plot(1,1)
+            plotlist.labels[[tn]] <- plot(1,1)
+        }
     }
 
     # save plot
@@ -407,7 +412,7 @@ if (length(unique(sample.groups$group)) != 2){
 pca.plot.list <- list()
 do.tax.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
 print('Compositional data analysis....')
-for (tax.level in do.tax.levels){
+for (tax.level in do.tax.levels[2:length(do.tax.levels)]){
     print(paste('.....', tax.level))
     # AT A SPECIFIC TAX LEVEL: filtering
     # keep only those samples with > min.reads
@@ -416,9 +421,14 @@ for (tax.level in do.tax.levels){
     min.prop = 0.01
     # keep OTUs that are found in at least 30% of samples
     cutoff = .3
-    reads.filtered <- codaSeq.filter(kgct.filtered.classified.list[[tax.level]]@mat,
-        min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE)
-    if(nrow(reads.filtered) > 0){
+    use.mat <- kgct.filtered.classified.list[[tax.level]]@mat
+    if(nrow(use.mat) > 2){
+        reads.filtered <- codaSeq.filter(use.mat,
+            min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE)
+        } else {
+            reads.filtered <- matrix(0)
+        }
+    if(nrow(reads.filtered) > 2){
         # replace 0 values with an estimate of the probability that the zero is not 0
         # only if necessary
         # at this point samples are by row, and variables are by column
@@ -526,7 +536,7 @@ for (tax.level in do.tax.levels){
                       clr = c(rfz.clr[g, s.pos], rfz.clr[g, s.neg]))
 
 
-                    g1 <- ggplot(test.df, aes(x=detected, y=proportion, fill=detected)) +
+                    g1 <- ggplot(test.df, aes(x=group, y=proportion, fill=group)) +
                     geom_boxplot() +
                     theme_bw() +
                     labs(subtitle=g) +
@@ -534,7 +544,7 @@ for (tax.level in do.tax.levels){
                     stat_compare_means(method = 'wilcox') +
                     stat_compare_means(method = 't.test', label.y.npc = 0.95) + guides(fill=FALSE)
 
-                    g2 <- ggplot(test.df, aes(x=detected, y=clr, fill=detected)) +
+                    g2 <- ggplot(test.df, aes(x=group, y=clr, fill=group)) +
                     geom_boxplot() +
                     theme_bw() +
                     labs(subtitle=g) +
