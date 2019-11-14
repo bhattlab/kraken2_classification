@@ -204,8 +204,11 @@ for (tn in filter.levels){
     write.table(mat.percentage.classified, outf.mat.percentage.classified, sep='\t', quote=F, row.names = T, col.names = T)
 
     # save gctx
-    suppressMessages(write.gctx(kgct.filtered.list[[tn]], outf.gctx.reads, appenddim = F))
-    suppressMessages(write.gctx(kgct.filtered.percentage.list[[tn]], outf.gctx.percentage, appenddim = F))
+    # only save with unclassified if not using Bracken
+    if (!use.bracken.report){
+        suppressMessages(write.gctx(kgct.filtered.list[[tn]], outf.gctx.reads, appenddim = F))
+        suppressMessages(write.gctx(kgct.filtered.percentage.list[[tn]], outf.gctx.percentage, appenddim = F))
+    }
     suppressMessages(write.gctx(kgct.filtered.classified.list[[tn]], outf.gctx.reads.classified, appenddim = F))
     suppressMessages(write.gctx(kgct.filtered.classified.percentage.list[[tn]], outf.gctx.percentage.classified, appenddim = F))
 }
