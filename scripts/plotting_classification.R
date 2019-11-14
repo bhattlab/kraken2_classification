@@ -131,6 +131,7 @@ plot_many_samples <- function(kraken.mat, n.colors=16, tax.level.name = 'Species
         toplot.df <- data.frame(taxa=rownames(kraken.mat.plot),
                                 sample=colnames(kraken.mat.plot),
                                 value=kraken.mat.plot[,1])
+        toplot.df$taxa = factor(toplot.df$taxa, levels = toplot.df$taxa)
     } else{
         toplot.df <- melt(kraken.mat.plot, varnames = c('taxa', 'sample'))
     }

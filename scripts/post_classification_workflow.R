@@ -36,7 +36,7 @@ tax.array.file <- snakemake@input[['tax_array']]
 # use.bracken.report <- T
 # scripts.folder <- '~/projects/kraken2_classification/scripts/'
 # tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
-#
+
 # # chris testing
 # sample.reads.f <- '~/scg/Ctrl_preNov2019/controls_new.txt'
 # sample.groups.f <- ''
@@ -186,7 +186,9 @@ for (tn in filter.levels){
     outf.gctx.percentage.classified <- file.path(outfolder.gctx.taxonomy.classified, paste(mat.name, tolower(tn), 'percentage.gctx', sep='_'))
 
     # save matrices
-    write.table(kgct.filtered.list[[tn]]@mat, outf.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
+    if (!use.bracken.report){
+        write.table(kgct.filtered.list[[tn]]@mat, outf.mat.reads, sep='\t', quote=F, row.names = T, col.names = T)
+    }
     write.table(kgct.filtered.classified.list[[tn]]@mat, outf.mat.reads.classified, sep='\t', quote=F, row.names = T, col.names = T)
 
     mat.percentage <- kgct.filtered.percentage.list[[tn]]@mat
@@ -200,7 +202,9 @@ for (tn in filter.levels){
     row.order.classified <- order(rowMeans(mat.percentage.classified), decreasing = T)
     mat.percentage.classified <- mat.percentage.classified[row.order.classified,]
 
-    write.table(mat.percentage, outf.mat.percentage, sep='\t', quote=F, row.names = T, col.names = T)
+    if (!use.bracken.report){
+        write.table(mat.percentage, outf.mat.percentage, sep='\t', quote=F, row.names = T, col.names = T)
+    }
     write.table(mat.percentage.classified, outf.mat.percentage.classified, sep='\t', quote=F, row.names = T, col.names = T)
 
     # save gctx
