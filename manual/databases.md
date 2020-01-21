@@ -24,20 +24,21 @@ There are new databases available for 2020. Chose the right one for your needs:
 Be aware that Genbank contains sequences that were not high quality enough to be added to Refseq. This includes things like MAGs, environmental samples, etc. Some of those genomes are of interest to us, like surveillance projects. See [this page](https://www.ncbi.nlm.nih.gov/assembly/help/anomnotrefseq/) for information on Genbank vs Refseq.
 
 Additionally, each database has had the "crAss-like phages" clade replaced with the genomes from Guerin et al. 2018, following the clustering hierarchy from that paper. The rank and taxid of each cluster:
-Guerin_crAss_Alpha       Genus      4000100
-Guerin_crAss_Alpha_01    Species    4000110
-Guerin_crAss_Alpha_03    Species    4000120
-Guerin_crAss_Alpha_04    Species    4000130
-Guerin_crAss_Alpha_09    Species    4000140
-Guerin_crAss_Beta        Genus      4000200
-Guerin_crAss_Beta_06     Species    4000210
-Guerin_crAss_Gamma       Genus      4000300
-Guerin_crAss_Gamma_02    Species    4000310
-Guerin_crAss_Gamma_05    Species    4000320
-Guerin_crAss_Delta       Genus      4000400
-Guerin_crAss_Delta_07    Species    4000410
-Guerin_crAss_Delta_08    Species    4000420
-Guerin_crAss_Delta_10    Species    4000430
+ 
+ - Guerin_crAss_Alpha       Genus      4000100
+ - Guerin_crAss_Alpha_01    Species    4000110
+ - Guerin_crAss_Alpha_03    Species    4000120
+ - Guerin_crAss_Alpha_04    Species    4000130
+ - Guerin_crAss_Alpha_09    Species    4000140
+ - Guerin_crAss_Beta        Genus      4000200
+ - Guerin_crAss_Beta_06     Species    4000210
+ - Guerin_crAss_Gamma       Genus      4000300
+ - Guerin_crAss_Gamma_02    Species    4000310
+ - Guerin_crAss_Gamma_05    Species    4000320
+ - Guerin_crAss_Delta       Genus      4000400
+ - Guerin_crAss_Delta_07    Species    4000410
+ - Guerin_crAss_Delta_08    Species    4000420
+ - Guerin_crAss_Delta_10    Species    4000430
 
 The following genomes have also been added to the Genbank expanded database.
 - _Prevotella copri_ complete genome from Eli's Nanopore assembly
