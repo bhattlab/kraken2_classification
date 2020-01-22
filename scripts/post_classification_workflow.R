@@ -110,6 +110,8 @@ if (sample.groups.f != '') {
 # simplified after processing krakens default taxonomy
 tax.array <- read.table(tax.array.file, sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
 colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
+# Bug in generation code gave muliple zero taxids. Eliminate that here now
+tax.array <- tax.array[!duplicated(tax.array$taxid),]
 rownames(tax.array) <- tax.array$taxid
 # some duplicate names in this. if so, change them to include the tax level
 dup.ids <- tax.array$id[duplicated(tax.array$id)]

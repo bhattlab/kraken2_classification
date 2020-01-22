@@ -183,7 +183,7 @@ def main():
     # and now its all in a beautiful and organized matrix!
     # should also have unclassified in it
     tax_array = np.append([['unclassified', '0', '', '','','','','','','','']], all_filled, axis=0)
-    np.savetxt(join(taxdir, 'tax_array.tsv'), tax_array, delimiter='\t', fmt="%s")
+    np.savetxt(join(taxdir, 'taxonomy_array.tsv'), tax_array, delimiter='\t', fmt="%s")
 
     # print out a rendered version of the tree
     print(RenderTree(root, style=ContRoundStyle), file=open(join(taxdir, 'rendertree_pruned.txt'), 'w'))
