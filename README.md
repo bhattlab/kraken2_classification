@@ -32,7 +32,7 @@ git clone https://github.com/bhattlab/kraken2_classification.git
 Copy the `config.yaml` file into the working directory for your samples. Change the options to suit your projects and make sure you specify the right `samples.tsv` file. See [Usage](manual/usage.md) for more detail. You can then lauch the workflow with a snakemake command like so:
 ```
 # Snakemake workflow - change options in config.yaml first
-snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /labs/ --bind /scratch --bind /home/' --profile scg --jobs 99
+snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /oak/,/labs/,/home' --profile scg --jobs 99
 ```
 
 ## Parsing output reports

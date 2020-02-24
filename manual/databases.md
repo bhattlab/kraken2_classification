@@ -1,23 +1,26 @@
 ## New databases as of 2020-01-12! 
 There are new databases available for 2020. Chose the right one for your needs:
-- Refseq standard: Refseq genomes assembled to "Complete Genome" or "Scaffold" quality from the following categories.
-    - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq`
-    - Bacteria 
-    - Archaea
-    - Fungi
-    - Human
-    - Mouse
-    - Plasmid
+- Refseq standard: Refseq genomes assembled to "Complete Genome" or "Scaffold" quality.
+    - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq`
+    - Genomes from the following categories 
+        - Bacteria 
+        - Archaea
+        - Fungi
+        - Human
+        - Mouse
+        - Plasmid
 - Refseq viral: same as above, but only viral sequences
-    - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq_viral`
-- Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that somewhere around 256G memory needed for this database.
-    - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold`
-    - Bacteria 
-    - Archaea
-    - Fungi
-    - Human
-    - Mouse
-    - Plasmid
+    - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq_viral`
+- **NOT AVAILABLE YET** Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that 256G memory necessary for this database.
+    - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold`
+    - **2019 DB available**: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold`
+    - Genomes from the following categories 
+        - Bacteria 
+        - Archaea
+        - Fungi
+        - Human
+        - Mouse
+        - Plasmid
 - Genbank viral: same as above, but only viral sequences
     - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_viral`
 
@@ -43,15 +46,13 @@ Additionally, each database has had the "crAss-like phages" clade replaced with 
 The following genomes have also been added to the Genbank expanded database.
 - _Prevotella copri_ complete genome from Eli's Nanopore assembly
 - Mouse microbiome Nanopore MAGs from Jessy's project
-- Anything else
+- Other Nanopore MAG genomes TBD
 
 To see if your organism of interest is present in a database (and therefore is able to be classified in your reads), search the `inspect.out` file in the database folder. If this has the name or taxonomic identifier you're interested in, you're good to go! In this example we see that a crAss-like phage cluster is indeed present in the Refseq viral database:
 ```
 $ grep -i Guerin_crAss_Alpha_01 /oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq_viral/inspect.out 
 >    0.31  227983  227983  S       4000110               Guerin_crAss_Alpha_01
 ```
-
-*If something breaks, the databases are actually still building at the moment*
 
 #### Custom sequences
 Don't see your favorite bug in the `inspect.out` file? Have a newly assembled organism you want added to the database? It's an easy process to put custom sequences into the database and can be done in under a day of processing time. Contact Ben for requests (I'll batch these to once a month or something if there are lots of requests.)
