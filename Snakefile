@@ -88,7 +88,8 @@ run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
 # print("run Extra files: " + str(run_extra_all_outputs))
 
 # set some resource requirements
-if config['database'] == '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold':
+if config['database'] in ['/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
+                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold']:
     kraken_memory = 256
     kraken_threads = 8
 else:
