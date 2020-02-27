@@ -161,6 +161,7 @@ normalize_kgct <- function(kgct, min.frac = 0.001){
     } else {
         kgct@mat[kgct@mat>0] <- 100
     }
+
     # round to x decimal places
     round.places <- ceiling(-log10(min.frac))
     kgct@mat <- round(kgct@mat, round.places)
@@ -170,5 +171,13 @@ normalize_kgct <- function(kgct, min.frac = 0.001){
     unclassified.rownames <- c('classified at a higher level', 'unclassified')
     keep.rows <- unique(c(unclassified.rownames[unclassified.rownames %in% kgct@rid], keep.rows))
     kgct <- subset.gct(kgct, keep.rows)
+
+    # Normalize again so that columns sum to 100 after we removed some rows
+    # catch edge case with one row
+    if (nrow(kgct@mat) >1 ) {
+        kgct@mat <- apply(kgct@mat, 2, function(x) x/sum(x) * 100)
+    } else {
+        kgct@mat[kgct@mat>0] <- 100
+    }
     return(kgct)
 }
