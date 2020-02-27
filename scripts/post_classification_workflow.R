@@ -68,10 +68,17 @@ outfolder.gctx.taxonomy.classified <- file.path(result.dir, 'taxonomy_gctx_class
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 outfolder.plots <- file.path(result.dir, 'plots')
 outfolder.aldex <- file.path(result.dir, 'ALDEx2_differential_abundance')
-for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy,
-            outfolder.matrices.taxonomy.classified, outfolder.gctx.taxonomy,
+
+for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy.classified,
             outfolder.gctx.taxonomy.classified, outfolder.plots, outfolder.aldex)){
     if (!dir.exists(f)){ dir.create(f, recursive = T)}
+}
+
+# dont create dirs we dont need from bracken
+if (!(use.bracken.report)){
+    for (f in c(outfolder.matrices.taxonomy, outfolder.gctx.taxonomy)){
+        if (!dir.exists(f)){ dir.create(f, recursive = T)}
+    }
 }
 
 # load other data processing and plotting scripts
