@@ -5,7 +5,7 @@ import sys
 import snakemake
 # output base directory
 outdir = config['outdir']
-localrules: downstream_processing, downstream_processing_krakenonly
+localrules: downstream_processing, downstream_processing_krakenonly, bracken
 
 #perform a check on the Lathe git repo and warn if not up to date
 onstart:
@@ -62,7 +62,7 @@ extra_run_list =[]
 if config['run_bracken']:
     extra_run_list.append('bracken')
     extra_run_list.append('krakenonly_processed')
-    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names)
+    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak_bracken.report"), samp=sample_names)
 else:
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
 
@@ -75,7 +75,7 @@ if config['extract_unmapped']:
 
 # additional outputs determined by whats specified in the readme
 extra_files = {
-    "bracken": expand(join(outdir, "classification/{samp}.krak.report.bracken"), samp=sample_names),
+    "bracken": expand(join(outdir, "classification/{samp}.krak_bracken.report"), samp=sample_names),
     "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf'),
     "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
     "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
@@ -89,7 +89,8 @@ run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
 
 # set some resource requirements
 if config['database'] in ['/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
-                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold']:
+                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
+                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold']:
     kraken_memory = 256
     kraken_threads = 8
 else:
@@ -99,8 +100,8 @@ else:
 
 rule all:
     input:
-        expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
+        # expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
@@ -109,7 +110,6 @@ rule kraken:
     input:
         reads = lambda wildcards: sample_reads[wildcards.samp],
     output:
-        krak = join(outdir, "classification/{samp}.krak"),
         krak_report = join(outdir, "classification/{samp}.krak.report")
     params:
         db = config['database'],
@@ -117,31 +117,32 @@ rule kraken:
     threads: kraken_threads
     resources:
         mem=kraken_memory,
-        time=1
+        time=6
     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
-        time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
+        time kraken2 --db {params.db} --threads {threads} --output {output.krak_report} \
         --report {output.krak_report} {params.paired_string} {input.reads} --use-names
         """
 
 rule bracken:
     input:
-        rules.kraken.output
+        krak_report = join(outdir, "classification/{samp}.krak.report"),
+        # krak = join(outdir, "classification/{samp}.krak")
     output:
-        join(outdir, "classification/{samp}.krak.report.bracken"),
         join(outdir, "classification/{samp}.krak_bracken.report"),
     params:
         db = config['database'],
         readlen = config['read_length'],
         level = config['taxonomic_level'],
-        threshold = 10
+        threshold = 10,
+        outspec = join(outdir, "classification/{samp}.krak.report.bracken"),
     threads: 1
     resources:
         mem = 64,
         time = 1
     singularity: "docker://quay.io/biocontainers/bracken:2.2--py27h2d50403_1"
     shell: """
-        bracken -d {params.db} -i {input[1]} -o {output[0]} -r {params.readlen} \
+        bracken -d {params.db} -i {input.krak_report} -o {params.outspec} -r {params.readlen} \
         -l {params.level} -t {params.threshold}
         """
 
@@ -186,42 +187,42 @@ rule krona:
         -tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy
         """
 
-# optional rule to extract unmapped reads
-rule extract_unmapped_paired:
-    input:
-        krak = join(outdir, "classification/{samp}.krak"),
-        r1 = lambda wildcards: sample_reads[wildcards.samp][0],
-        r2 = lambda wildcards: sample_reads[wildcards.samp][1],
-    output:
-        r1 = join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"),
-        r2 = join(outdir, "unmapped_reads/{samp}_unmapped_2.fq")
-    params:
-        taxid = str(0),
-        tempfile = "{samp}_" + str(0) + "_reads.txt"
-    resources:
-        mem = 64
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
-    shell: """
-        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
-        filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
-        rm {params.tempfile}
-    """
+# # optional rule to extract unmapped reads
+# rule extract_unmapped_paired:
+#     input:
+#         krak = join(outdir, "classification/{samp}.krak"),
+#         r1 = lambda wildcards: sample_reads[wildcards.samp][0],
+#         r2 = lambda wildcards: sample_reads[wildcards.samp][1],
+#     output:
+#         r1 = join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"),
+#         r2 = join(outdir, "unmapped_reads/{samp}_unmapped_2.fq")
+#     params:
+#         taxid = str(0),
+#         tempfile = "{samp}_" + str(0) + "_reads.txt"
+#     resources:
+#         mem = 64
+#     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+#     shell: """
+#         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+#         filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
+#         rm {params.tempfile}
+#     """
 
-rule extract_unmapped_single:
-    input:
-        krak = join(outdir, "classification/{samp}.krak"),
-        r1 = lambda wildcards: sample_reads[wildcards.samp],
-    output:
-        r1 = join(outdir, "unmapped_reads/{samp}_unmapped.fq"),
-    params:
-        taxid = str(0),
-        tempfile = "{samp}_" + str(0) + "_reads.txt"
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
-    shell: """
-        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
-        filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
-        rm {params.tempfile}
-    """
+# rule extract_unmapped_single:
+#     input:
+#         krak = join(outdir, "classification/{samp}.krak"),
+#         r1 = lambda wildcards: sample_reads[wildcards.samp],
+#     output:
+#         r1 = join(outdir, "unmapped_reads/{samp}_unmapped.fq"),
+#     params:
+#         taxid = str(0),
+#         tempfile = "{samp}_" + str(0) + "_reads.txt"
+#     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+#     shell: """
+#         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+#         filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
+#         rm {params.tempfile}
+#     """
 
 '''
 # convert bracken to mpa syle report if desired

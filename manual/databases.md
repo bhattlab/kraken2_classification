@@ -1,4 +1,4 @@
-## New databases as of 2020-01-12! 
+## New databases for 2020! 
 There are new databases available for 2020. Chose the right one for your needs:
 - Refseq standard: Refseq genomes assembled to "Complete Genome" or "Scaffold" quality.
     - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq`
@@ -11,9 +11,8 @@ There are new databases available for 2020. Chose the right one for your needs:
         - Plasmid
 - Refseq viral: same as above, but only viral sequences
     - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq_viral`
-- **NOT AVAILABLE YET** Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that 256G memory necessary for this database.
+Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that 256G memory necessary for this database.
     - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold`
-    - **2019 DB available**: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold`
     - Genomes from the following categories 
         - Bacteria 
         - Archaea
@@ -21,6 +20,7 @@ There are new databases available for 2020. Chose the right one for your needs:
         - Human
         - Mouse
         - Plasmid
+    This databse contains a total of 14686 organisms at the species level. 
 - Genbank viral: same as above, but only viral sequences
     - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_viral`
 
@@ -42,11 +42,6 @@ Additionally, each database has had the "crAss-like phages" clade replaced with 
  - Guerin_crAss_Delta_07    Species    4000410
  - Guerin_crAss_Delta_08    Species    4000420
  - Guerin_crAss_Delta_10    Species    4000430
-
-The following genomes have also been added to the Genbank expanded database.
-- _Prevotella copri_ complete genome from Eli's Nanopore assembly
-- Mouse microbiome Nanopore MAGs from Jessy's project
-- Other Nanopore MAG genomes TBD
 
 To see if your organism of interest is present in a database (and therefore is able to be classified in your reads), search the `inspect.out` file in the database folder. If this has the name or taxonomic identifier you're interested in, you're good to go! In this example we see that a crAss-like phage cluster is indeed present in the Refseq viral database:
 ```

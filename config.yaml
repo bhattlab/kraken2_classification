@@ -11,7 +11,7 @@ outdir: kraken2_classification
 read_length: 150 #or 100
 taxonomic_level: 'S' # For bracken results. Probably dont need to chage. Options: D,P,C,O,F,G,S
 # see database options below, or manual/databases.md
-database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
+database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold
 
 ############# Downstream processing #######################
 # Do Bracken calculations and use it in downstream processing
@@ -31,6 +31,8 @@ extract_unmapped: False
 
 ########### database alternatives (see README): ###########
 # Slow, but has sequenced genomes of all quality. Best classification results:
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold
+# Older version of the same database, used in many previous Bhatt lab analyses
 #     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold
 # Fast, but only high quality genomes, misses some things: 
 #     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_oct2018/genbank_bacteria
