@@ -89,6 +89,7 @@ run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
 
 # set some resource requirements
 if config['database'] in ['/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
+                          '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold',
                           '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
                           '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold']:
     kraken_memory = 256
@@ -187,42 +188,42 @@ rule krona:
         -tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy
         """
 
-# # optional rule to extract unmapped reads
-# rule extract_unmapped_paired:
-#     input:
-#         krak = join(outdir, "classification/{samp}.krak"),
-#         r1 = lambda wildcards: sample_reads[wildcards.samp][0],
-#         r2 = lambda wildcards: sample_reads[wildcards.samp][1],
-#     output:
-#         r1 = join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"),
-#         r2 = join(outdir, "unmapped_reads/{samp}_unmapped_2.fq")
-#     params:
-#         taxid = str(0),
-#         tempfile = "{samp}_" + str(0) + "_reads.txt"
-#     resources:
-#         mem = 64
-#     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
-#     shell: """
-#         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
-#         filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
-#         rm {params.tempfile}
-#     """
+# optional rule to extract unmapped reads
+rule extract_unmapped_paired:
+    input:
+        krak = join(outdir, "classification/{samp}.krak"),
+        r1 = lambda wildcards: sample_reads[wildcards.samp][0],
+        r2 = lambda wildcards: sample_reads[wildcards.samp][1],
+    output:
+        r1 = join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"),
+        r2 = join(outdir, "unmapped_reads/{samp}_unmapped_2.fq")
+    params:
+        taxid = str(0),
+        tempfile = "{samp}_" + str(0) + "_reads.txt"
+    resources:
+        mem = 64
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+    shell: """
+        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+        filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
+        rm {params.tempfile}
+    """
 
-# rule extract_unmapped_single:
-#     input:
-#         krak = join(outdir, "classification/{samp}.krak"),
-#         r1 = lambda wildcards: sample_reads[wildcards.samp],
-#     output:
-#         r1 = join(outdir, "unmapped_reads/{samp}_unmapped.fq"),
-#     params:
-#         taxid = str(0),
-#         tempfile = "{samp}_" + str(0) + "_reads.txt"
-#     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
-#     shell: """
-#         awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
-#         filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
-#         rm {params.tempfile}
-#     """
+rule extract_unmapped_single:
+    input:
+        krak = join(outdir, "classification/{samp}.krak"),
+        r1 = lambda wildcards: sample_reads[wildcards.samp],
+    output:
+        r1 = join(outdir, "unmapped_reads/{samp}_unmapped.fq"),
+    params:
+        taxid = str(0),
+        tempfile = "{samp}_" + str(0) + "_reads.txt"
+    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+    shell: """
+        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+        filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
+        rm {params.tempfile}
+    """
 
 '''
 # convert bracken to mpa syle report if desired

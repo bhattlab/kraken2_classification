@@ -459,8 +459,9 @@ for (tax.level in do.tax.levels[2:length(do.tax.levels)]){
     cutoff = .3
     use.mat <- kgct.filtered.classified.list[[tax.level]]@mat
     if(nrow(use.mat) > 2){
-        reads.filtered <- codaSeq.filter(use.mat,
-            min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE)
+        reads.filtered <- tryCatch(codaSeq.filter(use.mat,
+            min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE), 
+        error=function(e) matrix(0))
         } else {
             reads.filtered <- matrix(0)
         }
