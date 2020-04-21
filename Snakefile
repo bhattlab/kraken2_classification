@@ -102,7 +102,7 @@ else:
 rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
-        # expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
+        expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
@@ -111,6 +111,7 @@ rule kraken:
     input:
         reads = lambda wildcards: sample_reads[wildcards.samp],
     output:
+        krak = join(outdir, "classification/{samp}.krak"),
         krak_report = join(outdir, "classification/{samp}.krak.report")
     params:
         db = config['database'],
@@ -121,14 +122,14 @@ rule kraken:
         time=6
     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
-        time kraken2 --db {params.db} --threads {threads} --output {output.krak_report} \
+        time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} --use-names
         """
 
 rule bracken:
     input:
         krak_report = join(outdir, "classification/{samp}.krak.report"),
-        # krak = join(outdir, "classification/{samp}.krak")
+        krak = join(outdir, "classification/{samp}.krak")
     output:
         join(outdir, "classification/{samp}.krak_bracken.report"),
     params:

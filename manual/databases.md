@@ -11,7 +11,7 @@ There are new databases available for 2020. Chose the right one for your needs:
         - Plasmid
 - Refseq viral: same as above, but only viral sequences
     - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq_viral`
-Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that 256G memory necessary for this database.
+- Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that 256G memory necessary for this database.
     - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold`
     - Genomes from the following categories 
         - Bacteria 
@@ -20,7 +20,7 @@ Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "
         - Human
         - Mouse
         - Plasmid
-    This databse contains a total of 14686 organisms at the species level. 
+    - Also includes the Prevotella copri genome assembled with Nanopore by Eli Moss
 - Genbank viral: same as above, but only viral sequences
     - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_viral`
 
@@ -49,7 +49,29 @@ $ grep -i Guerin_crAss_Alpha_01 /oak/stanford/scg/lab_asbhatt/data/program_indic
 >    0.31  227983  227983  S       4000110               Guerin_crAss_Alpha_01
 ```
 
+### Stats about each database
+The 2020 genbank and refseq databases used the following total number of genomes as input:
+
+Genbank genome chromosome scaffold (Jan 2020)
+archaea:    2252 
+bacteria:   135198 
+fungi:  4738 
+human:  1 
+viral:  35437 
+total:  177626
+
+Refseq (Jan 20200)
+archaea:    354 
+bacteria:   18196 
+human:  1 
+plasmid:    8 
+viral:  9332 
+total:  27891
+
+
+
 #### Custom sequences
 Don't see your favorite bug in the `inspect.out` file? Have a newly assembled organism you want added to the database? It's an easy process to put custom sequences into the database and can be done in under a day of processing time. Contact Ben for requests (I'll batch these to once a month or something if there are lots of requests.)
 
 _Guerin E, Shkoporov A, Stockdale SR, Clooney AG, Ryan FJ, Sutton TDS, et al. Biology and Taxonomy of crAss-like Bacteriophages, the Most Abundant Virus in the Human Gut. Cell Host & Microbe [Internet]. 2018 Oct 25 [cited 2018 Oct 25];0(0). Available from: http://www.cell.com/cell-host-microbe/abstract/S1931-3128(18)30524-9_
+
