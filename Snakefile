@@ -205,7 +205,7 @@ rule extract_unmapped_paired:
         mem = 64
     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
-        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+        awk '$1=="U" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
         rm {params.tempfile}
     """
@@ -221,9 +221,9 @@ rule extract_unmapped_single:
         tempfile = "{samp}_" + str(0) + "_reads.txt"
     singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
     shell: """
-        awk '$3=="{params.taxid}" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
+        awk '$1=="U" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
-        rm {params.tempfile}
+        # rm {params.tempfile}
     """
 
 '''
