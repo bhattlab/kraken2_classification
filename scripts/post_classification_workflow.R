@@ -17,7 +17,7 @@ options(stringsAsFactors = F)
 # suppressMessages(library(CoDaSeq, quietly = TRUE, warn.conflicts = FALSE))
 
 # options we need from snakemake
-scripts.folder <- snakemake@params[['scripts_folder']]
+# scripts.folder <- snakemake@params[['scripts_folder']]
 sample.reads.f <- snakemake@params[['sample_reads']]
 sample.groups.f <- snakemake@params[['sample_groups']]
 workflow.outdir <- snakemake@params[['workflow_outdir']]
@@ -25,6 +25,7 @@ result.dir <- snakemake@params[['result_dir']]
 use.bracken.report <- snakemake@params[['use_bracken_report']]
 scripts.folder <- snakemake@scriptdir
 tax.array.file <- snakemake@input[['tax_array']]
+print(paste('scriptdir:', scripts.folder))
 ############ Testing Args ############################################################################
 # sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples.tsv'
 # sample.groups.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/sample_groups.tsv'
@@ -85,8 +86,17 @@ if (!(use.bracken.report)){
 source.script.process <- file.path(scripts.folder, 'process_classification_gctx.R')
 source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
 source.script.codaseq <- file.path(scripts.folder, 'CoDaSeq_functions.R')
-if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))){
-    stop('Specify right source script dir')
+if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))) {
+    # if these don't exist it could be due to a singularity error. 
+    # Try loading from a backup location on scg
+    warning('Cannot find processing scripts in the scripts dir relative to this snakefile. Attempting to load processing scripts from backup directory.... (/oak/stanford/scg/lab_asbhatt/tools/kraken2_classification/scripts)')
+    scripts.folder <- '/oak/stanford/scg/lab_asbhatt/tools/kraken2_classification/scripts'
+    source.script.process <- file.path(scripts.folder, 'process_classification_gctx.R')
+    source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
+    source.script.codaseq <- file.path(scripts.folder, 'CoDaSeq_functions.R')
+    if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))){
+            stop('processing scripts do not exist at any of the attempted directories. Exiting. ')
+    }
 }
 suppressMessages(source(source.script.process))
 suppressMessages(source(source.script.plot))
