@@ -129,12 +129,22 @@ def main():
 
     # Custom changes
     # set crass-like viruses to genus 
-    find(root, lambda node: node.name == "crAss-like viruses").rank='genus'
-    # set these viruses to family
-    find(root, lambda node: node.name == "unclassified bacterial viruses").rank='family'
-    # set all superkingdoms to kingdom to make things simple
-    for a in findall(root, lambda node: node.rank == "superkingdom"):
-        a.rank = 'kingdom'
+    try: 
+        find(root, lambda node: node.name == "crAss-like viruses").rank='genus'
+    except: 
+        AttributeError 
+
+    try:
+        # set these viruses to family
+        find(root, lambda node: node.name == "unclassified bacterial viruses").rank='family'
+    except: 
+        AttributeError 
+    try:
+        # set all superkingdoms to kingdom to make things simple
+        for a in findall(root, lambda node: node.rank == "superkingdom"):
+            a.rank = 'kingdom'
+    except: 
+        AttributeError 
     # set Fungi and metazoa to be direct descendants of root
     try:
         find(root, lambda node: node.name == "Metazoa").parent = root

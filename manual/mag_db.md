@@ -48,4 +48,66 @@ kraken2-build --build --threads 16 --db ~/almeida_genomes/kraken2_db/
                                
 ```
 
-1.Almeida, A. et al. A new genomic blueprint of the human gut microbiota. Nature 1 (2019). doi:10.1038/s41586-019-0965-1
+## Using a dereplicated genome set
+Another way to create a custom MAG database is to assemble a set of genomes from your own samples, run them through [dRep](https://drep.readthedocs.io/en/latest/) to get a non-redundant genome set, and then create a database out of those genomes. Here, I had metagenomic samples from mouse stool in different experimental conditions and sampled at different days. Because there were 5 replicates at each condition, the samples were co-assembled and co-binned to get the highest quality genomes possible (acknowledging that they may be "franken-genomes" and not truly representative of the species present). dRep was used to create the non-redundant genome set. I then made a kraken database as follows (this is kind of a hack that could be made much better by using a mapping of genome>taxid):
+
+```
+# form the root of the dRep output
+mkdir -p kraken_db/genomes
+
+# add kraken_taxid to each dereplicated genome
+# start with taxid 11 and increment by 1
+cd dereplicated_genomes
+taxid=11
+outdir=../kraken_db/genomes
+
+for fa in *.fa; do
+    echo $taxid
+    fa_name=$(echo $fa | sed 's/.fa//g')
+    sed "/>/ c\>$fa_name|kraken:taxid|$taxid" $fa > "$outdir"/"$fa"
+    taxid=$(expr $taxid + 1)
+done
+cd ../kraken_db
+
+# add to library - set this directory
+dbdir=.
+find -name '*.fa' -print0 | xargs -0 -I{} -P 8 -n1 kraken2-build --add-to-library {} --db $dbdir
+
+
+mkdir taxonomy
+# construct nodes.dmp and names.dmp taxonomy files
+echo -e "1\t|\t1\t|\tno rank\t|\t|\t8\t|\t0\t|\t1\t|\t0\t|\t0\t|\t0\t|\t0\t|\t0\t|\t\t|" > taxonomy/nodes.dmp
+echo -e "1\t|\tall\t|\t\t|\tsynonym\t|" > taxonomy/names.dmp
+echo -e "1\t|\troot\t|\t\t|\tscientific name\t|" >> taxonomy/names.dmp
+
+taxid=11
+for fa in genomes/*.fa; do
+    echo $taxid
+    fa_name=$(echo $fa | sed 's/.fa//g')
+    fa_name=$(basename $fa_name)
+    echo -e "$taxid\t|\t1\t|\tspecies\t|\t|\t0\t|\t0\t|\t1\t|\t0\t|\t0\t|\t0\t|\t0\t|\t0\t|\t\t|" >> taxonomy/nodes.dmp
+    echo -e "$taxid\t|\t$fa_name\t|\t\t|\tdrep bin name\t|" >> taxonomy/names.dmp
+    taxid=$(expr $taxid + 1)
+done
+
+
+# then build in parallel
+kraken2-build --build --threads 16 --db $dbdir
+
+# you can't build a bracken database because there's no real taxonomy information here. Make sure to set run_braken to false in the configfile when using this database
+
+# to get the classification pipeline to work correctly, need to create a taxonomy_array.tsv file 
+# this is a tab delimited file that provides the taxonomic information of each taxid 
+# something like this, with a line for each mag, should do the trick
+unclassified\t0\t\t\t\t\t\t\t\t\t
+root\t1\troot\t\t\t\t\t\t\t\t
+MAG_NAME\t11\troot\t\t\t\t\t\t\t\t
+.
+.
+... fill in the rest
+
+
+```
+
+
+1. Almeida, A. et al. A new genomic blueprint of the human gut microbiota. Nature 1 (2019). doi:10.1038/s41586-019-0965-1
