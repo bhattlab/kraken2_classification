@@ -176,11 +176,19 @@ merge.mat <- merge_kraken_df_list(df.list)
 sample.metadata <- data.frame(id=sample.groups$sample, group=sample.groups$group)
 # construct gct object from reads matrix, sample metadata, row metadata
 kgct <- make_gct_from_kraken(merge.mat, sample.metadata, tax.array)
+
 # filter to each of the taxonomy levels
-if (segata){ filter.levels <- c('species') } else {
-    filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species') }
-kgct.filtered.list <- lapply(filter.levels, function(level) subset_kgct_to_level(kgct, level))
-names(kgct.filtered.list) <- filter.levels
+if (segata){
+    filter.levels <- c('species')
+    kgct.filtered.list <- list(species=subset.gct(kgct, rid=kgct@rid[kgct@rid != 'root']))
+} else {
+    filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species') 
+    kgct.filtered.list <- lapply(filter.levels, function(level) subset_kgct_to_level(kgct, level))
+    names(kgct.filtered.list) <- filter.levels
+}
+# print("kgct.filtered.list[['species']]@mat")
+# print(kgct.filtered.list[['species']]@mat)
+
 # subset to classified taxa only
 unclassified.rownames <- c('unclassified', 'classified at a higher level')
 kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset.gct(x, rid=x@rid[!(x@rid %in% unclassified.rownames)]))
@@ -459,9 +467,14 @@ if (nrow(sample.groups) < 3){
     warning('Will not do compositional data analysis with < 3 samples')
 } else {
     pca.plot.list <- list()
-    do.tax.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
+    if(segata){
+        do.tax.levels <- c('species')
+    } else {
+        do.tax.levels <- c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
+    }
+
     print('Compositional data analysis....')
-    for (tax.level in do.tax.levels[2:length(do.tax.levels)]){
+    for (tax.level in do.tax.levels[do.tax.levels != 'kingdom']){
         print(paste('.....', tax.level))
         # AT A SPECIFIC TAX LEVEL: filtering
         # keep only those samples with > min.reads

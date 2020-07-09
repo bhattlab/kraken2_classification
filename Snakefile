@@ -3,6 +3,7 @@
 from os.path import join
 import sys
 import snakemake
+import time
 # output base directory
 outdir = config['outdir']
 localrules: downstream_processing, downstream_processing_krakenonly, bracken
@@ -17,7 +18,23 @@ onstart:
     repo_git = repo.git
     stat = repo_git.diff('origin/master')
     if stat != "":
+        print()
+        print("#")
+        print("##")
+        print("###")
+        print("####")
+        print("#####")
+        print("######")
+        print()
         print('WARNING: Differences to latest version detected. Please reset changes and/or pull repo.')
+        print()
+        print("######")
+        print("#####")
+        print("####")
+        print("###")
+        print("##")
+        print("#")
+        time.sleep(5)
     else:
         print("No updates or modifications found")
 

@@ -145,6 +145,8 @@ check_gct_filtered <- function(kgct){
             return(F)
         }
     }
+    # if get to this point without returning, probably a mag database
+    return(T)
 }
 
 # normalize a gct matrix from reads to percentages
