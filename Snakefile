@@ -34,9 +34,12 @@ onstart:
         print("###")
         print("##")
         print("#")
-        time.sleep(5)
+        # time.sleep(5)
     else:
         print("No updates or modifications found")
+
+print('WORKFLOW DIR: ')
+print(workflow.basedir)
 
 def get_sample_reads(sample_file):
     sample_reads = {}
@@ -165,11 +168,28 @@ rule bracken:
         -l {params.level} -t {params.threshold}
         """
 
+# copy over scripts and taxonomy_array
+# so that the R script works properly
+# darn you, singularity for making me do this dumb thing
+rule copy_files_processing:
+    input: 
+        tax_array = join(config['database'], 'taxonomy_array.tsv')
+    output:
+        'taxonomy_array.tsv',
+        script_test = 'scripts/post_classification_workflow.R'
+    params:
+        scriptdir = join(workflow.basedir, 'scripts')
+    shell: """
+    cp -r {params.scriptdir} .
+    cp {input.tax_array} .
+    """
+
 # must also have the processed taxonomy file generated manually 
 rule downstream_processing:
     input:
         downstream_processing_input,
-        tax_array = join(config['database'], 'taxonomy_array.tsv')
+        tax_array = 'taxonomy_array.tsv',
+        script_test = 'scripts/post_classification_workflow.R'
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],

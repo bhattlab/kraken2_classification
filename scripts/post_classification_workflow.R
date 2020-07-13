@@ -23,8 +23,11 @@ sample.groups.f <- snakemake@params[['sample_groups']]
 workflow.outdir <- snakemake@params[['workflow_outdir']]
 result.dir <- snakemake@params[['result_dir']]
 use.bracken.report <- snakemake@params[['use_bracken_report']]
-scripts.folder <- snakemake@scriptdir
-tax.array.file <- snakemake@input[['tax_array']]
+# now just use locations in the working directory
+scripts.folder <- "scripts"
+# scripts.folder <- snakemake@scriptdir
+tax.array.file <- 'taxonomy_array.tsv'
+# tax.array.file <- snakemake@input[['tax_array']]
 print(paste('scriptdir:', scripts.folder))
 ############ Testing Args ############################################################################
 # sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples.tsv'
@@ -251,8 +254,8 @@ for (tn in filter.levels){
 message('Doing diversity calculations and saving figures...')
 
 # DISABLE rarefaction curve as it's useless with so many species
-# plot_rarefaction_curve(kgct.filtered.classified.list$species@mat,
-#                        file.path(outfolder.plots, 'rarefaction_curve.pdf'))
+plot_rarefaction_curve(kgct.filtered.classified.list$species@mat,
+                       file.path(outfolder.plots, 'rarefaction_curve.pdf'))
 
 # diversity calculations
 div.methods <- c('shannon', 'simpson')
