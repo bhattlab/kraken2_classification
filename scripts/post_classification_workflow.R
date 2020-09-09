@@ -90,7 +90,7 @@ source.script.process <- file.path(scripts.folder, 'process_classification_gctx.
 source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
 source.script.codaseq <- file.path(scripts.folder, 'CoDaSeq_functions.R')
 if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))) {
-    # if these don't exist it could be due to a singularity error. 
+    # if these don't exist it could be due to a singularity error.
     # Try loading from a backup location on scg
     warning('Cannot find processing scripts in the scripts dir relative to this snakefile. Attempting to load processing scripts from backup directory.... (/oak/stanford/scg/lab_asbhatt/tools/kraken2_classification/scripts)')
     scripts.folder <- '/oak/stanford/scg/lab_asbhatt/tools/kraken2_classification/scripts'
@@ -185,7 +185,7 @@ if (segata){
     filter.levels <- c('species')
     kgct.filtered.list <- list(species=subset.gct(kgct, rid=kgct@rid[kgct@rid != 'root']))
 } else {
-    filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species') 
+    filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
     kgct.filtered.list <- lapply(filter.levels, function(level) subset_kgct_to_level(kgct, level))
     names(kgct.filtered.list) <- filter.levels
 }
@@ -465,7 +465,7 @@ for (tn in filter.levels){
 #################################################################################
 if (length(unique(sample.groups$group)) != 2){
     warning('Will not do ALDEx2 differential abundance with !=2 groups')}
-    
+
 if (nrow(sample.groups) < 3){
     warning('Will not do compositional data analysis with < 3 samples')
 } else {
@@ -489,7 +489,7 @@ if (nrow(sample.groups) < 3){
         use.mat <- kgct.filtered.classified.list[[tax.level]]@mat
         if(nrow(use.mat) > 2){
             reads.filtered <- tryCatch(codaSeq.filter(use.mat,
-                min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE), 
+                min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE),
             error=function(e) matrix(0))
             } else {
                 reads.filtered <- matrix(0)
@@ -511,7 +511,7 @@ if (nrow(sample.groups) < 3){
             # convert to CLR
             clr.aldex <- aldex.clr(rfz, conds=NA, mc.samples=128, denom = 'all', verbose = F)
             # get clr from mean of the MC instances
-            rfz.clr <- sapply(clr.aldex@analysisData , function(x) rowMeans(x))
+            rfz.clr <- t(sapply(clr.aldex@analysisData , function(x) rowMeans(x)))
             # save CLR matrix
             outf <- file.path(outfolder.matrices.taxonomy.classified, paste('clr_values_', tax.level, '.tsv', sep=''))
             write.table(round(rfz.clr, 4), outf, sep='\t', quote=F, row.names = T, col.names = T)
@@ -520,7 +520,7 @@ if (nrow(sample.groups) < 3){
             rfz.clr.mvar <- mvar(rfz.clr)
 
             # PCA biplot
-            plot.df <- data.frame(rfz.clr.pca$rotation[,1:2], group=sample.groups[sample.groups$sample %in% colnames(rfz.clr), 'group'])
+            plot.df <- data.frame(rfz.clr.pca$x[,1:2], group=sample.groups[sample.groups$sample %in% colnames(rfz.clr), 'group'])
             pc1.var <- round(sum(rfz.clr.pca$sdev[1]^2)/rfz.clr.mvar * 100, 1)
             pc2.var <- round(sum(rfz.clr.pca$sdev[2]^2)/rfz.clr.mvar * 100, 1)
             pca.plot <- ggplot(plot.df, aes(x=PC1, y=PC2, col=group)) +
