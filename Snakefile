@@ -140,7 +140,7 @@ rule kraken:
     resources:
         mem=kraken_memory,
         time=6
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+    singularity: "quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} --use-names
@@ -240,7 +240,7 @@ rule extract_unmapped_paired:
         tempfile = "{samp}_" + str(0) + "_reads.txt"
     resources:
         mem = 64
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+    singularity: "quay.io/biocontainers/bbmap:38.86--h1296035_0"
     shell: """
         awk '$1=="U" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} in2={input.r2} names={params.tempfile} include=true out={output.r1} out2={output.r2}
@@ -256,7 +256,7 @@ rule extract_unmapped_single:
     params:
         taxid = str(0),
         tempfile = "{samp}_" + str(0) + "_reads.txt"
-    singularity: "shub://bsiranosian/bens_1337_workflows:kraken2"
+    singularity: "quay.io/biocontainers/bbmap:38.86--h1296035_0"
     shell: """
         awk '$1=="U" {{ print }}' {input.krak} | cut -f 2 > {params.tempfile}
         filterbyname.sh in={input.r1} names={params.tempfile} include=true out={output.r1}
