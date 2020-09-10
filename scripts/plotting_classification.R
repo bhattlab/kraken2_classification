@@ -139,8 +139,8 @@ plot_many_samples <- function(kraken.mat, n.colors=16, tax.level.name = 'Species
         toplot.df <- melt(kraken.mat.plot, varnames = c('taxa', 'sample'))
     }
     # arrange so naming is consistent
-    toplot.df$sample <- as.character(toplot.df$sample)
-    toplot.df <- toplot.df[order(toplot.df$sample),]
+    toplot.df$sample <- factor(toplot.df$sample, levels=colnames(kraken.mat.plot))
+    # toplot.df <- toplot.df[order(toplot.df$sample),]
     # print(head(toplot.df))
     taxplot <- ggplot(data=toplot.df, aes(x = sample, y = value, fill = taxa)) +
         geom_bar(stat = 'identity') +

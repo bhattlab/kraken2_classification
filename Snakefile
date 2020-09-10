@@ -124,7 +124,8 @@ rule all:
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
         expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
-        run_extra_all_outputs
+        run_extra_all_outputs,
+        join(outdir, "completed.txt")
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
 rule kraken:
@@ -217,6 +218,21 @@ rule downstream_processing_krakenonly:
         join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf')
     script:
         'scripts/post_classification_workflow.R'
+
+# remove these copied files now
+rule remove_files_processing:
+    input: 
+        rules.downstream_processing.output
+    output:
+        join(outdir, "completed.txt")
+    params:
+        scriptdir = join(workflow.basedir, 'scripts')
+    shell: """
+    rm -rf scripts
+    rm -f taxonomy_array.tsv
+    touch {output}
+    """
+
 
 rule krona:
     input: rules.kraken.output.krak_report

@@ -520,7 +520,7 @@ if (nrow(sample.groups) < 3){
             rfz.clr.mvar <- mvar(rfz.clr)
 
             # PCA biplot
-            plot.df <- data.frame(rfz.clr.pca$x[,1:2], group=sample.groups[sample.groups$sample %in% colnames(rfz.clr), 'group'])
+            plot.df <- data.frame(rfz.clr.pca$x[,1:2], group=sample.groups[sample.groups$sample %in% rownames(rfz.clr), 'group'])
             pc1.var <- round(sum(rfz.clr.pca$sdev[1]^2)/rfz.clr.mvar * 100, 1)
             pc2.var <- round(sum(rfz.clr.pca$sdev[2]^2)/rfz.clr.mvar * 100, 1)
             pca.plot <- ggplot(plot.df, aes(x=PC1, y=PC2, col=group)) +
