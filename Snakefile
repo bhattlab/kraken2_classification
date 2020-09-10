@@ -141,7 +141,7 @@ rule kraken:
     resources:
         mem=kraken_memory,
         time=6
-    singularity: "quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
+    singularity: "docker://quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} --use-names
