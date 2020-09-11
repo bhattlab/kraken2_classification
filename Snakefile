@@ -128,6 +128,35 @@ rule all:
         join(outdir, "kraken2_processing_completed.txt")
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
+
+rule create_taxonomy_array:
+    input:
+        join(config['database'], 'taxo.k2d')
+    output:
+        join(config['database'], 'taxonomy_array.tsv')
+    params: 
+        db = config['database'],
+        improve_taxonomy_script = join(workflow.basedir, 'scripts', 'improve_taxonomy.py')
+    shell: """
+        python {params.improve_taxonomy_script} {params.db}
+    """
+
+# copy over scripts and taxonomy_array
+# so that the R script works properly
+# darn you, singularity for making me do this dumb thing
+rule copy_files_processing:
+    input: 
+        tax_array = join(config['database'], 'taxonomy_array.tsv')
+    output:
+        'taxonomy_array.tsv',
+        script_test = 'scripts/post_classification_workflow.R'
+    params:
+        scriptdir = join(workflow.basedir, 'scripts')
+    shell: """
+    cp -r {params.scriptdir} .
+    cp {input.tax_array} .
+    """
+
 rule kraken:
     input:
         reads = lambda wildcards: sample_reads[wildcards.samp],
@@ -169,21 +198,6 @@ rule bracken:
         -l {params.level} -t {params.threshold}
         """
 
-# copy over scripts and taxonomy_array
-# so that the R script works properly
-# darn you, singularity for making me do this dumb thing
-rule copy_files_processing:
-    input: 
-        tax_array = join(config['database'], 'taxonomy_array.tsv')
-    output:
-        'taxonomy_array.tsv',
-        script_test = 'scripts/post_classification_workflow.R'
-    params:
-        scriptdir = join(workflow.basedir, 'scripts')
-    shell: """
-    cp -r {params.scriptdir} .
-    cp {input.tax_array} .
-    """
 
 # must also have the processed taxonomy file generated manually 
 rule downstream_processing:

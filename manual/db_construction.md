@@ -1,3 +1,6 @@
+# Setting up your own database 
+If you're not in the Bhatt lab or are using a new databse, build it with instructions from the kraken2 github or the custom instructions below. The only other thing you need to do is create the `taxonomy_array.tsv` file, which contains an improved version of the ncbi taxonomy for downstream analysis. To do this, run `scripts/improve_taxonomy.py` with the database directory as the only argument. You need to have the python packages _numpy_ and _anytree_ installed for this script. 
+
 # Custom database construction
 To get the most use out of Kraken, I recommend creating a custom database for classification. The defautlt bacteria database is incomplete, and excludes genomes that aren't assembled to "complete genome" or "chromosome" quality in NCBI. This misses key commensals like _Bacteroides intestinalis_. Here, we'll switch the database to use Genbank instead of Refseq and include genomes of "scaffold" quality as well. This requires modifying some of the Kraken2 code. 
 

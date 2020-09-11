@@ -1,26 +1,7 @@
 ## Downstream processing
 
 ### Automatic pipeline outputs: 
-
-- Kraken and Bracken reports
-- Matrices of taxonomic classification
-    - Every species level
-    - Read counds, or relative abundance
-    - Normalized to only include classified reads, or all reads
-    - Kraken only (without running Bracken, to look for unique read mappings) results too
-- Bray-curtis distance matrices for all taxonomic levels
-- PLOTS, which can be separated by the sample_groups option
-    - Taxonomic barplots for each taxonomic level
-        - Normalized to only include classified reads, or all reads
-    - Plots of diversity estimates 
-    - Rarefaction curves
-    - PCoA 2D plot based on Bray-Curtis distances 
-
-![default_barplot](../images/taxonomic_barplot.png "Default taxonomic barplot output")
-
-If that isn't enough, see below for more options (mostly older stuff before it was all automated)
-
-
+See the main readme page for a description of the output files from the pipeline
 
 ### Abundance estimation with Bracken
 [Bracken](https://peerj.com/articles/cs-104/) post-processes kraken outputs to (hopefully) make them more accurate.  

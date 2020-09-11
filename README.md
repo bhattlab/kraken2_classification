@@ -20,15 +20,15 @@ Also as of this update, the taxonomy information used by Kraken is fitered and i
 8. [GCTx data parsing](manual/gctx.md)
 
 ## Quickstart
-*Install*
-If you're in the Bhatt lab, most of this work will take place on the SCG cluster. Otherwise, set this up on your own cluster or local machine (with a small database only). You will have to [build a database](manual/db_construction.md) and set the database options if you're not in the Bhatt lab. Thanks to Singularity, all you need to have installed is snakemake. See the instructions [here](https://github.com/bhattlab/bhattlab_workflows/) to set up snakemake and set up a profile to submit jobs to the cluster. 
+#### Install
+If you're in the Bhatt lab, most of this work will take place on the SCG cluster. Otherwise, set this up on your own cluster or local machine (with a small database only). You will have to [build a database](manual/db_construction.md), create the `taxonomy_array.tsv` file (instructions at previous link) and set the database options if you're not in the Bhatt lab. Thanks to Singularity, all you need to have installed is snakemake. See the instructions [here](https://github.com/bhattlab/bhattlab_workflows/) to set up snakemake and set up a profile to submit jobs to the cluster. 
 
 Then clone the repo wherever is convenient for you. I use a directory in `~/projects`
 ```
 cd ~/projects
 git clone https://github.com/bhattlab/kraken2_classification.git
 ```
-*Run*
+#### Run
 Copy the `config.yaml` file into the working directory for your samples. Change the options to suit your projects and make sure you specify the right `samples.tsv` file. See [Usage](manual/usage.md) for more detail. You can then lauch the workflow with a snakemake command like so:
 ```
 # Snakemake workflow - change options in config.yaml first
@@ -37,3 +37,58 @@ snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --sing
 
 ## Parsing output reports
 The Kraken reports `classification/sample.krak.report`, bracken reports `sample.krak_bracken.report`, and data matrices in the `processed_results` folder are the best for downstream analysis. See [Downstream processing and plotting](manual/downstream_plotting.md) for details on using the data in R. 
+
+## Example output
+The pipeline outputs data, results and figures in the structure below. 
+```
+ | classification 
+   - sample.krak                    Kraken results - classification of each read. These files
+                                    can get very large and are unnecessary if you only want the reports. 
+   - sample.krak.report             Kraken report - reads and percentages at each taxonomic level.
+   - sample.krak.report.bracken     Standard bracken report at species level. Not useful, use the one below.
+   - sample.krak_bracken.report     Most useful format of the the Bracken results.
+
+ | processed_results
+   - diversity.txt                  Diversity of each sample at each taxonomic level
+
+   | ALDEX2_differential_abuncance  Compositional data analysis done with the ALDEx2 package.
+                                    Only done if you have 2 groups in the sample_groups file.
+     - aldex_result_[].tsv          Differential abundance at the given taxonomic level. 
+     - aldex_scatter_[].pdf         Scatterplot of effect vs dispersion with significant hits highlighted
+     - aldex_significant_boxplots_[].pdf  Boxplot of any significant hits
+
+   | braycurtis_matrices
+     - bravcurtis_distance_[].tsv   Matrix of braycurtis distance between samples at each taxonomic level
+   
+   | plots                          Lots of plots!
+      - classified_taxonomy_barplot_[].pdf   Barplot at each taxonomic level.
+      - compositional_PCA_plot.pdf  PCA done on clr values
+      - diversity_allsamples.pdf    Diversity barplot
+      - diversity_by_group.pdf      Diversity barplot, stratified by sample group
+      - PCoA_2D_plot_labels.pdf     Principal coordinates analysis, calculated on braycurtis distances
+      - PCoA_2D_plot_nolabels.pdf   Same as above without the point labels
+      - rarefaction_curve.pdf       Rarefaction "collectors" curve plot
+
+   | taxonomy_gctx_classified_only  
+      - bracken_[]_reads.gctx       GCTx file with matrix containing reads classified at each level 
+      - bracken_[]_percentage.gctx  Same, but percentage of classified reads
+
+   | taxonomy_matrices_classified_only
+      - bracken_[]_reads.txt        Matrix of taxa by sample classified reads
+      - bracken_[]_percentage.txt   Same, but percentage of classified reads
+      - clr_values_[].txt           From compositional data analysis, centered log-ratio values at each level
+
+ | processed_results_krakenonly
+   | Same as above, but using the results without Bracken. Also includes taxonomy matrices
+   | that have unclassified reads in them (as bracken no longer reports unclassified reads)
+ 
+ | unmapped reads
+   - sample_unmapped_1.fq           Only present if selected in the config file; reads that are not 
+   - sample_unmapped_2.fq           classified, as paired end fastq.
+```
+
+_Taxonomic barplot_
+![default_barplot](images/taxonomic_barplot.png "Default taxonomic barplot output")
+
+_PCoA plot example_
+![pcoa_plot](images/pcoa_plot.png "PCoA plot")
