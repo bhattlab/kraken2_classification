@@ -125,7 +125,7 @@ rule all:
         expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs,
-        join(outdir, "completed.txt")
+        join(outdir, "kraken2_processing_completed.txt")
         # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
 
 rule kraken:
@@ -206,7 +206,8 @@ rule downstream_processing:
 rule downstream_processing_krakenonly:
     input:
         downstream_processing_input,
-        tax_array = join(config['database'], 'taxonomy_array.tsv')
+        tax_array = 'taxonomy_array.tsv',
+        script_test = 'scripts/post_classification_workflow.R'
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
@@ -224,7 +225,7 @@ rule remove_files_processing:
     input: 
         rules.downstream_processing.output
     output:
-        join(outdir, "completed.txt")
+        join(outdir, "kraken2_processing_completed.txt")
     params:
         scriptdir = join(workflow.basedir, 'scripts')
     shell: """
