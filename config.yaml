@@ -30,6 +30,8 @@ extract_unmapped: False
 
 
 ########### database alternatives (see README): ###########
+# UHGG v1.0 database:
+#     /oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/uhgg
 # Slow, but has sequenced genomes of all quality. Best classification results:
 #     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold
 # Older version of the same database, used in many previous Bhatt lab analyses

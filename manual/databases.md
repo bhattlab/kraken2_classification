@@ -1,5 +1,7 @@
 ## New databases for 2020! 
 There are new databases available for 2020. Chose the right one for your needs:
+- UHGG v1.0 (Downloaded directly from the FTP site)
+    - /oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/uhgg
 - Refseq standard: Refseq genomes assembled to "Complete Genome" or "Scaffold" quality.
     - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/refseq`
     - Genomes from the following categories 
