@@ -254,6 +254,7 @@ for (tn in filter.levels){
 message('Doing diversity calculations and saving figures...')
 
 # DISABLE rarefaction curve as it's useless with so many species
+# Wait actually people want it so Im going to re-enable it
 plot_rarefaction_curve(kgct.filtered.classified.list$species@mat,
                        file.path(outfolder.plots, 'rarefaction_curve.pdf'))
 
@@ -295,6 +296,7 @@ div.plot.list <- list()
 for (g in unique(sample.groups$group)){
     plot.samples <- sample.groups[sample.groups$group==g, "sample"]
     plot.df <- div.df[div.df$sample %in% plot.samples, ]
+    plot.df$sample <- factor(plot.df$sample, levels = sample.groups$sample)
     p <- ggplot(plot.df, aes(x=sample, y=value)) +
         geom_bar(stat='identity') +
         facet_grid(rows = vars(tax.level), cols= vars(method), scales = 'fixed') +
