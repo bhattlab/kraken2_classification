@@ -183,7 +183,7 @@ kgct <- make_gct_from_kraken(merge.mat, sample.metadata, tax.array)
 # filter to each of the taxonomy levels
 if (segata){
     filter.levels <- c('species')
-    kgct.filtered.list <- list(species=subset.gct(kgct, rid=kgct@rid[kgct@rid != 'root']))
+    kgct.filtered.list <- list(species=subset_gct(kgct, rid=kgct@rid[kgct@rid != 'root']))
 } else {
     filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
     kgct.filtered.list <- lapply(filter.levels, function(level) subset_kgct_to_level(kgct, level))
@@ -194,7 +194,7 @@ if (segata){
 
 # subset to classified taxa only
 unclassified.rownames <- c('unclassified', 'classified at a higher level')
-kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset.gct(x, rid=x@rid[!(x@rid %in% unclassified.rownames)]))
+kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset_gct(x, rid=x@rid[!(x@rid %in% unclassified.rownames)]))
 
 # normalize to percentages
 min.frac <- 0.001

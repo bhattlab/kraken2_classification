@@ -105,7 +105,7 @@ subset_kgct_to_level <- function(kgct, level){
     # names(keep.inds) <- NULL
     # print(keep.inds)
     # subset to thse indices
-    kgct.subset <- subset.gct(kgct, rid=keep.inds)
+    kgct.subset <- subset_gct(kgct, rid=keep.inds)
 
     # something to deal with reads unclassified, and classified above this level
     # convention: reads classified above this level have taxid -1
@@ -172,7 +172,7 @@ normalize_kgct <- function(kgct, min.frac = 0.001){
     # must always have unclassified rows if starting with them
     unclassified.rownames <- c('classified at a higher level', 'unclassified')
     keep.rows <- unique(c(unclassified.rownames[unclassified.rownames %in% kgct@rid], keep.rows))
-    kgct <- subset.gct(kgct, keep.rows)
+    kgct <- subset_gct(kgct, keep.rows)
 
     # Normalize again so that columns sum to 100 after we removed some rows
     # catch edge case with one row
