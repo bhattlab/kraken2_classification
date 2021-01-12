@@ -31,6 +31,7 @@ From: continuumio/miniconda3
     Rscript -e 'BiocManager::install("BiocParallel")'
     Rscript -e 'BiocManager::install("ALDEx2")'
 
+
     Rscript -e 'install.packages("stringi", repos = "http://cran.us.r-project.org")'
     # CoDaSeq functions
     # Rscript -e 'install.packages("car", repos = "http://cran.us.r-project.org")'
