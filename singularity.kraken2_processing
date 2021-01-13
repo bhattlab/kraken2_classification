@@ -13,20 +13,22 @@ From: continuumio/miniconda3
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
 
     apt-get install -y libcurl3-dev gcc zlib1g-dev
-    conda install -y -c conda-forge -c r r r-devtools r-ggplot2 r-ggpubr r-rcolorbrewer r-reshape2 r-vegan r-stringi r-devtools r-zcompositions r-compositions r-rafalib r-curl r-data.table
+    conda install -y -c conda-forge -c r -c bioconda r r-devtools r-ggplot2 r-ggpubr r-rcolorbrewer r-reshape2 r-vegan r-stringi r-devtools r-zcompositions r-compositions r-rafalib r-curl r-data.table bioconductor-flowcore 
 
     # install some other packages
     Rscript -e 'install.packages("RCurl", repos = "http://cran.us.r-project.org")'
+    Rscript -e 'install.packages("matrixStats", repos = "http://cran.us.r-project.org")'
     Rscript -e 'install.packages("BiocManager", repos = "http://cran.us.r-project.org")'
 
     # get cmapR and dependencies
     Rscript -e 'devtools::install_github("grimbough/Rhdf5lib")'
     Rscript -e 'BiocManager::install("rhdf5")'
     Rscript -e 'BiocManager::install("prada")'
+    Rscript -e 'BiocManager::install("SummarizedExperiment")'
+    Rscript -e 'BiocManager::install("flowCore")'
     Rscript -e 'devtools::install_github("cmap/cmapR", dependencies = F)'
 
     # aldex2 and dependencies 
-    Rscript -e 'BiocManager::install("SummarizedExperiment")'
     Rscript -e 'BiocManager::install("GenomicRanges")'
     Rscript -e 'BiocManager::install("BiocParallel")'
     Rscript -e 'BiocManager::install("ALDEx2")'
