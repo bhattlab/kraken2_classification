@@ -20,6 +20,9 @@ run_bracken: True
 #    see manual/downstream_plotting.md
 # if empty string specified, all samples will be treated as one group
 sample_groups_file: ''
+# remove everything in the phylum Chordata?
+# # This helps to remove pesky human reads from the matrices and plots
+remove_chordata: True
 ###########################################################
 
 ########### Extracting unmapped reads #####################

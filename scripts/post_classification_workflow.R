@@ -23,6 +23,10 @@ sample.groups.f <- snakemake@params[['sample_groups']]
 workflow.outdir <- snakemake@params[['workflow_outdir']]
 result.dir <- snakemake@params[['result_dir']]
 use.bracken.report <- snakemake@params[['use_bracken_report']]
+remove.chordata <- as.logical(snakemake@params[['remove_chordata']])
+if (length(remove.chordata)==0){
+    remove.chordata <- F
+}
 # now just use locations in the working directory
 scripts.folder <- "scripts"
 # scripts.folder <- snakemake@scriptdir
@@ -180,6 +184,10 @@ sample.metadata <- data.frame(id=sample.groups$sample, group=sample.groups$group
 # construct gct object from reads matrix, sample metadata, row metadata
 kgct <- make_gct_from_kraken(merge.mat, sample.metadata, tax.array)
 
+# remove Chordata reads if desired
+if(remove.chordata){
+    kgct <- subset_gct(kgct, rid=kgct@rid[kgct@rdesc$phylum != "Chordata"])
+}
 # filter to each of the taxonomy levels
 if (segata){
     filter.levels <- c('species')
@@ -479,7 +487,7 @@ if (nrow(sample.groups) < 3){
     }
 
     print('Compositional data analysis....')
-    for (tax.level in do.tax.levels[do.tax.levels != 'kingdom']){
+    for (tax.level in do.tax.levels[!(do.tax.levels %in% c('kingdom'))]){
         print(paste('.....', tax.level))
         # AT A SPECIFIC TAX LEVEL: filtering
         # keep only those samples with > min.reads
@@ -511,7 +519,7 @@ if (nrow(sample.groups) < 3){
             }
 
             # convert to CLR
-            clr.aldex <- aldex.clr(rfz, conds=NA, mc.samples=128, denom = 'all', verbose = F)
+            clr.aldex <- aldex.clr(rfz, mc.samples=128, denom = 'all', verbose = F)
             # get clr from mean of the MC instances
             rfz.clr <- t(sapply(clr.aldex@analysisData , function(x) rowMeans(x)))
             # save CLR matrix

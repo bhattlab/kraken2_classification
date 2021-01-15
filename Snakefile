@@ -7,6 +7,9 @@ import time
 # output base directory
 outdir = config['outdir']
 localrules: downstream_processing, downstream_processing_krakenonly, bracken
+# set remove chordata if it doesnt exist
+if not "remove_chordata" in config:
+    config['remove_chordata'] = 'FALSE'
 
 #perform a check on the Lathe git repo and warn if not up to date
 onstart:
@@ -122,7 +125,7 @@ else:
 rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
-        expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
+        # expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs,
         join(outdir, "kraken2_processing_completed.txt")
@@ -210,7 +213,8 @@ rule downstream_processing:
         sample_groups = config["sample_groups_file"],
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results'),
-        use_bracken_report = config['run_bracken']
+        use_bracken_report = config['run_bracken'],
+        remove_chordata = config['remove_chordata']
     singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf')
@@ -227,7 +231,8 @@ rule downstream_processing_krakenonly:
         sample_groups = config["sample_groups_file"],
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results_krakenonly'),
-        use_bracken_report = False
+        use_bracken_report = False,
+	remove_chordata = config['remove_chordata']
     singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf')
