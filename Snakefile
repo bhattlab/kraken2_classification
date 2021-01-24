@@ -6,7 +6,7 @@ import snakemake
 import time
 # output base directory
 outdir = config['outdir']
-localrules: downstream_processing, downstream_processing_krakenonly, bracken
+localrules: downstream_processing, downstream_processing_krakenonly, bracken, copy_files_processing, create_taxonomy_array
 # set remove chordata if it doesnt exist
 if not "remove_chordata" in config:
     config['remove_chordata'] = 'FALSE'
