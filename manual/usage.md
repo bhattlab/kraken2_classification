@@ -29,6 +29,11 @@ _Refresher_ To get an interactive session, run something like this (change cores
 srun -t 1:00:00 -p interactive  -n 1 -c 8 --mem=256000 --pty bash
 ```
 
+After running the workflow and you're satisfied the results, run the cleanup command to remove temporary files that are not needed anymore. 
+```
+snakemake cleanup -s path/to/Snakefile --configfile config.yaml
+```
+
 ### Downstream processing
 Kraken/Bracken reports are processed into matrices containing read counts classified at the genus and species level, as well as relative proportions. Several plots are produced with taxonomic barplots and diversity metrics. Samples can be split into separate groups for a patient, treatment group, etc. To do so, specify a tab delimited file with sample names and groups. Sample names must match the `samples.tsv` above. By default this is called `sample_groups.tsv` Example:
 ```

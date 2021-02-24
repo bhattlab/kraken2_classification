@@ -299,6 +299,20 @@ rule extract_unmapped_single:
         # rm {params.tempfile}
     """
 
+
+################################################################################
+# cleanup to be run after everything else is finished
+rule cleanup:
+    input: join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf')
+    output: join(outdir, "cleaned")
+    params:
+        rmdir_1 = join(outdir, 'classification'),
+    shell: """
+        rm -f {params.rmdir_1}/*.krak
+        touch {output}
+    """
+
+
 '''
 # convert bracken to mpa syle report if desired
 rule convert_bracken_mpa:

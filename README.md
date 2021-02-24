@@ -35,6 +35,12 @@ Copy the `config.yaml` file into the working directory for your samples. Change 
 snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /oak/,/labs/,/home' --profile scg --jobs 99
 ```
 
+After running the workflow and you're satisfied the results, run the cleanup command to remove temporary files that are not needed anymore. 
+```
+snakemake cleanup -s path/to/Snakefile --configfile config.yaml
+```
+
+
 ## Parsing output reports
 The Kraken reports `classification/sample.krak.report`, bracken reports `sample.krak_bracken.report`, and data matrices or GCTx objects in the `processed_results` folder are the best for downstream analysis. See [Downstream processing and plotting](manual/downstream_plotting.md) for details on using the data in R. 
 
