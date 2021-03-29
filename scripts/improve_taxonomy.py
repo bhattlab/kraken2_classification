@@ -56,9 +56,16 @@ def fill_taxonomy(path, ranks, taxid, name):
                 'species': '',
                 'subspecies': ''
                 }
+    orig_keys = list(tax_dict.keys())
     for a,b in zip(ranks, path):
         tax_dict[a]=b
-    return(list(tax_dict.values()))
+    # check for domain
+    if 'domain' in tax_dict.keys():
+        tax_dict['kingdom'] = tax_dict['domain']
+    # ensure no invalid ranks
+    tax_dict = {key: value for key, value in tax_dict.items() if key in orig_keys}
+    to_return = list(tax_dict.values())
+    return(to_return)
 
 def main():
     taxdir = sys.argv[1]
@@ -189,10 +196,10 @@ def main():
     # 11 column matrix: 
     #  name, taxid, root, taxonomy(kingdom - species)
     all_filled = np.array([fill_taxonomy(a,b,c,d) for a,b,c,d in zip(all_paths, all_ranks, taxids, names)])
-
     # and now its all in a beautiful and organized matrix!
     # should also have unclassified in it
-    tax_array = np.append([['unclassified', '0', '', '','','','','','','','']], all_filled, axis=0)
+    to_add = [['unclassified', '0', '', '','','','','','','','']]
+    tax_array = np.append(to_add, all_filled, axis=0)
     np.savetxt(join(taxdir, 'taxonomy_array.tsv'), tax_array, delimiter='\t', fmt="%s")
 
     # print out a rendered version of the tree
