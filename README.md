@@ -21,18 +21,27 @@ Also as of this update, the NCBI taxonomy information used by Kraken is filtered
 
 ## Quickstart
 #### Install
-If you're in the Bhatt lab, most of this work will take place on the SCG cluster. Otherwise, set this up on your own cluster or local machine (with a small database only). You will have to [build a database](manual/db_construction.md), create the `taxonomy_array.tsv` file (instructions at previous link), set the database options, and create the [sample input files](manual/usage.md). Thanks to Singularity, all you need to have installed is snakemake. See the instructions [here](https://github.com/bhattlab/bhattlab_workflows/) to set up snakemake and set up a profile to submit jobs to the cluster. 
+If you're in the Bhatt lab, most of this work will take place on the SCG cluster. Otherwise, set this up on your own cluster or local machine. You will have to [build a database](manual/db_construction.md), create the `taxonomy_array.tsv` file (instructions at the [build a database page](manual/db_construction.md)), set the database options, and create the [sample input files](manual/usage.md). Thanks to Singularity containerization, you can run this pipeline with only Snakemake installed and no extra software! 
 
-Then clone the repo wherever is convenient for you. I use a directory in `~/projects`
+If you're in the Bhatt lab, use the instructions [here](https://github.com/bhattlab/bhattlab_workflows/blob/master/manual/setup.md) to set up snakemake and set up a profile to submit jobs to the SCG cluster. If not, I recommend installing snakemake in a [conda](https://docs.conda.io/en/latest/miniconda.html) environment. 
+
+Then, clone this repo wherever is convenient for you. I use a directory in `~/projects`
 ```
 cd ~/projects
 git clone https://github.com/bhattlab/kraken2_classification.git
 ```
 #### Run
-Copy the `config.yaml` file into the working directory for your samples. Change the options to suit your projects and make sure you specify the right `samples.tsv` file. See [Usage](manual/usage.md) for more detail. You can then lauch the workflow with a snakemake command like so:
+Copy the `config.yaml` file into the working directory for your samples. Change the options to suit your projects and make sure you specify the right `samples.tsv` file. See [Usage](manual/usage.md) for more detail.
+
+On the Bhatt lab SCG cluster, you can then launch the workflow with a snakemake command like so:
 ```
 # Snakemake workflow - change options in config.yaml first
 snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --singularity-args '--bind /oak/,/labs/,/home' --profile scg --jobs 99
+```
+
+If you're not in the Bhatt lab, a more general command should be sufficient, but you might need to add singularity bind arguments or a profile for SLURM job submission depending on your configuration. This example uses 8 cores, but that can be changed to reflect available resources.
+```
+snakemake -s path/to/Snakefile --configfile config.yaml --use-singularity --jobs 8 --cores 8
 ```
 
 After running the workflow and you're satisfied the results, run the cleanup command to remove temporary files that are not needed anymore. 
