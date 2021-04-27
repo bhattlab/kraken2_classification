@@ -12,5 +12,3 @@ conda env create -f classification2.yaml
 mkdir $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy
 ktUpdateTaxonomy.sh 
 ```
-
-*NOTE* [Bracken](downstream_plotting.md) installation with conda is currently broken. You must install the package from source at the [Bracken github](https://github.com/jenniferlu717/Bracken/). Clone the repository and then follow the installation instructions. 
