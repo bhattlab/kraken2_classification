@@ -45,15 +45,15 @@ print(paste('scriptdir:', scripts.folder))
 # scripts.folder <- '~/projects/kraken2_classification/scripts/'
 # tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
 
-# # chris testing
-# sample.reads.f <- '~/scg/Ctrl_preNov2019/controls_new.txt'
+# testing one col debug
+# sample.reads.f <- '~/Desktop/kraken_test/classification_input.txt'
 # sample.groups.f <- ''
-# workflow.outdir <- '~/scg/Ctrl_preNov2019/'
-# result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out2/'
+# workflow.outdir <- '~/Desktop/kraken_test/'
+# result.dir <- '~/Desktop/kraken_test/processed_results/'
 # use.bracken.report <- T
 # scripts.folder <- '~/projects/kraken2_classification/scripts/'
-# tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
-
+# tax.array.file <- '~/Desktop/kraken_test/taxonomy_array.tsv'
+# remove.chordata <- F
 # # for segata debug
 # scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
 # sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples_2018_unmapped.tsv'

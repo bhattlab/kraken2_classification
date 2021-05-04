@@ -168,7 +168,12 @@ normalize_kgct <- function(kgct, min.frac = 0.001){
     round.places <- ceiling(-log10(min.frac))
     kgct@mat <- round(kgct@mat, round.places)
     # filter to only rows with > filter_thresh abundance in one sample
-    keep.rows <- kgct@rid[apply(kgct@mat, 1, function(x) sum(x>min.frac)>1)]
+    # catch edge case with one column
+    if (ncol(kgct@mat)==1) {
+        keep.rows <- kgct@rid[which(kgct@mat > min.frac)]
+    } else{
+        keep.rows <- kgct@rid[apply(kgct@mat, 1, function(x) sum(x>min.frac)>1)]
+    }
     # must always have unclassified rows if starting with them
     unclassified.rownames <- c('classified at a higher level', 'unclassified')
     keep.rows <- unique(c(unclassified.rownames[unclassified.rownames %in% kgct@rid], keep.rows))
