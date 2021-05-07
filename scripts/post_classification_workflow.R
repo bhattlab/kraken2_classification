@@ -519,7 +519,7 @@ if (nrow(sample.groups) < 3){
             }
 
             # convert to CLR
-            clr.aldex <- aldex.clr(rfz, conds=NA, mc.samples=128, denom = 'all', verbose = F)
+            clr.aldex <- aldex.clr(rfz, conds=rep(NA, ncol(rfz)), mc.samples=128, denom = 'all', verbose = F)
             # get clr from mean of the MC instances
             rfz.clr <- t(sapply(clr.aldex@analysisData , function(x) rowMeans(x)))
             # save CLR matrix
