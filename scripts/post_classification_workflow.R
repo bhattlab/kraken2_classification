@@ -207,7 +207,9 @@ if (segata){
     kgct.filtered.list <- list(species=subset_gct(kgct, rid=kgct@rid[kgct@rid != 'root']))
 } else {
     filter.levels <-  c('kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
-    kgct.filtered.list <- lapply(filter.levels, function(level) subset_kgct_to_level(kgct, level))
+    kgct.filtered.list <- lapply(filter.levels, function(level) {
+        subset_kgct_to_level(kgct, level)
+        })
     names(kgct.filtered.list) <- filter.levels
 }
 # print("kgct.filtered.list[['species']]@mat")

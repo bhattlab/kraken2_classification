@@ -88,6 +88,9 @@ subset_kgct_to_level <- function(kgct, level){
         below.levels <- ''
     } else {
         below.levels <- valid.levels[(which(valid.levels == level) +1):length(valid.levels)]
+        if ( ("subspecies" %in% below.levels ) & (!'subspecies' %in% colnames(kgct@rdesc))){
+            below.levels <- below.levels[below.levels != 'subspecies']
+        }
     }
     # to filter to a level, tax entry at that level must be nonempty
     # and all levels BELOW musst be empty
