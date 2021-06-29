@@ -151,9 +151,9 @@ check_gct_filtered <- function(kgct){
 
 # normalize a gct matrix from reads to percentages
 # and filter rows with minimal abundance
-normalize_kgct <- function(kgct, min.frac = 0.001){
+normalize_kgct <- function(kgct, min.frac = 0.001, check_filtered=TRUE){
     # this can only be done at a specific taxonomic level
-    if (!check_gct_filtered(kgct)) {
+    if (!check_gct_filtered(kgct) & check_filtered) {
         stop('GCT must be filtered to a single tax level before normalizing')
     }
 

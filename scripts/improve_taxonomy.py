@@ -43,19 +43,32 @@ def get_root(nodes, name_super_string, level_super_string):
     return root
 
 # helper function to fill taxonomy ranks
-def fill_taxonomy(path, ranks, taxid, name):
-    tax_dict = {'name': name, 
-                'taxid': taxid, 
-                'root': 'root', 
-                'kingdom': '',
-                'phylum': '',
-                'class': '',
-                'order': '',
-                'family': '',
-                'genus': '',
-                'species': '',
-                'subspecies': ''
-                }
+def fill_taxonomy(path, ranks, taxid, name, uhgg=False):
+    if uhgg: 
+        tax_dict = {'name': name, 
+                    'taxid': taxid, 
+                    'ro': 'root', 
+                    'kingd': '',
+                    'phyl': '',
+                    'cla': '',
+                    'ord': '',
+                    'fami': '',
+                    'gen': '',
+                    'speci': '',
+                    }
+    else:
+        tax_dict = {'name': name, 
+                    'taxid': taxid, 
+                    'root': 'root', 
+                    'kingdom': '',
+                    'phylum': '',
+                    'class': '',
+                    'order': '',
+                    'family': '',
+                    'genus': '',
+                    'species': '',
+                    'subspecies': ''
+                    }
     orig_keys = list(tax_dict.keys())
     for a,b in zip(ranks, path):
         tax_dict[a]=b
@@ -121,15 +134,29 @@ def main():
     #   4c) set all superkingdoms to kingdom 
     #   4d) set Fungi and metazoa to be direct descendants of root
 
+    # detect if we're working with the UHGG database here, 
+    # as the taxonomic levels are different. 
+    if 'speci' in levels and 'gen' in levels:
+        working_with_uhgg = True
+        print ("Detected working with UHGG database")
+        root_rank_name = 'ro'
+        species_rank_name = 'speci'
+        keep_ranks = ['cla', 'fami', 'gen', 'kingd', 'ord', 'phyl', 'ro', 'speci']
+    else:
+        working_with_uhgg = False
+        root_rank_name = 'root'
+        species_rank_name = 'species'
+        keep_ranks = ['superkingdom', 'kingdom', 'domain', 'phylum', 'class', 'order', 'family',
+                       'genus', 'subspecies', 'species']
+
     root = get_root(nodes, name_super_string, level_super_string)
-    root.rank = 'root'
-    keep_ranks = ['superkingdom', 'kingdom', 'domain', 'phylum', 'class', 'order', 'family',
-                   'genus', 'subspecies', 'species']
+    root.rank = root_rank_name
     all_levels = [node.rank for node in PreOrderIter(root)]
+    
 
     # mark all levels below species as subspecies
     # find species, get all their children, mark them 
-    species_nodes = [node for node in PreOrderIter(root, filter_=lambda n: n.rank=='species')]
+    species_nodes = [node for node in PreOrderIter(root, filter_=lambda n: n.rank==species_rank_name)]
     for n in species_nodes:
         for c in n.children:
             c.rank = 'subspecies'
@@ -195,10 +222,13 @@ def main():
     # fill in a matrix of each tax level
     # 11 column matrix: 
     #  name, taxid, root, taxonomy(kingdom - species)
-    all_filled = np.array([fill_taxonomy(a,b,c,d) for a,b,c,d in zip(all_paths, all_ranks, taxids, names)])
+    all_filled = np.array([fill_taxonomy(a,b,c,d, working_with_uhgg) for a,b,c,d in zip(all_paths, all_ranks, taxids, names)])
     # and now its all in a beautiful and organized matrix!
     # should also have unclassified in it
-    to_add = [['unclassified', '0', '', '','','','','','','','']]
+    if working_with_uhgg: 
+        to_add = [['unclassified', '0', '', '','','','','','','']]
+    else:
+        to_add = [['unclassified', '0', '', '','','','','','','','']]
     tax_array = np.append(to_add, all_filled, axis=0)
     np.savetxt(join(taxdir, 'taxonomy_array.tsv'), tax_array, delimiter='\t', fmt="%s")
 

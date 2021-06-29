@@ -64,6 +64,16 @@ print(paste('scriptdir:', scripts.folder))
 # outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 # outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 # outfolder.plots <- file.path(result.dir, 'plots')
+
+# testing with UHGG
+# sample.reads.f <- '~/scg/gutdecon_data/bas_kraken2_classification/sample_reads.txt'
+# sample.groups.f <- '~/scg/gutdecon_data/bas_kraken2_classification/sample_groups.txt'
+# workflow.outdir <- '~/scg/gutdecon_data/bas_kraken2_classification_UHGG/'
+# result.dir <- '~/scg/gutdecon_data/bas_kraken2_classification_UHGG/processed_results'
+# use.bracken.report <- TRUE
+# remove.chordata <- FALSE
+# scripts.folder <- '~/projects/kraken2_classification/scripts/'
+# tax.array.file <- '~/scg/kraken2_db/uhgg/taxonomy_array.tsv'
 ######################################################################################################
 
 # set up directories and make those that don't exist
@@ -133,7 +143,7 @@ if (sample.groups.f != '') {
 # classification at each level for each entry in the database.
 # simplified after processing krakens default taxonomy
 tax.array <- read.table(tax.array.file, sep='\t', quote='', header=F, comment.char = '', colClasses = 'character')
-colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')
+colnames(tax.array) <- c('id', 'taxid', 'root', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'subspecies')[1:ncol(tax.array)]
 # Bug in generation code gave muliple zero taxids. Eliminate that here now
 tax.array <- tax.array[!duplicated(tax.array$taxid),]
 rownames(tax.array) <- tax.array$taxid
@@ -168,9 +178,12 @@ if (!(all(file.exists(flist)))){
     stop("Some classification files do not exist!")
 }
 
-# special case for MAG databases.
-# need something to limit to Segata database
+# special case for UHGG and MAG databases.
+# if reading from UHGG, the taxonomy levels go R, R1-R7
 test.df <- kraken_file_to_df(flist[1])
+# UHGG database will have
+uhgg <- all(paste0('R', 1:7) %in% test.df$tax.level)
+# MAG database will have this
 # like number of genus classifications is zero or something
 segata <- sum(sum(test.df$tax.level=='G')) == 0
 
