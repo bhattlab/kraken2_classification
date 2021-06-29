@@ -185,7 +185,7 @@ test.df <- kraken_file_to_df(flist[1])
 uhgg <- all(paste0('R', 1:7) %in% test.df$tax.level)
 # MAG database will have this
 # like number of genus classifications is zero or something
-segata <- sum(sum(test.df$tax.level=='G')) == 0
+segata <- !uhgg & sum(sum(test.df$tax.level=='G')) == 0
 
 # load classification results from each sample and process into gct format
 message(paste('Loading data from ', length(flist), ' kraken/bracken results.', sep=''))
