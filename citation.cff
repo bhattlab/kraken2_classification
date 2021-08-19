@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Siranosian
+    given-names: Benjamin
+    orcid: https://orcid.org/0000-0002-4935-8172
+  - family-names: Bhatt
+    given-names: Ami
+    orcid: https://orcid.org/0000-0001-8099-2975
+title: "bhattlab/Kraken2_classification"
+version: 1.0.0
+doi: 10.5281/zenodo.5219057
+date-released: 2021-08-18
