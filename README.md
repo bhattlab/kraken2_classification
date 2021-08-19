@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/155569982.svg)](https://zenodo.org/badge/latestdoi/155569982)
+
 # Kraken2 classification
 A Snakemake pipeline wrapper of the Kraken2 short read metagenomic classification software, with additional tools for analysis, plots, compositional data and differential abundance calculation. Designed and maintained by Ben Siranosian in [Ami Bhatt's lab](http://www.bhattlab.com/) at Stanford University. 
 
