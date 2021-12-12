@@ -113,8 +113,10 @@ run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
 # set some resource requirements
 if config['database'] in ['/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
                           '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold',
+                          '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold',
                           '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
-                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold']:
+                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold',
+                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold']:
     kraken_memory = 256
     kraken_threads = 8
 else:
@@ -173,7 +175,8 @@ rule kraken:
     resources:
         mem=kraken_memory,
         time=6
-    singularity: "docker://quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
+    singularity: "docker://quay.io/biocontainers/kraken2:2.1.2--pl5262h7d875b9_0"
+    # singularity: "docker://quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} --use-names
@@ -195,7 +198,8 @@ rule bracken:
     resources:
         mem = 64,
         time = 1
-    singularity: "docker://quay.io/biocontainers/bracken:2.2--py27h2d50403_1"
+    singularity: "docker://quay.io/biocontainers/bracken:2.6.1--py38hed8969a_0"
+    # singularity: "docker://quay.io/biocontainers/bracken:2.2--py27h2d50403_1"
     shell: """
         bracken -d {params.db} -i {input.krak_report} -o {params.outspec} -r {params.readlen} \
         -l {params.level} -t {params.threshold}
