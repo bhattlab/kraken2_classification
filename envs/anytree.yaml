@@ -1,0 +1,7 @@
+name: anytree
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - anytree
+  - numpy

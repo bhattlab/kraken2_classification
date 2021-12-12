@@ -85,7 +85,7 @@ extra_run_list =[]
 if config['run_bracken']:
     extra_run_list.append('bracken')
     extra_run_list.append('krakenonly_processed')
-    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak_bracken.report"), samp=sample_names)
+    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names)
 else:
     downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
 
@@ -98,7 +98,7 @@ if config['extract_unmapped']:
 
 # additional outputs determined by whats specified in the readme
 extra_files = {
-    "bracken": expand(join(outdir, "classification/{samp}.krak_bracken.report"), samp=sample_names),
+    "bracken": expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names),
     "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf'),
     "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
     "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
@@ -123,6 +123,11 @@ else:
     kraken_memory = 64
     kraken_threads = 4
 
+# Taxonomic level can only be species right now. A future fix could look at the 
+# output file name of Bracken and adjust based on taxonomic level. But I don't think
+# anyone uses anything other than species
+if config['taxonomic_level'] != 'S':
+    sys.exit('taxonomic_level setting can only be S')
 
 rule all:
     input:
@@ -142,6 +147,7 @@ rule create_taxonomy_array:
     params: 
         db = config['database'],
         improve_taxonomy_script = join(workflow.basedir, 'scripts', 'improve_taxonomy.py')
+    conda: "envs/anytree.yaml"
     shell: """
         python {params.improve_taxonomy_script} {params.db}
     """
@@ -153,13 +159,13 @@ rule copy_files_processing:
     input: 
         tax_array = join(config['database'], 'taxonomy_array.tsv')
     output:
-        'taxonomy_array.tsv',
-        script_test = 'scripts/post_classification_workflow.R'
+        '{outdir}/taxonomy_array.tsv',
+        '{outdir}/scripts/post_classification_workflow.R'
     params:
         scriptdir = join(workflow.basedir, 'scripts')
     shell: """
-    cp -r {params.scriptdir} .
-    cp {input.tax_array} .
+    cp -r {params.scriptdir} {outdir}
+    cp {input.tax_array} {outdir}
     """
 
 rule kraken:
@@ -187,7 +193,7 @@ rule bracken:
         krak_report = join(outdir, "classification/{samp}.krak.report"),
         krak = join(outdir, "classification/{samp}.krak")
     output:
-        join(outdir, "classification/{samp}.krak_bracken.report"),
+        join(outdir, "classification/{samp}.krak_bracken_species.report"),
     params:
         db = config['database'],
         readlen = config['read_length'],
@@ -210,8 +216,8 @@ rule bracken:
 rule downstream_processing:
     input:
         downstream_processing_input,
-        tax_array = 'taxonomy_array.tsv',
-        script_test = 'scripts/post_classification_workflow.R'
+        tax_array = join(outdir, 'taxonomy_array.tsv'),
+        script_test = join(outdir, 'scripts/post_classification_workflow.R')
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
@@ -228,8 +234,8 @@ rule downstream_processing:
 rule downstream_processing_krakenonly:
     input:
         downstream_processing_input,
-        tax_array = 'taxonomy_array.tsv',
-        script_test = 'scripts/post_classification_workflow.R'
+        tax_array = join(outdir, 'taxonomy_array.tsv'),
+        script_test = join(outdir, 'scripts/post_classification_workflow.R')
     params:
         sample_reads = config["sample_file"],
         sample_groups = config["sample_groups_file"],
@@ -250,10 +256,10 @@ rule remove_files_processing:
     output:
         join(outdir, "kraken2_processing_completed.txt")
     params:
-        scriptdir = join(workflow.basedir, 'scripts')
+        workflow_outdir = outdir
     shell: """
-    rm -rf scripts
-    rm -f taxonomy_array.tsv
+    rm -rf {params.workflow_outdir}/scripts
+    rm -f {params.workflow_outdir}/taxonomy_array.tsv
     touch {output}
     """
 

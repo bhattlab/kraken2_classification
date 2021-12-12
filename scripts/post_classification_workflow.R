@@ -1,7 +1,7 @@
 # Processing kraken results into matrices and plots
 # Ben Siranosian - Bhatt lab - Stanford Genetics
 # bsiranosian@gmail.com
-# January 2019 - November 2019
+# January 2019 - December 2021
 
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
@@ -28,22 +28,21 @@ if (length(remove.chordata)==0){
     remove.chordata <- F
 }
 # now just use locations in the working directory
-scripts.folder <- "scripts"
+scripts.folder <- file.path(workflow.outdir, "scripts")
 # scripts.folder <- snakemake@scriptdir
-tax.array.file <- 'taxonomy_array.tsv'
+tax.array.file <- file.path(workflow.outdir, "taxonomy_array.tsv")
 # tax.array.file <- snakemake@input[['tax_array']]
 print(paste('scriptdir:', scripts.folder))
 ############ Testing Args ############################################################################
-# sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples.tsv'
-# sample.groups.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/sample_groups.tsv'
-# # sample.reads.f <- '~/bhatt_local/kraken2_testing/small_hct_dataset/samples_1.tsv'
-# # sample.groups.f <- ''
-# workflow.outdir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/kraken2_classification_feb2019/'
-# result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out/'
-# # result.dir <- '~/bhatt_local/kraken2_testing/small_hct_dataset/test_processing_out_1/'
+# testing 2021 database things 
+# sample.reads.f <- '~/scg_lab/bootcamp/zeiser/preprocessing/01_processing/classification_input.txt'
+# sample.groups.f <- '~/scg_lab/bootcamp/zeiser/sample_groups.tsv'
+# workflow.outdir <- '~/scg_lab/bootcamp/zeiser/kraken2_classification_2021/genbank_viral/'
+# result.dir <- '~/scg_lab/bootcamp/zeiser/kraken2_classification_2021/genbank_viral/processed_results/'
 # use.bracken.report <- T
-# scripts.folder <- '~/projects/kraken2_classification/scripts/'
-# tax.array.file <- '~/bhatt_local/kraken2_testing/taxonomy_parsing/tax_array.tsv'
+# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
+# tax.array.file <- '~/scg/kraken2_db/kraken_custom_dec2021/genbank_viral/taxonomy_array.tsv'
+# remove.chordata <- F
 
 # testing one col debug
 # sample.reads.f <- '~/Desktop/kraken_test/classification_input.txt'
@@ -168,7 +167,7 @@ if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$samp
 }
 
 # get sample names
-if (use.bracken.report){f.ext <- '.krak_bracken.report'} else {f.ext <- '.krak.report'}
+if (use.bracken.report){f.ext <- '.krak_bracken_species.report'} else {f.ext <- '.krak.report'}
 flist <- sapply(sample.groups$sample, function(x) file.path(classification.folder, paste(x, f.ext, sep='')))
 names(flist) <- sample.groups$sample
 if (!(all(file.exists(flist)))){
@@ -260,14 +259,14 @@ for (tn in filter.levels){
     }
     write.table(mat.percentage.classified, outf.mat.percentage.classified, sep='\t', quote=F, row.names = T, col.names = T)
 
-    # save gctx
+    # save gctx 
     # only save with unclassified if not using Bracken
     if (!use.bracken.report){
-        suppressMessages(write.gctx(kgct.filtered.list[[tn]], outf.gctx.reads, appenddim = F))
-        suppressMessages(write.gctx(kgct.filtered.percentage.list[[tn]], outf.gctx.percentage, appenddim = F))
+        suppressMessages(write_gctx(kgct.filtered.list[[tn]], outf.gctx.reads, appenddim = F))
+        suppressMessages(write_gctx(kgct.filtered.percentage.list[[tn]], outf.gctx.percentage, appenddim = F))
     }
-    suppressMessages(write.gctx(kgct.filtered.classified.list[[tn]], outf.gctx.reads.classified, appenddim = F))
-    suppressMessages(write.gctx(kgct.filtered.classified.percentage.list[[tn]], outf.gctx.percentage.classified, appenddim = F))
+    suppressMessages(write_gctx(kgct.filtered.classified.list[[tn]], outf.gctx.reads.classified, appenddim = F))
+    suppressMessages(write_gctx(kgct.filtered.classified.percentage.list[[tn]], outf.gctx.percentage.classified, appenddim = F))
 }
 
 
