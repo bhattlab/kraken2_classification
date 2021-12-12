@@ -1,3 +1,32 @@
+## New databases, December 2021
+Refseq and Genbank databases have been updated as of December 10, 2021. The format generally follows the same as the previous database sets. Due to the segfault issue in Bracken that has been [unfixed for years](https://github.com/jenniferlu717/Bracken/issues/54#issuecomment-968787387) I couldn't get the custom crAss-like phages integrated into these databases. There are many more crAss-like phages in Genbank these days, which should cover much of the diversity of the clade. If you need the crAss-like pahge taxonomy, use the 2020 databases. Check the `inspect.out` file in each database directory  
+
+- Refseq standard: Refseq genomes assembled to "Complete Genome" or "Scaffold" quality.
+    - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/refseq`
+    - Genomes from the following categories 
+        - Bacteria 
+        - Archaea
+        - Fungi
+        - Human
+        - Mouse
+        - Plasmid
+- Refseq viral: same as above, but only viral sequences
+    - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/refseq_viral`
+- Genbank expanded: Genbank genomes assembled to "Complete Genome" "Scaffold" or "Chromosome" quality from the following categories. The largest and most permissive database. Note that 256G memory necessary for this database.
+    - SCG location: `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold`
+    - Genomes from the following categories 
+        - Bacteria 
+        - Archaea
+        - Fungi
+        - Human
+        - Mouse
+        - Plasmid
+- Genbank viral: same as above, but only viral sequences
+    - `/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_viral`
+
+Be aware that Genbank contains sequences that were not high quality enough to be added to Refseq. This includes things like MAGs, environmental samples, etc. Some of those genomes are of interest to us, like surveillance projects. See [this page](https://www.ncbi.nlm.nih.gov/assembly/help/anomnotrefseq/) for information on Genbank vs Refseq.
+
+
 ## New databases for 2020! 
 There are new databases available for 2020. Chose the right one for your needs:
 - UHGG v1.0 (Downloaded directly from the FTP site)
