@@ -80,6 +80,8 @@ else:
 sample_names = sample_reads.keys()
 
 # also read in desired confidence threshold for Kraken
+if not 'confidence_threshold' in config:
+    config['confidence_threshold'] = 0.0
 confidence_threshold = config['confidence_threshold']
 
 # extra specified files to generate from the config file
