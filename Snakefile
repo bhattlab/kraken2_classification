@@ -182,7 +182,7 @@ rule kraken:
     params:
         db = config['database'],
         paired_string = paired_string,
-	confidence_threshold = confidence_threshold
+        confidence_threshold = confidence_threshold
     threads: kraken_threads
     resources:
         mem=kraken_memory,
@@ -192,7 +192,7 @@ rule kraken:
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} \
-	--confidence {params.confidence_threshold} --use-names
+        --confidence {params.confidence_threshold} --use-names
         """
 
 rule bracken:
@@ -249,7 +249,7 @@ rule downstream_processing_krakenonly:
         workflow_outdir = outdir,
         result_dir = join(outdir, 'processed_results_krakenonly'),
         use_bracken_report = False,
-	remove_chordata = config['remove_chordata']
+        remove_chordata = config['remove_chordata']
     singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
         join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf')
