@@ -79,6 +79,11 @@ else:
     paired_string = ''
 sample_names = sample_reads.keys()
 
+# also read in desired confidence threshold for Kraken
+if not 'confidence_threshold' in config:
+    config['confidence_threshold'] = 0.0
+confidence_threshold = config['confidence_threshold']
+
 # extra specified files to generate from the config file
 extra_run_list =[]
 # add bracken to extra files if running it
@@ -176,7 +181,8 @@ rule kraken:
         krak_report = join(outdir, "classification/{samp}.krak.report")
     params:
         db = config['database'],
-        paired_string = paired_string
+        paired_string = paired_string,
+	confidence_threshold = confidence_threshold
     threads: kraken_threads
     resources:
         mem=kraken_memory,
@@ -185,7 +191,8 @@ rule kraken:
     # singularity: "docker://quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
-        --report {output.krak_report} {params.paired_string} {input.reads} --use-names
+        --report {output.krak_report} {params.paired_string} {input.reads} \
+	--confidence {params.confidence_threshold} --use-names
         """
 
 rule bracken:
