@@ -506,8 +506,9 @@ if (nrow(sample.groups) < 3){
         # AT A SPECIFIC TAX LEVEL: filtering
         # keep only those samples with > min.reads
         min.reads <- 5000
-        # keep only OTUs with an abundance of at least 0.01
-        min.prop = 0.01
+        # keep only OTUs with an FRACTION of at least 0.001
+        # This is equivalent to a PERCENTAGE of 0.1
+        min.prop = 0.001
         # keep OTUs that are found in at least 30% of samples
         cutoff = .3
         use.mat <- kgct.filtered.classified.list[[tax.level]]@mat
