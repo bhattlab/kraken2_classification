@@ -1,0 +1,42 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Bacteroides uniformis	820	S	300	349	649	0.13140
+Bacteroides sp. M10	2763022	S	47	64	111	0.02247
+Bacteroides sp. D2	556259	S	18	41	59	0.01195
+Bacteroides faecis	674529	S	58	19	77	0.01559
+Bacteroides fragilis	817	S	34	25	59	0.01195
+Bacteroides ovatus	28116	S	23	80	103	0.02085
+Bacteroides thetaiotaomicron	818	S	14	3	17	0.00344
+Phocaeicola dorei	357276	S	589	368	957	0.19376
+Parabacteroides distasonis	823	S	98	96	194	0.03928
+Alistipes finegoldii	214856	S	58	15	73	0.01478
+Alistipes shahii	328814	S	25	5	30	0.00607
+Alistipes onderdonkii	328813	S	23	3	26	0.00526
+Odoribacter splanchnicus	28118	S	11	0	11	0.00223
+Blautia wexlerae	418240	S	181	98	279	0.05649
+Blautia obeum	40520	S	72	29	101	0.02045
+Roseburia hominis	301301	S	100	31	131	0.02652
+Roseburia intestinalis	166486	S	28	18	46	0.00931
+Anaerobutyricum hallii	39488	S	82	15	97	0.01964
+[Ruminococcus] lactaris	46228	S	32	5	37	0.00749
+[Ruminococcus] gnavus	33038	S	15	4	19	0.00385
+[Ruminococcus] torques	33039	S	13	5	18	0.00364
+Coprococcus comes	410072	S	37	16	53	0.01073
+Coprococcus catus	116085	S	17	5	22	0.00445
+Anaerostipes hadrus	649756	S	54	12	66	0.01336
+Dorea longicatena	88431	S	34	11	45	0.00911
+Simiaoa sunii	2763672	S	32	7	39	0.00790
+Faecalibacterium sp. I3-3-89	2929493	S	69	50	119	0.02409
+Faecalibacterium sp. I4-3-84	2929495	S	27	60	87	0.01761
+Faecalibacterium sp. I4-1-79	2929494	S	13	18	31	0.00628
+Faecalibacterium sp. I3-3-33	2929492	S	12	13	25	0.00506
+Faecalibacterium prausnitzii	853	S	65	102	167	0.03381
+Dysosmobacter welbionis	2093857	S	16	5	21	0.00425
+Ruthenibacterium lactatiformans	1550024	S	11	1	12	0.00243
+Clostridioides difficile	1496	S	11	7	18	0.00364
+Streptococcus thermophilus	1308	S	38	35	73	0.01478
+Staphylococcus aureus	1280	S	51	74	125	0.02531
+Faecalibacillus intestinalis	1982626	S	24	3	27	0.00547
+Longicatena caecimuris	1796635	S	15	4	19	0.00385
+Bifidobacterium adolescentis	1680	S	90	66	156	0.03159
+Bifidobacterium longum	216816	S	23	14	37	0.00749
+Salmonella enterica	28901	S	27	654	681	0.13788
