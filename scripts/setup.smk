@@ -67,7 +67,7 @@ if config['database'] in ['/labs/asbhatt/data/program_indices/kraken2/kraken_cus
     kraken_threads = 8
     bracken_memory = 64
     bracken_threads = 1
-elif config['database'] == 'test_data/db':
+elif config['database'] == 'test_data/db/':
     kraken_memory = 8
     kraken_threads = 4
     bracken_memory = 8
