@@ -82,3 +82,10 @@ else:
 # output file name of Bracken and adjust based on taxonomic level.
 if config['taxonomic_level'] != 'S':
     sys.exit('taxonomic_level setting can only be S')
+
+# Set config['codata_min_reads'] to lower than the default if working with test data
+if config['codata_min_reads'] > 1000 \
+    and "M0018C_2_month" in sample_reads \
+    and sample_reads["M0018C_2_month"][0] == "test_data/SRR7281046_sub_1.fastq.gz":
+    print("Changing config['codata_min_reads'] to 1000 based on test data ")
+    config['codata_min_reads'] = 1000

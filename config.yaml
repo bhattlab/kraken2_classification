@@ -37,9 +37,17 @@ database: test_data/db/
 ######### Downstream processing options ###################
 # Do Bracken calculations and use it in downstream processing
 run_bracken: True
-# remove everything in the phylum Chordata?
-# # This helps to remove pesky human reads from the matrices and plots
+# Remove everything in the phylum Chordata?
+## This helps to remove pesky human reads from the matrices and plots
 remove_chordata: True
+# Filters for compositional data analysis, which get applied at each taxonomic level
+## Keep only those samples with > 5000 reads
+codata_min_reads: 5000
+## Keep only OTUs with an PROPORTION of at least 0.001
+## This is equivalent to a PERCENTAGE of 0.1
+codata_min_prop: 0.001
+## Keep OTUs that are found in at least 30% of samples
+codata_otu_cutoff: 0.3
 ###########################################################
 
 ########### Extracting unmapped reads #####################

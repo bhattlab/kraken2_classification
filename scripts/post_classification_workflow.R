@@ -1,7 +1,7 @@
 # Processing kraken results into matrices and plots
 # Ben Siranosian - Bhatt lab - Stanford Genetics
 # bsiranosian@gmail.com
-# January 2019 - December 2021
+# January 2019 - June 2023
 
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
@@ -505,17 +505,20 @@ if (nrow(sample.groups) < 3){
         print(paste('.....', tax.level))
         # AT A SPECIFIC TAX LEVEL: filtering
         # keep only those samples with > min.reads
-        min.reads <- 5000
+        codata_min_reads <- as.numeric(snakemake@config[['codata_min_reads']])
         # keep only OTUs with an FRACTION of at least 0.001
         # This is equivalent to a PERCENTAGE of 0.1
-        min.prop = 0.001
+        codata_min_prop = as.numeric(snakemake@config[['codata_min_prop']])
         # keep OTUs that are found in at least 30% of samples
-        cutoff = .3
+        codata_otu_cutoff = as.numeric(snakemake@config[['codata_otu_cutoff']])
         use.mat <- kgct.filtered.classified.list[[tax.level]]@mat
         if(nrow(use.mat) > 2){
             reads.filtered <- tryCatch(codaSeq.filter(use.mat,
-                min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE),
-            error=function(e) matrix(0))
+                min.reads=codata_min_reads, min.occurrence=codata_otu_cutoff, min.prop=codata_min_prop, samples.by.row=FALSE),
+            error=function(e) {
+                warning(e)
+                matrix(0)
+                })
             } else {
                 reads.filtered <- matrix(0)
             }
@@ -532,7 +535,6 @@ if (nrow(sample.groups) < 3){
             } else {
                 rfz <- reads.filtered
             }
-
             # convert to CLR
             clr.aldex <- aldex.clr(rfz, conds=rep(NA, ncol(rfz)), mc.samples=128, denom = 'all', verbose = F)
             # get clr from mean of the MC instances
@@ -611,7 +613,6 @@ if (nrow(sample.groups) < 3){
                 if (nrow(aldex.res.plot) >0 ){
                     # make clr values
                     m.prop <-  apply(rfz, 2, function(x) x/sum(x))
-                    # rfz.clr <- t(codaSeq.clr(rfz, samples.by.row=FALSE))
                     clr.aldex <- aldex.clr(rfz[,c(s.pos, s.neg)],
                         conds = c(rep(group.pos, length(s.pos)), rep(group.neg, length(s.neg))),
                         mc.samples=128, denom = 'all', verbose = F)
