@@ -1,138 +1,18 @@
-# Snakefile for kraken2 classification
-# Does classification, plotting, etc
-from os.path import join
+# Snakemake pipeline for kraken2 classification of metagenomic samples
+# Developed by Ben Siranosian 2018-2023
+# Originally developed in the Bhatt Lab, Stanford Genetics
+# MIT Licensed. https://github.com/bhattlab/kraken2_classification/
+
+from os.path import join, exists
 import sys
 import snakemake
 import time
-# output base directory
-outdir = config['outdir']
 localrules: downstream_processing, downstream_processing_krakenonly, bracken, copy_files_processing, create_taxonomy_array
-# set remove chordata if it doesnt exist
-if not "remove_chordata" in config:
-    config['remove_chordata'] = 'FALSE'
 
-#perform a check on the Lathe git repo and warn if not up to date
-onstart:
-    print("Checking for updates or modifications to workflow")
-    import git
-    repo_dir = os.path.dirname(workflow.snakefile)
-    repo = git.Repo(repo_dir)
-    assert not repo.bare
-    repo_git = repo.git
-    stat = repo_git.diff('origin/master')
-    if stat != "":
-        print()
-        print("#")
-        print("##")
-        print("###")
-        print("####")
-        print("#####")
-        print("######")
-        print()
-        print('WARNING: Differences to latest version detected. Please reset changes and/or pull repo.')
-        print()
-        print("######")
-        print("#####")
-        print("####")
-        print("###")
-        print("##")
-        print("#")
-        # time.sleep(5)
-    else:
-        print("No updates or modifications found")
-
-print('WORKFLOW DIR: ')
-print(workflow.basedir)
-
-def get_sample_reads(sample_file):
-    sample_reads = {}
-    paired_end = ''
-    with open(sample_file) as sf:
-        for l in sf.readlines():
-            s = l.strip().split("\t")
-            if len(s) == 1 or s[0] == 'Sample' or s[0] == '#Sample' or s[0].startswith('#'):
-                continue
-            sample = s[0]
-            # paired end specified
-            if (len(s)==3):
-                reads = [s[1],s[2]]
-                if paired_end != '' and not paired_end:
-                    sys.exit('All samples must be paired or single ended.')
-                paired_end = True
-            # single end specified
-            elif len(s)==2:
-                reads=s[1]
-                if paired_end != '' and paired_end:
-                    sys.exit('All samples must be paired or single ended.')
-                paired_end = False
-            if sample in sample_reads:
-                raise ValueError("Non-unique sample encountered!")
-            sample_reads[sample] = reads
-    return (sample_reads, paired_end)
-
-
-# read in sample info and reads from the sample_file
-sample_reads, paired_end = get_sample_reads(config['sample_file'])
-if paired_end:
-    paired_string = '--paired'
-else:
-    paired_string = ''
-sample_names = sample_reads.keys()
-
-# also read in desired confidence threshold for Kraken
-if not 'confidence_threshold' in config:
-    config['confidence_threshold'] = 0.0
-confidence_threshold = config['confidence_threshold']
-
-# extra specified files to generate from the config file
-extra_run_list =[]
-# add bracken to extra files if running it
-if config['run_bracken']:
-    extra_run_list.append('bracken')
-    extra_run_list.append('krakenonly_processed')
-    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names)
-else:
-    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
-
-# do we want to extract unmapped reads?
-if config['extract_unmapped']:
-    if paired_end:
-        extra_run_list.append('unmapped_paired')
-    else:
-        extra_run_list.append('unmapped_single')
-
-# additional outputs determined by whats specified in the readme
-extra_files = {
-    "bracken": expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names),
-    "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf'),
-    "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
-    "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
-    "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
-    "krona": expand(join(outdir, "krona/{samp}.html"), samp = sample_names),
-    "mpa_heatmap": join(outdir, "mpa_reports/merge_metaphlan_heatmap.png"),
-    "biom_file": join(outdir, "table.biom"),
-}
-run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
-# print("run Extra files: " + str(run_extra_all_outputs))
-
-# set some resource requirements
-if config['database'] in ['/labs/asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
-                          '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold',
-                          '/labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold',
-                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_feb2019/genbank_genome_chromosome_scaffold',
-                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold',
-                          '/oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold']:
-    kraken_memory = 256
-    kraken_threads = 8
-else:
-    kraken_memory = 64
-    kraken_threads = 4
-
-# Taxonomic level can only be species right now. A future fix could look at the 
-# output file name of Bracken and adjust based on taxonomic level. But I don't think
-# anyone uses anything other than species
-if config['taxonomic_level'] != 'S':
-    sys.exit('taxonomic_level setting can only be S')
+# Include code from other files
+# scripts/setup.smk interprets config file and sets pipeline options
+include: "scripts/functions.smk"
+include: "scripts/setup.smk"
 
 rule all:
     input:
@@ -141,8 +21,6 @@ rule all:
         join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs,
         join(outdir, "kraken2_processing_completed.txt")
-        # expand(join(outdir, "krona/{samp}.html"), samp = sample_names)
-
 
 rule create_taxonomy_array:
     input:
@@ -152,20 +30,20 @@ rule create_taxonomy_array:
     params: 
         db = config['database'],
         improve_taxonomy_script = join(workflow.basedir, 'scripts', 'improve_taxonomy.py')
-    conda: "envs/anytree.yaml"
+    conda: "envs/anytree/anytree.yaml"
+    container: "docker://bsiranosian/anytree:2.8"
     shell: """
         python {params.improve_taxonomy_script} {params.db}
     """
 
-# copy over scripts and taxonomy_array
-# so that the R script works properly
-# darn you, singularity for making me do this dumb thing
+# Running the pipeline with singularity had a strange bug, where these files had 
+# to be present in the output directory. This rule accomplishes that.
 rule copy_files_processing:
     input: 
         tax_array = join(config['database'], 'taxonomy_array.tsv')
     output:
-        '{outdir}/taxonomy_array.tsv',
-        '{outdir}/scripts/post_classification_workflow.R'
+        join(outdir,  'taxonomy_array.tsv'),
+        join(outdir,  'scripts/post_classification_workflow.R')
     params:
         scriptdir = join(workflow.basedir, 'scripts')
     shell: """
@@ -173,6 +51,7 @@ rule copy_files_processing:
     cp {input.tax_array} {outdir}
     """
 
+# Run classification with Kraken2
 rule kraken:
     input:
         reads = lambda wildcards: sample_reads[wildcards.samp],
@@ -188,13 +67,13 @@ rule kraken:
         mem=kraken_memory,
         time=6
     singularity: "docker://quay.io/biocontainers/kraken2:2.1.2--pl5262h7d875b9_0"
-    # singularity: "docker://quay.io/biocontainers/kraken2:2.0.9beta--pl526hc9558a2_0"
     shell: """
         time kraken2 --db {params.db} --threads {threads} --output {output.krak} \
         --report {output.krak_report} {params.paired_string} {input.reads} \
         --confidence {params.confidence_threshold} --use-names
         """
 
+# Run Bracken, if specified in the config file
 rule bracken:
     input:
         krak_report = join(outdir, "classification/{samp}.krak.report"),
@@ -207,19 +86,18 @@ rule bracken:
         level = config['taxonomic_level'],
         threshold = 10,
         outspec = join(outdir, "classification/{samp}.krak.report.bracken"),
-    threads: 1
+    threads: bracken_threads
     resources:
-        mem = 64,
+        mem = bracken_memory,
         time = 1
-    singularity: "docker://quay.io/biocontainers/bracken:2.6.1--py38hed8969a_0"
-    # singularity: "docker://quay.io/biocontainers/bracken:2.2--py27h2d50403_1"
+    singularity: "docker://quay.io/biocontainers/bracken:2.8--py310h0dbaff4_1"
     shell: """
         bracken -d {params.db} -i {input.krak_report} -o {params.outspec} -r {params.readlen} \
         -l {params.level} -t {params.threshold}
         """
 
-
-# must also have the processed taxonomy file generated manually 
+# Downstream processing with R
+## Two steps: first with Bracken if the tool was run, the second with Kraken only
 rule downstream_processing:
     input:
         downstream_processing_input,
@@ -256,7 +134,7 @@ rule downstream_processing_krakenonly:
     script:
         'scripts/post_classification_workflow.R'
 
-# remove these copied files now
+# Remove file copied files during setup
 rule remove_files_processing:
     input: 
         rules.downstream_processing.output
@@ -270,7 +148,6 @@ rule remove_files_processing:
     touch {output}
     """
 
-
 rule krona:
     input: rules.kraken.output.krak_report
     output: join(outdir, "krona/{samp}.html")
@@ -279,7 +156,8 @@ rule krona:
         -tax $(which kraken2 | sed 's/envs\/classification2.*$//g')/envs/classification2/bin/taxonomy
         """
 
-# optional rule to extract unmapped reads
+# Optional rule to extract unmapped reads from the Kraken2 output
+## Two versions: paired and single-end
 rule extract_unmapped_paired:
     input:
         krak = join(outdir, "classification/{samp}.krak"),
@@ -318,7 +196,8 @@ rule extract_unmapped_single:
 
 
 ################################################################################
-# cleanup to be run after everything else is finished
+# Cleanup rule - can be run after everything is done. Removes *.krak files,
+# which contain information on every single read and can therefore be quite large
 rule cleanup:
     input: join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf')
     output: join(outdir, "cleaned")
@@ -329,7 +208,7 @@ rule cleanup:
         touch {output}
     """
 
-
+# Older pipeline rules... not used currently but could be re-enabled if needed
 '''
 # convert bracken to mpa syle report if desired
 rule convert_bracken_mpa:
