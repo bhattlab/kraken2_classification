@@ -1,17 +1,30 @@
 # Specify sample names and read files
-# tab-delimited table with three columns, see manual/usage.md
-#    sample_name  read1_file  [read2_file]
-#    if paired end, all samples must be paired end
-#    if single end, all samples must be single end
-# By default this loads a very small test dataset
-sample_file: test_data/classification_input.tsv
+## tab-delimited table with three columns, see manual/usage.md
+##    sample_name  read1_file  [read2_file]
+##    if paired end, all samples must be paired end
+##    if single end, all samples must be single end
+## By default, this loads a very small test dataset
+# sample_reads_file: ''
+sample_reads_file: test_data/classification_input.tsv
 # Specify file containing sample groups.
 ## Tab delimited with two columns, see manual/downstream_plotting.md
 ## If empty string specified, all samples will be treated as one group.
-sample_groups_file: 'test_data/sample_groups.tsv'
+sample_groups_file: test_data/sample_groups.tsv
+# OPTIONAL: file containing sample reports 
+## Use this with Snakefile_downstream_only to do the downstream processing 
+## and figure generation steps from pipeline results that already exist.
+## tab-delimited table with three columns
+##    sample_name  kraken_report  [bracken_report]
+##    if only kraken_report is listed, run_bracken below must be false
+sample_reports_file:
+# sample_reports_file: test_data/sample_reports.tsv
+
 
 # Output base directory - will contain subfolders for reports, plots, etc
 outdir: test_data/test_output
+
+# Do Bracken calculations and use the results in downstream processing?
+run_bracken: True
 
 # Read length of the input data
 ## Used in the Bracken species reestimation. You must have a Bracken database built with this length
@@ -25,7 +38,7 @@ confidence_threshold: 0.0
 
 # Taxonomic level for Bracken results.
 ## Currently, only "S" is supported.
-taxonomic_level: 'S'
+taxonomic_level: S
 
 # Database
 ## Must contain a Kraken2 and Bracken database
@@ -35,11 +48,12 @@ taxonomic_level: 'S'
 database: test_data/db/
 
 ######### Downstream processing options ###################
-# Do Bracken calculations and use it in downstream processing
-run_bracken: True
-# Remove everything in the phylum Chordata?
-## This helps to remove pesky human reads from the matrices and plots
-remove_chordata: True
+# Downstream processing for filtering OTUs
+## This removes any classification result where all samples are below this threshold,
+## which serves to remove the very long tail of lowly abundant species in Kraken2/Bracken results.
+## This parameter can be tuned, but I recommend you keep something here to reduce the long tail.
+## This parameter is defined as a percentage, so 0.001 = 0.001%
+min_otu_percentage: 0.001
 # Filters for compositional data analysis, which get applied at each taxonomic level
 ## Keep only those samples with > 5000 reads
 codata_min_reads: 5000
@@ -48,16 +62,18 @@ codata_min_reads: 5000
 codata_min_prop: 0.001
 ## Keep OTUs that are found in at least 30% of samples
 codata_otu_cutoff: 0.3
+# Remove everything in the phylum Chordata?
+## This helps to remove pesky human reads from the matrices and plots
+remove_chordata: True
 ###########################################################
 
 ########### Extracting unmapped reads #####################
-# Can extract unmapped reads from this database for use with
-# another database. Will be in output folder $outdir/unmapped_reads
+# Extract unmapped reads from this database for use with
+## another database. Will be in output folder outdir/unmapped_reads
 extract_unmapped: False
 ###########################################################
 
-
-########### database alternatives (see README): ###########
+########### Database alternatives on SCG (see README): ####
 # Genbank 2021, viral sequences only
 #     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_viral
 # Refseq 2021
