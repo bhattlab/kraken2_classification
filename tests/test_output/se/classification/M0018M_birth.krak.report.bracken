@@ -1,0 +1,32 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Bacteroides uniformis	820	S	228	273	501	0.13541
+Bacteroides sp. M10	2763022	S	33	46	79	0.02135
+Bacteroides sp. D2	556259	S	11	26	37	0.01000
+Bacteroides faecis	674529	S	46	16	62	0.01676
+Bacteroides fragilis	817	S	17	13	30	0.00811
+Bacteroides ovatus	28116	S	14	50	64	0.01730
+Phocaeicola dorei	357276	S	416	290	706	0.19081
+Parabacteroides distasonis	823	S	64	80	144	0.03892
+Alistipes finegoldii	214856	S	43	13	56	0.01514
+Alistipes shahii	328814	S	19	4	23	0.00622
+Alistipes onderdonkii	328813	S	18	3	21	0.00568
+Blautia wexlerae	418240	S	129	77	206	0.05568
+Blautia obeum	40520	S	47	21	68	0.01838
+Roseburia hominis	301301	S	74	24	98	0.02649
+Roseburia intestinalis	166486	S	20	11	31	0.00838
+Anaerobutyricum hallii	39488	S	57	11	68	0.01838
+Coprococcus comes	410072	S	27	12	39	0.01054
+Coprococcus catus	116085	S	11	3	14	0.00378
+Anaerostipes hadrus	649756	S	39	10	49	0.01324
+[Ruminococcus] lactaris	46228	S	21	3	24	0.00649
+Dorea longicatena	88431	S	24	9	33	0.00892
+Simiaoa sunii	2763672	S	24	6	30	0.00811
+Faecalibacterium sp. I3-3-89	2929493	S	47	45	92	0.02486
+Faecalibacterium sp. I4-3-84	2929495	S	19	57	76	0.02054
+Faecalibacterium prausnitzii	853	S	35	70	105	0.02838
+Streptococcus thermophilus	1308	S	28	27	55	0.01486
+Staphylococcus aureus	1280	S	34	35	69	0.01865
+Faecalibacillus intestinalis	1982626	S	17	2	19	0.00514
+Bifidobacterium adolescentis	1680	S	62	48	110	0.02973
+Bifidobacterium longum	216816	S	16	12	28	0.00757
+Salmonella enterica	28901	S	28	721	749	0.20243

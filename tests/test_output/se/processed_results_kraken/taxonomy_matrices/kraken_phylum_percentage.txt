@@ -1,0 +1,16 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+unclassified	38.83	37.83	44.39	54.33	36.88	45.29	70.83	59.76
+classified at a higher level	1.95	5.38	1.3	1.15	7.23	17.5	1.2	7.92
+Bacteroidota	30.74	48.78	47.21	33.35	47.56	27.88	8.5	17.42
+Bacillota	4.7	0.91	2.02	0.89	6.21	5.04	12.09	11.76
+Actinomycetota	7.4	6.62	3.28	9.62	1.48	0.59	2.05	1.66
+Pseudomonadota	16.37	0.47	1.77	0.64	0.64	1.79	0.83	0.76
+Verrucomicrobiota	0	0	0	0	0	1.89	4.4	0.69
+Campylobacterota	0.01	0	0.01	0	0	0	0.04	0.02
+Uroviricota	0	0	0	0	0	0.01	0.04	0
+Thermoproteota	0	0.01	0.01	0.01	0	0	0	0.01
+Nucleocytoviricota	0	0	0	0	0	0.01	0	0
+Acidobacteriota	0	0	0	0	0	0	0.01	0
+Mycoplasmatota	0	0	0	0.01	0	0	0	0
+Chlorobiota	0	0	0	0	0	0	0.01	0
+Euryarchaeota	0	0	0.01	0	0	0	0	0

@@ -1,0 +1,22 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Enterobacteriaceae	79	418	246	119	376	535	148	749
+Pseudoalteromonadaceae	0	0	0	0	0	743	0	0
+Moraxellaceae	1659	0	0	0	0	0	0	0
+Bartonellaceae	0	0	0	0	0	19	0	0
+Xanthobacteraceae	0	0	0	0	0	13	0	0
+Staphylococcaceae	29	78	22	53	158	87	20	69
+Streptococcaceae	0	0	0	0	0	40	104	55
+Lactobacillaceae	365	21	65	0	0	0	0	0
+Enterococcaceae	0	0	0	22	452	0	0	0
+Lachnospiraceae	52	0	65	0	0	117	722	665
+Oscillospiraceae	17	0	49	0	0	195	254	274
+Erysipelotrichaceae	0	0	0	0	0	0	0	19
+Coprobacillaceae	0	0	0	0	58	0	0	0
+Actinomycetaceae	0	0	35	0	0	0	0	0
+Bifidobacteriaceae	615	590	276	899	125	0	172	139
+Mycobacteriaceae	77	0	0	0	279	586	0	0
+Propionibacteriaceae	45	51	0	28	0	0	0	0
+Eggerthellaceae	44	15	0	0	0	0	0	0
+Bacteroidaceae	1452	2060	2969	2802	4406	2403	503	1480
+Rikenellaceae	0	0	0	0	0	110	292	101
+Tannerellaceae	1597	2867	1703	483	357	236	22	144

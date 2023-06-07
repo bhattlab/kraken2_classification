@@ -1,0 +1,20 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Phocaeicola dorei	357276	S	1253	678	1931	0.35340
+Bacteroides faecis	674529	S	166	51	217	0.03971
+Bacteroides ovatus	28116	S	140	483	623	0.11402
+Bacteroides fragilis	817	S	43	31	74	0.01354
+Bacteroides uniformis	820	S	26	32	58	0.01061
+Bacteroides xylanisolvens	371601	S	17	29	46	0.00842
+Bacteroides thetaiotaomicron	818	S	15	3	18	0.00329
+Parabacteroides distasonis	823	S	785	918	1703	0.31168
+Bifidobacterium longum	216816	S	95	62	157	0.02873
+Bifidobacterium adolescentis	1680	S	67	51	118	0.02160
+Schaalia radingae	131110	S	35	0	35	0.00641
+Blautia obeum	40520	S	43	6	49	0.00897
+Blautia wexlerae	418240	S	13	2	15	0.00275
+Flavonifractor plautii	292800	S	48	1	49	0.00897
+Lacticaseibacillus rhamnosus	47715	S	62	3	65	0.01190
+Staphylococcus aureus	1280	S	14	8	22	0.00403
+Escherichia coli	562	S	15	49	64	0.01171
+Salmonella enterica	28901	S	17	165	182	0.03331
+Homo sapiens	9606	S	29	0	29	0.00531

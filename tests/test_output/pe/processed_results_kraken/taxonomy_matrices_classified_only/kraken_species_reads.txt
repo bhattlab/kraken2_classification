@@ -1,0 +1,320 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Quadragintavirus ev040	0	0	0	0	0	1	0	0
+Megavirus chiliensis	0	0	0	0	0	1	0	0
+Tunisvirus	0	0	0	0	0	1	0	0
+Pseudomonas fluorescens	12	8	4	2	4	13	5	1
+Pseudomonas sp. FGI182	0	0	0	0	1	0	0	0
+Pseudomonas sp. St316	0	0	0	0	0	0	1	0
+Marinobacter sp. Arc7-DN-1	0	0	0	1	0	0	0	0
+Marinobacter sp. AN1	0	0	0	0	0	0	1	0
+Citrobacter sedlakii	1	0	0	0	0	0	0	0
+Enterobacter bugandensis	0	0	0	0	0	0	0	1
+Enterobacter hormaechei	3	0	1	1	1	3	0	1
+Escherichia coli	1	0	24	1	0	0	8	0
+Salmonella enterica	18	14	14	22	25	45	24	27
+Shigella boydii	0	0	1	0	0	0	0	0
+Klebsiella pneumoniae	1	0	0	0	0	1	0	0
+Klebsiella variicola	7	9	5	3	2	14	3	3
+Klebsiella michiganensis	0	0	0	0	0	1	0	0
+Klebsiella quasipneumoniae	0	0	0	1	0	0	0	0
+Mixta intestinalis	0	0	0	0	0	0	1	0
+Serratia plymuthica	1	0	0	0	0	0	0	0
+Serratia ureilytica	0	1	0	0	0	1	0	1
+Serratia sp. JSRIV001	0	0	0	1	0	0	0	0
+Xanthomonas citri	1	3	0	0	1	3	2	1
+Arenimonas daejeonensis	0	1	0	0	0	0	0	0
+Pseudoalteromonas rubra	0	0	0	0	0	1	0	0
+Pseudoalteromonas sp. Scap25	3	0	3	2	5	13	1	5
+Shewanella marisflavi	0	0	0	0	0	0	0	1
+Shewanella litorisediminis	0	0	0	0	0	0	1	0
+Photobacterium damselae	0	0	0	0	0	1	0	0
+Vibrio cholerae	0	0	0	0	0	0	0	1
+Aeromonas hydrophila	0	0	1	0	0	0	0	1
+Tolumonas auensis	0	0	0	0	0	0	0	1
+Haemophilus parainfluenzae	0	0	2	0	0	0	0	2
+[Haemophilus] ducreyi	3	1	1	7	3	7	3	1
+Acinetobacter baumannii	1363	0	0	0	0	0	0	0
+Bartonella krasnovii	3	7	4	6	10	29	12	9
+Rhizobium phaseoli	0	0	0	0	0	0	1	0
+Xanthobacter autotrophicus	3	2	2	4	5	16	4	5
+Orientia tsutsugamushi	0	0	0	0	1	0	0	0
+Komagataeibacter oboediens	0	0	0	0	0	0	1	1
+Zymomonas mobilis	1	1	2	1	1	1	1	1
+Brevundimonas sp. LM2	0	0	0	0	0	0	1	0
+Nitrosomonas eutropha	0	0	0	1	0	0	0	0
+Orrella dioscoreae	0	0	0	0	0	1	0	0
+Janthinobacterium sp. Marseille	0	0	0	0	1	0	0	0
+Comamonas aquatica	0	0	0	0	0	0	1	0
+Acidovorax carolinensis	0	0	0	0	0	0	0	1
+Rhodoferax sp. AJA081-3	0	0	0	0	0	0	1	0
+Burkholderia cenocepacia	1	0	0	0	0	2	1	0
+Burkholderia dolosa	25	11	4	12	11	23	15	9
+Ralstonia solanacearum	0	1	0	3	1	6	1	2
+Cupriavidus oxalaticus	0	0	1	1	0	2	1	1
+Kingella denitrificans	0	0	0	0	0	1	0	0
+Helicobacter cinaedi	2	0	0	1	0	0	0	0
+Campylobacter jejuni	0	0	1	0	0	0	3	0
+Candidatus Koribacter versatilis	0	0	0	0	0	0	1	0
+Leptospira santarosai	0	0	0	2	2	0	0	0
+Akkermansia muciniphila	0	0	0	0	0	2	9	2
+Pirellula sp. SH-Sr6A	0	0	0	0	1	0	0	0
+Staphylococcus aureus	32	54	27	41	55	125	25	51
+Staphylococcus epidermidis	0	3	0	21	97	0	0	0
+Staphylococcus cohnii	0	1	0	0	0	0	0	0
+Halobacillus sp. SSTM10-2	0	0	0	0	0	0	0	1
+Virgibacillus sp. Bac332	0	0	0	0	0	0	0	1
+Oceanobacillus oncorhynchi	0	0	0	0	0	0	0	1
+Psychrobacillus sp. INOP01	0	0	0	0	1	0	0	0
+Rossellomorea marisflavi	0	0	0	0	0	0	1	0
+Paenibacillus mucilaginosus	0	0	0	0	0	0	0	1
+Paenibacillus stellifer	1	0	0	0	0	0	0	0
+Paenibacillus graminis	0	0	0	0	0	0	1	0
+Paenibacillus sp. BIHB4019	0	0	0	0	0	0	1	0
+Streptococcus salivarius	0	4	3	1	0	0	3	8
+Streptococcus thermophilus	0	0	0	0	0	1	102	38
+Streptococcus vestibularis	0	0	0	0	0	0	2	0
+Streptococcus mitis	0	2	0	0	0	0	0	0
+Streptococcus infantis	0	0	0	1	0	0	0	0
+Streptococcus pasteurianus	0	0	0	0	1	0	0	0
+Streptococcus pseudopneumoniae	0	0	0	1	0	0	0	0
+Streptococcus sp. HSISM1	0	0	0	0	0	0	1	0
+Streptococcus sp. LPB0220	0	0	0	0	0	0	0	1
+Lactococcus lactis	0	0	0	0	0	35	6	5
+Lactococcus cremoris	0	0	0	0	0	2	4	1
+Leuconostoc mesenteroides	0	0	0	0	0	0	1	0
+Lactobacillus crispatus	0	0	0	0	1	0	0	0
+Limosilactobacillus mucosae	0	0	0	0	0	0	1	0
+Lacticaseibacillus rhamnosus	480	28	86	0	0	0	0	3
+Lactiplantibacillus paraplantarum	0	0	0	0	0	0	1	0
+Latilactobacillus curvatus	0	0	0	2	0	1	0	0
+Ligilactobacillus ruminis	0	0	0	0	0	0	0	1
+Enterococcus faecalis	0	7	0	14	251	1	0	0
+Enterococcus faecium	0	0	0	0	1	0	3	0
+Enterococcus durans	0	0	0	0	0	0	10	0
+Dolosigranulum pigrum	1	0	0	0	0	0	0	0
+Clostridium botulinum	0	0	0	0	0	0	1	0
+Clostridium pasteurianum	0	0	0	0	0	0	1	0
+Clostridium perfringens	0	0	0	1	0	0	0	0
+Clostridium felsineum	0	0	0	0	0	1	0	0
+Clostridium sp. MD294	0	1	0	0	0	0	0	0
+Clostridium sp. M62/1	0	0	0	0	0	1	5	2
+Clostridium sp. SY8519	0	0	0	0	0	0	0	1
+Clostridium sp. C1	0	0	0	0	1	0	0	0
+Oceanirhabdus sp. W0125-5	0	0	0	0	0	0	0	1
+Hungatella hathewayi	0	1	0	1	0	1	1	2
+Paraclostridium bifermentans	0	0	0	0	1	0	1	0
+Butyrivibrio crossotus	0	0	0	0	0	1	3	7
+Roseburia intestinalis	0	1	0	0	0	88	39	28
+Roseburia hominis	0	0	0	0	0	2	34	100
+Roseburia sp. NSJ-69	0	0	0	0	0	5	3	5
+Lachnospira eligens	0	0	0	0	0	0	1	4
+Coprococcus eutactus	0	0	0	0	0	0	3	3
+Coprococcus catus	0	0	0	0	0	2	34	17
+Coprococcus comes	0	0	1	0	0	7	65	37
+Coprococcus sp. ART55/1	0	0	0	0	0	0	3	1
+Dorea formicigenerans	1	0	0	0	0	0	3	7
+Dorea longicatena	0	0	0	0	0	2	34	34
+Anaerostipes caccae	0	0	0	0	0	1	1	0
+Anaerostipes hadrus	1	0	0	0	0	1	209	54
+Blautia producta	0	0	1	0	0	0	7	2
+Blautia obeum	7	4	73	3	0	3	36	72
+Blautia wexlerae	72	2	19	1	0	6	229	181
+Blautia argi	0	0	0	0	0	0	2	2
+Blautia liquoris	0	0	0	0	0	0	0	1
+Blautia sp. SC05B48	0	0	3	0	0	2	5	9
+Blautia sp. NBRC 113351	0	1	0	0	0	0	0	1
+[Clostridium] scindens	0	0	0	0	0	0	3	3
+Lachnoclostridium phytofermentans	0	0	0	0	0	0	1	0
+Lachnoclostridium phocaeense	0	0	0	0	2	0	0	0
+Lachnoclostridium sp. YL32	0	4	0	2	0	2	0	1
+Sellimonas intestinalis	0	0	0	1	0	0	1	2
+Anaerocolumna sedimenticola	0	0	0	0	0	0	0	1
+Faecalicatena sp. Marseille-Q4148	0	0	0	0	0	0	0	3
+Anaerotignum propionicum	0	0	0	0	0	0	0	1
+[Ruminococcus] gnavus	1	0	0	0	0	0	4	15
+[Ruminococcus] torques	0	0	1	0	0	1	15	13
+[Ruminococcus] lactaris	0	0	0	0	0	1	15	32
+Anaerobutyricum hallii	0	0	0	0	0	1	38	82
+Lacrimispora sphenoides	0	0	0	0	0	1	0	0
+Lacrimispora xylanolytica	0	0	1	0	0	0	0	0
+Lacrimispora saccharolytica	0	0	0	0	0	0	1	1
+Enterocloster clostridioformis	0	3	0	0	0	13	2	2
+Enterocloster bolteae	0	4	1	3	0	3	5	2
+Enterocloster asparagiformis	0	2	0	0	0	3	0	1
+Wujia chipingensis	0	0	0	0	0	0	50	0
+Simiaoa sunii	0	0	0	0	0	4	28	32
+Romboutsia ilealis	0	0	0	0	0	0	7	0
+Romboutsia sp. CE17	0	0	0	0	1	0	0	0
+Terrisporobacter hibernicus	0	0	0	0	3	0	1	1
+Paeniclostridium sordellii	0	0	0	0	1	0	0	0
+Clostridioides difficile	2	1	0	0	2	1	2	11
+Peptacetobacter hiranonis	0	0	0	0	1	0	0	0
+Eubacterium limosum	0	0	0	0	0	0	1	0
+Eubacterium ventriosum	0	0	0	0	0	0	1	4
+Eubacterium callanderi	0	0	1	0	0	0	0	0
+Eubacterium hominis	0	0	0	0	0	1	0	0
+Eubacterium sp. c-25	0	0	0	0	0	1	0	2
+Eubacterium sp. MSJ-33	0	0	0	0	0	0	4	1
+Ruminococcus bicirculans	0	0	0	0	0	0	1	9
+Ruminococcus bovis	0	0	0	0	0	0	1	1
+Faecalibacterium prausnitzii	0	0	0	0	0	58	22	65
+Faecalibacterium duncaniae	0	0	0	0	0	0	2	3
+Faecalibacterium sp. IP-1-18	0	0	0	0	0	1	0	2
+Faecalibacterium sp. IP-3-29	0	0	0	0	0	3	3	3
+Faecalibacterium sp. I2-3-92	0	0	0	0	0	0	0	4
+Faecalibacterium sp. HTF-F	0	0	0	0	0	2	4	5
+Faecalibacterium sp. I3-3-33	1	0	0	0	0	0	0	12
+Faecalibacterium sp. I3-3-89	0	0	0	0	0	1	3	69
+Faecalibacterium sp. I4-1-79	0	0	0	0	0	2	3	13
+Faecalibacterium sp. I4-3-84	0	0	0	0	0	20	8	27
+Fastidiosipila sanguinis	0	0	0	0	0	0	0	1
+Anaerotruncus colihominis	0	0	0	0	0	0	1	4
+Subdoligranulum variabile	0	0	0	0	0	0	2	2
+Flavonifractor plautii	17	0	70	0	0	19	27	3
+Ruthenibacterium lactatiformans	0	0	0	0	0	0	31	11
+Monoglobus pectinilyticus	0	0	0	0	0	1	87	3
+Dysosmobacter welbionis	0	0	0	0	0	7	14	16
+Dysosmobacter sp. Marseille-Q4140	0	0	0	0	0	0	1	0
+Caproicibacterium lactatifermentans	0	0	0	0	0	0	0	1
+Caproicibacterium amylolyticum	0	0	0	0	0	1	0	2
+Solibaculum mannosilyticum	0	0	0	0	0	0	2	0
+Vescimonas fastidiosa	0	0	0	0	0	0	4	0
+Vescimonas coprocola	0	0	0	0	0	10	117	1
+Pusillibacter faecalis	0	0	0	0	0	1	4	2
+Desulfosporosinus meridiei	0	0	0	0	0	0	1	0
+Intestinimonas butyriciproducens	0	0	0	0	1	0	2	0
+Flintibacter sp. KGMB00164	0	0	0	0	0	0	0	2
+Massilistercora timonensis	1	0	0	0	0	0	1	2
+Erysipelothrix inopinata	0	0	0	0	1	0	0	0
+Faecalitalea cylindroides	0	0	0	0	1	0	1	1
+Longicatena caecimuris	0	0	0	0	0	0	13	15
+Faecalibacillus intestinalis	0	0	0	0	0	4	7	24
+Catenibacterium mitsuokai	0	0	0	0	1	0	0	0
+[Clostridium] innocuum	0	0	0	0	0	1	3	0
+Thomasclavelia ramosa	1	0	0	0	0	1	2	2
+Thomasclavelia spiroformis	0	0	0	0	95	0	4	2
+Phascolarctobacterium faecium	0	0	0	0	0	0	0	1
+Veillonella parvula	0	0	0	4	1	0	0	0
+Veillonella sp. S12025-13	0	0	0	0	0	0	0	1
+Peptoniphilus sp. SAHP1	0	0	0	0	4	0	1	0
+Fimbriimonas ginsengisoli	0	0	0	0	0	0	1	0
+Actinomyces pacaensis	1	1	0	0	0	0	0	1
+Schaalia odontolytica	0	0	0	0	0	0	1	0
+Schaalia meyeri	0	0	1	0	0	0	0	0
+Schaalia radingae	0	0	44	0	0	0	0	0
+Winkia neuii	8	0	2	0	0	0	0	0
+Bifidobacterium adolescentis	233	174	97	277	30	0	7	90
+Bifidobacterium angulatum	3	2	0	3	0	0	0	0
+Bifidobacterium breve	1	2	2	12	4	0	2	1
+Bifidobacterium catenulatum	0	2	1	2	2	0	0	1
+Bifidobacterium dentium	0	0	0	1	0	0	0	0
+Bifidobacterium indicum	0	0	0	1	0	0	0	0
+Bifidobacterium pseudolongum	0	1	0	0	0	0	0	0
+Bifidobacterium pseudocatenulatum	4	1	0	1	0	2	0	2
+Bifidobacterium subtile	0	0	0	0	0	0	0	1
+Bifidobacterium pullorum	1	1	0	0	0	0	1	0
+Bifidobacterium scardovii	0	0	0	0	0	0	0	1
+Bifidobacterium longum	242	308	130	462	74	5	153	23
+Bifidobacterium saguini	0	0	1	0	0	0	1	0
+Arthrobacter alpinus	0	0	0	0	0	1	0	0
+Rothia mucilaginosa	0	10	0	0	0	0	0	1
+Kocuria varians	0	0	0	0	0	0	1	0
+Psychromicrobium lacuslunae	0	0	0	0	0	0	0	1
+Dermabacter jinjuensis	0	0	1	0	0	0	0	0
+Curtobacterium sp. Csp2	9	4	3	9	8	21	5	9
+Salinibacterium sp. UTAS2018	0	0	0	0	0	0	1	0
+Ornithinimicrobium pratense	0	0	0	1	0	0	0	0
+Corynebacterium pseudotuberculosis	0	0	0	0	0	0	0	1
+Corynebacterium atypicum	0	0	1	0	0	0	0	0
+Corynebacterium kefirresidentii	0	0	0	1	0	0	0	0
+Corynebacterium lujinxingii	1	0	0	0	0	0	0	0
+Mycobacterium avium	12	5	1	6	10	31	4	7
+Mycobacterium sp. EPa45	0	0	0	0	0	0	1	0
+Mycolicibacter sp. MYC123	0	0	0	1	1	0	0	0
+Mycolicibacter sp. MYC340	2	1	0	1	1	5	2	5
+Mycolicibacterium chitae	1	0	0	0	0	0	0	0
+Mycolicibacterium austroafricanum	1	0	1	1	0	3	0	0
+Rhodococcus pyridinivorans	0	1	0	0	0	0	0	0
+Rhodococcus oxybenzonivorans	0	0	0	0	0	1	0	0
+Tsukamurella pulmonis	0	0	0	0	0	0	0	1
+Propionibacterium freudenreichii	0	0	0	0	0	0	1	2
+Cutibacterium acnes	3	0	0	1	0	1	0	0
+Cutibacterium avidum	56	62	0	41	0	0	0	0
+Actinopolymorpha singaporensis	0	0	0	0	0	0	1	0
+Streptomyces sp. ICC1	0	3	0	2	3	3	2	4
+Streptomyces sp. ICC4	0	0	0	1	1	0	0	0
+Streptomyces sp. HNM0140	0	0	0	1	0	0	0	0
+Streptomyces vinaceusdrappus	1	1	0	0	0	2	0	1
+Collinsella aerofaciens	0	0	0	2	0	0	2	1
+Collinsella stercoris	0	0	0	1	0	0	0	0
+Parolsenella massiliensis	0	0	0	0	0	1	0	0
+Eggerthella lenta	53	17	7	21	0	1	2	7
+Adlercreutzia equolifaciens	0	0	0	0	0	1	4	1
+Adlercreutzia hattorii	0	0	0	0	0	1	2	5
+Gordonibacter pamelaeae	0	1	0	1	0	0	6	0
+Raoultibacter timonensis	1	0	0	0	0	0	0	0
+Spiroplasma apis	0	0	0	1	0	0	0	0
+Flavobacterium psychrophilum	1	2	0	0	0	0	2	3
+Polaribacter cellanae	0	0	0	0	0	1	0	0
+Amniculibacterium sp. G2-70	0	0	0	0	0	0	1	0
+Chryseobacterium oryzae	0	0	0	0	0	0	0	1
+Mucilaginibacter mali	0	0	0	0	0	0	0	1
+Pseudopedobacter saltans	0	0	0	0	0	1	0	0
+Bacteroides fragilis	48	76	63	50	82	49	18	34
+Bacteroides thetaiotaomicron	29	44	32	19	38	30	11	14
+Bacteroides uniformis	86	15	41	5	22	338	89	300
+Bacteroides eggerthii	2	1	1	1	2	1	0	0
+Bacteroides heparinolyticus	0	0	0	0	1	1	0	0
+Bacteroides ovatus	17	188	190	515	27	67	11	23
+Bacteroides stercoris	1	0	1	0	0	3	2	2
+Bacteroides caccae	2	3	1	3	2	4	0	0
+Bacteroides coprosuis	0	0	0	1	0	0	0	0
+Bacteroides cellulosilyticus	1	1	0	0	0	3	0	1
+Bacteroides salyersiae	1	1	1	1	0	0	0	0
+Bacteroides nordii	0	0	0	0	0	0	0	1
+Bacteroides intestinalis	0	0	1	0	0	0	0	0
+Bacteroides xylanisolvens	5	19	29	53	6	23	2	1
+Bacteroides faecis	787	883	221	13	18	146	28	58
+Bacteroides caecimuris	1	0	1	2	0	3	0	1
+Bacteroides zhangwenhongii	1	1	1	1	0	10	0	2
+Bacteroides luhongzhouii	0	4	11	17	1	5	0	0
+Bacteroides faecium	0	2	1	4	0	2	0	0
+Bacteroides humanifaecis	0	0	0	0	0	1	1	0
+Bacteroides sp. D2	4	29	13	62	0	80	1	18
+Bacteroides sp. A1C1	1	0	1	0	0	6	0	3
+Bacteroides sp. CACC 737	0	0	0	0	0	0	0	1
+Bacteroides sp. M10	2	10	14	19	6	315	10	47
+Bacteroides sp. HF-162	0	0	0	0	0	2	0	0
+Bacteroides sp. DH3716P	0	3	3	11	0	1	0	0
+Phocaeicola vulgatus	6	11	8	9	26	6	6	6
+Phocaeicola dorei	471	417	1758	713	3451	135	221	589
+Phocaeicola salanitronis	1	0	0	0	0	1	0	0
+Phocaeicola coprophilus	0	0	2	2	4	0	0	0
+Alistipes finegoldii	2	3	0	3	7	13	32	58
+Alistipes onderdonkii	0	0	10	0	0	90	260	23
+Alistipes shahii	0	0	0	0	0	21	61	25
+Alistipes senegalensis	0	0	0	0	0	0	4	2
+Alistipes megaguti	0	0	0	0	0	5	1	4
+Alistipes communis	0	0	0	0	0	0	3	0
+Alistipes dispar	0	0	0	0	0	1	0	0
+Prevotella corporis	0	0	0	0	0	1	0	0
+Prevotella intermedia	2	6	3	1	0	0	0	0
+Prevotella nigrescens	0	1	1	0	0	0	0	0
+Prevotella veroralis	0	1	0	0	0	0	0	0
+Prevotella bryantii	0	0	0	0	0	0	0	1
+Prevotella scopos	0	0	0	0	1	0	0	0
+Prevotella sp. oral taxon 299	0	0	0	0	0	0	0	1
+Paraprevotella xylaniphila	0	0	0	0	0	1	0	0
+Odoribacter splanchnicus	1	0	0	0	0	10	5	11
+Sodaliphilus pleomorphus	1	0	2	2	0	0	0	0
+Barnesiella viscericola	2	4	5	2	0	0	1	1
+Coprobacter secundus	0	0	1	0	0	0	0	0
+Parabacteroides distasonis	1120	2066	1168	321	245	123	12	98
+Parabacteroides merdae	0	6	8	5	10	1	1	1
+Parabacteroides goldsteinii	3	7	2	2	2	2	3	2
+Parabacteroides johnsonii	0	0	0	0	0	0	1	1
+Paraflavitalea soli	0	1	0	0	0	0	0	0
+Chlorobaculum limnaeum	0	0	0	0	0	0	1	0
+Fischerella sp. NIES-3754	0	1	0	0	0	0	0	0
+Microcystis aeruginosa	0	0	1	0	0	0	0	0
+Sulfolobus acidocaldarius	0	5	1	3	3	2	3	2

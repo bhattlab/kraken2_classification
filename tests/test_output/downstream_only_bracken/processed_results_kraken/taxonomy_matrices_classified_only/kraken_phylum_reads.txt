@@ -1,0 +1,18 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Uroviricota	0	0	0	0	0	2	6	1
+Nucleocytoviricota	0	0	0	0	0	2	0	0
+Pseudomonadota	1480	81	249	101	102	291	139	116
+Campylobacterota	2	0	1	1	0	0	7	2
+Acidobacteriota	0	0	0	0	0	0	1	0
+Spirochaetota	0	0	0	2	2	0	0	0
+Verrucomicrobiota	0	0	0	0	0	231	594	87
+Planctomycetota	0	0	0	0	1	0	0	0
+Bacillota	687	177	328	150	823	775	1874	1767
+Deinococcota	0	0	0	0	0	0	1	0
+Armatimonadota	0	0	0	0	0	0	1	0
+Actinomycetota	1013	920	461	1417	211	82	300	249
+Mycoplasmatota	0	0	0	1	0	0	0	0
+Bacteroidota	4460	6453	6486	4763	6275	3579	1207	2381
+Chlorobiota	0	0	0	0	0	0	1	0
+Cyanobacteriota	0	1	1	0	0	0	0	0
+Thermoproteota	0	5	1	3	3	2	3	2

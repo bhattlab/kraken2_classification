@@ -1,7 +1,7 @@
 # Processing kraken results into matrices and plots
 # Ben Siranosian - Bhatt lab - Stanford Genetics
 # bsiranosian@gmail.com
-# January 2019 - December 2021
+# January 2019 - June 2023
 
 suppressMessages(library(ggplot2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(rafalib, quietly = TRUE, warn.conflicts = FALSE))
@@ -14,12 +14,11 @@ suppressMessages(library(zCompositions, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(ALDEx2, quietly = TRUE, warn.conflicts = FALSE))
 suppressMessages(library(ggpubr, quietly = TRUE, warn.conflicts = FALSE))
 options(stringsAsFactors = F)
-# suppressMessages(library(CoDaSeq, quietly = TRUE, warn.conflicts = FALSE))
 
 # options we need from snakemake
-# scripts.folder <- snakemake@params[['scripts_folder']]
-sample.reads.f <- snakemake@params[['sample_reads']]
-sample.groups.f <- snakemake@params[['sample_groups']]
+sample_reads_file <- snakemake@params[['sample_reads_file']]
+sample_reports_file <- snakemake@params[['sample_reports_file']]
+sample_groups_file <- snakemake@params[['sample_groups_file']]
 workflow.outdir <- snakemake@params[['workflow_outdir']]
 result.dir <- snakemake@params[['result_dir']]
 use.bracken.report <- snakemake@params[['use_bracken_report']]
@@ -27,57 +26,28 @@ remove.chordata <- as.logical(snakemake@params[['remove_chordata']])
 if (length(remove.chordata)==0){
     remove.chordata <- F
 }
-# now just use locations in the working directory
+
+# Use locations in the working directory for scripts and taxonomy array
 scripts.folder <- file.path(workflow.outdir, "scripts")
-# scripts.folder <- snakemake@scriptdir
 tax.array.file <- file.path(workflow.outdir, "taxonomy_array.tsv")
-# tax.array.file <- snakemake@input[['tax_array']]
-print(paste('scriptdir:', scripts.folder))
-############ Testing Args ############################################################################
-# testing 2021 database things 
-# sample.reads.f <- '~/scg_lab/bootcamp/zeiser/preprocessing/01_processing/classification_input.txt'
-# sample.groups.f <- '~/scg_lab/bootcamp/zeiser/sample_groups.tsv'
-# workflow.outdir <- '~/scg_lab/bootcamp/zeiser/kraken2_classification_2021/genbank_viral/'
-# result.dir <- '~/scg_lab/bootcamp/zeiser/kraken2_classification_2021/genbank_viral/processed_results/'
-# use.bracken.report <- T
-# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-# tax.array.file <- '~/scg/kraken2_db/kraken_custom_dec2021/genbank_viral/taxonomy_array.tsv'
-# remove.chordata <- F
 
-# testing one col debug
-# sample.reads.f <- '~/Desktop/kraken_test/classification_input.txt'
-# sample.groups.f <- ''
-# workflow.outdir <- '~/Desktop/kraken_test/'
-# result.dir <- '~/Desktop/kraken_test/processed_results/'
-# use.bracken.report <- T
-# scripts.folder <- '~/projects/kraken2_classification/scripts/'
-# tax.array.file <- '~/Desktop/kraken_test/taxonomy_array.tsv'
-# remove.chordata <- F
-# # for segata debug
-# scripts.folder <- '~/scg/projects/kraken2_classification/scripts/'
-# sample.reads.f <- '~/scg_lab/transmit_crass/kraken2_classification/samples_2018_unmapped.tsv'
-# sample.groups.f <- ''
-# classification.folder <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/classification/'
-# use.bracken.report <- F
-# result.dir <- '~/scg_lab/transmit_crass/kraken2_classification/kraken2_classification_2018_unmapped_segata/processed_results/'
-# outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
-# outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
-# outfolder.plots <- file.path(result.dir, 'plots')
+# Downstream processing for filtering OTUs
+## This removes any classification result where all samples are below this threshold,
+## which serves to remove the very long tail of lowly abundant species in Kraken2/Bracken results.
+## This parameter can be tuned, but I recommend you keep something here to reduce the long tail.
+min_otu_percentage <- as.numeric(snakemake@config[['min_otu_percentage']])
+# Filtering for compositional data analysis that gets applied for each taxonomic level
+## Keep only samples with > codata_min_reads (default 5000)
+codata_min_reads <- as.numeric(snakemake@config[['codata_min_reads']])
+## Keep only OTUs with an FRACTION of at least 0.001 by default
+## This is equivalent to a PERCENTAGE of 0.1
+codata_min_prop = as.numeric(snakemake@config[['codata_min_prop']])
+## Keep OTUs that are found in at least codata_otu_cutoff fraction of samples 
+## Default is 0.3 or 30% of samples
+codata_otu_cutoff = as.numeric(snakemake@config[['codata_otu_cutoff']])
 
-# testing with UHGG
-# sample.reads.f <- '~/scg/gutdecon_data/bas_kraken2_classification/sample_reads.txt'
-# sample.groups.f <- '~/scg/gutdecon_data/bas_kraken2_classification/sample_groups.txt'
-# workflow.outdir <- '~/scg/gutdecon_data/bas_kraken2_classification_UHGG/'
-# result.dir <- '~/scg/gutdecon_data/bas_kraken2_classification_UHGG/processed_results'
-# use.bracken.report <- TRUE
-# remove.chordata <- FALSE
-# scripts.folder <- '~/projects/kraken2_classification/scripts/'
-# tax.array.file <- '~/scg/kraken2_db/uhgg/taxonomy_array.tsv'
-######################################################################################################
-
-# set up directories and make those that don't exist
+# Set up directories and create those that don't exist
 classification.folder <- file.path(workflow.outdir, 'classification')
-# result.dir <- file.path(workflow.outdir, 'processed_results')
 outfolder.matrices.taxonomy <- file.path(result.dir, 'taxonomy_matrices')
 outfolder.matrices.taxonomy.classified <- file.path(result.dir, 'taxonomy_matrices_classified_only')
 outfolder.gctx.taxonomy <- file.path(result.dir, 'taxonomy_gctx')
@@ -85,57 +55,76 @@ outfolder.gctx.taxonomy.classified <- file.path(result.dir, 'taxonomy_gctx_class
 outfolder.matrices.bray <- file.path(result.dir, 'braycurtis_matrices')
 outfolder.plots <- file.path(result.dir, 'plots')
 outfolder.aldex <- file.path(result.dir, 'ALDEx2_differential_abundance')
-
 for (f in c(result.dir, outfolder.matrices.bray, outfolder.matrices.taxonomy.classified,
             outfolder.gctx.taxonomy.classified, outfolder.plots, outfolder.aldex)){
     if (!dir.exists(f)){ dir.create(f, recursive = T)}
 }
-
 # dont create dirs we dont need from bracken
 if (!(use.bracken.report)){
     for (f in c(outfolder.matrices.taxonomy, outfolder.gctx.taxonomy)){
         if (!dir.exists(f)){ dir.create(f, recursive = T)}
     }
 }
-
-# load other data processing and plotting scripts
+# Load other data processing and plotting scripts
 source.script.process <- file.path(scripts.folder, 'process_classification_gctx.R')
 source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
 source.script.codaseq <- file.path(scripts.folder, 'CoDaSeq_functions.R')
 if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))) {
-    # if these don't exist it could be due to a singularity error.
-    # Try loading from a backup location on scg
-    warning('Cannot find processing scripts in the scripts dir relative to this snakefile. Attempting to load processing scripts from backup directory.... (/oak/stanford/scg/lab_asbhatt/tools/kraken2_classification/scripts)')
-    scripts.folder <- '/oak/stanford/scg/lab_asbhatt/tools/kraken2_classification/scripts'
-    source.script.process <- file.path(scripts.folder, 'process_classification_gctx.R')
-    source.script.plot <- file.path(scripts.folder, 'plotting_classification.R')
-    source.script.codaseq <- file.path(scripts.folder, 'CoDaSeq_functions.R')
-    if (!(file.exists(source.script.process) & file.exists(source.script.plot) & file.exists(source.script.codaseq))){
-            stop('processing scripts do not exist at any of the attempted directories. Exiting. ')
-    }
+    stop('processing scripts do not exist at any of the attempted directories. Exiting. ')
 }
 suppressMessages(source(source.script.process))
 suppressMessages(source(source.script.plot))
 suppressMessages(source(source.script.codaseq))
 
-# read sample groups file
-sample.reads <- read.table(sample.reads.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
-colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
-# ensure we skip first row as 'sample'
-if(tolower(sample.reads[1,'sample'] == 'sample')){
-    sample.reads <- sample.reads[2:nrow(sample.reads), ]
+# read from sample_reads_file or sample_reports_file as input
+if(sample_reads_file != ""){
+    sample.reads <- read.table(sample_reads_file, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
+    colnames(sample.reads) <- c('sample', 'r1', 'r2')[1:ncol(sample.reads)]
+    # ensure we skip first row if it's a comment
+    if ((tolower(sample.reads[1,1]) == 'sample') | (substr(sample.reads[1,1], 1,1) == "#")){
+        sample.reads <- sample.reads[2:nrow(sample.reads), ]
+    }
+    # create dataframe of output files that would be in sample.reports
+    sample.reports <- data.frame(sample = sample.reads$sample, 
+                                 kraken_report = sapply(sample.reads$sample, function(x) file.path(classification.folder, paste(x, '.krak.report', sep=''))),
+                                 bracken_report = sapply(sample.reads$sample, function(x) file.path(classification.folder, paste(x, '.krak_bracken_species.report', sep=''))))                    
+} else if(sample_reports_file != ""){
+    sample.reports <- read.table(sample_reports_file, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
+    colnames(sample.reports) <- c('sample', 'kraken_report', 'bracken_report')[1:ncol(sample.reports)]
+    # ensure we skip first row if it's a comment
+    if ((tolower(sample.reports[1,1]) == 'sample') | (substr(sample.reports[1,1], 1,1) == "#")){
+        sample.reports <- sample.reports[2:nrow(sample.reports), ]
+    }
+}
+sample.names <- sample.reports$sample
+sample.number <- nrow(sample.reports)
+
+# Define files for loading in based on sample.
+if(use.bracken.report){
+    flist <- sample.reports[,3]
+} else {
+    flist <- sample.reports[,2]
+}
+names(flist) <- sample.names
+
+# Ensure all expected results files exist
+if (!(all(file.exists(flist)))){
+    # print which files don't exist
+    message('The follwing files do not exist:')
+    print(flist[!sapply(flist, file.exists)])
+    stop("Some classification files do not exist!")
 }
 
 # if a groups file is specified, read it. Otherwise assign everything to one group
-if (sample.groups.f != '') {
-    sample.groups <- read.table(sample.groups.f, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
+if (sample_groups_file != '') {
+    sample.groups <- read.table(sample_groups_file, sep='\t', quote='', header=F, comment.char = "#", colClasses = 'character')
     colnames(sample.groups) <- c('sample', 'group')
     # if first sample is sample, discard the line
     if(tolower(sample.groups[1,'sample']) == 'sample'){
         sample.groups <- sample.groups[2:nrow(sample.groups),]
     }
 } else {
-    sample.groups <- data.frame(sample=sample.reads$sample, group='All')
+    sample.groups <- data.frame(sample=sample.names, group='All')
 }
 
 # get taxonomy array
@@ -154,36 +143,25 @@ tax.array[tax.array$id %in% dup.ids, "id"] <-
     paste(tax.array[tax.array$id %in% dup.ids, "id"], ' (', tax.array[tax.array$id %in% dup.ids, "taxid"], ')', sep='')
 
 # ensure reads and groups have the same data
-if (!(all(sample.groups$sample %in% sample.reads$sample) & all(sample.reads$sample %in% sample.groups$sample))){
+if (!(all(sample.groups$sample %in% sample.names) & all(sample.names %in% sample.groups$sample))){
     message('sample.reads:')
     print(sample.reads)
     message('sample.groups:')
     print(sample.groups)
-    message('sample.groups$sample[!(sample.groups$sample %in% sample.reads$sample)]')
-    print(sample.groups$sample[!(sample.groups$sample %in% sample.reads$sample)])
-    message('sample.reads$sample[!(sample.reads$sample %in% sample.groups$sample)]')
-    print(sample.reads$sample[!(sample.reads$sample %in% sample.groups$sample)])
+    message('sample.groups$sample[!(sample.groups$sample %in% sample.names)]')
+    print(sample.groups$sample[!(sample.groups$sample %in% sample.names)])
+    message('sample.names[!(sample.names %in% sample.groups$sample)]')
+    print(sample.names[!(sample.names %in% sample.groups$sample)])
     stop('Sample reads and sample groups dont contain the same samples... check inputs')
 }
 
-# get sample names
-if (use.bracken.report){f.ext <- '.krak_bracken_species.report'} else {f.ext <- '.krak.report'}
-flist <- sapply(sample.groups$sample, function(x) file.path(classification.folder, paste(x, f.ext, sep='')))
-names(flist) <- sample.groups$sample
-if (!(all(file.exists(flist)))){
-    # print which files don't exist
-    message('The follwing files do not exist:')
-    print(flist[!sapply(flist, file.exists)])
-    stop("Some classification files do not exist!")
-}
-
 # special case for UHGG and MAG databases.
-# if reading from UHGG, the taxonomy levels go R, R1-R7
+## If reading from UHGG, the taxonomy levels go R, R1-R7
 test.df <- kraken_file_to_df(flist[1])
-# UHGG database will have
+## UHGG database will have this structure
 uhgg <- all(paste0('R', 1:7) %in% test.df$tax.level)
-# MAG database will have this
-# like number of genus classifications is zero or something
+# MAG database will have this structure
+## Number of genus classifications is zero
 segata <- !uhgg & sum(sum(test.df$tax.level=='G')) == 0
 
 # load classification results from each sample and process into gct format
@@ -219,9 +197,8 @@ unclassified.rownames <- c('unclassified', 'classified at a higher level')
 kgct.filtered.classified.list <- lapply(kgct.filtered.list, function(x) subset_gct(x, rid=x@rid[!(x@rid %in% unclassified.rownames)]))
 
 # normalize to percentages
-min.frac <- 0.001
-kgct.filtered.percentage.list <- lapply(kgct.filtered.list, function(x) normalize_kgct(x, min.frac=min.frac))
-kgct.filtered.classified.percentage.list <- lapply(kgct.filtered.classified.list, function(x) normalize_kgct(x, min.frac=min.frac))
+kgct.filtered.percentage.list <- lapply(kgct.filtered.list, function(x) normalize_kgct(x, min_otu_percentage=min_otu_percentage))
+kgct.filtered.classified.percentage.list <- lapply(kgct.filtered.classified.list, function(x) normalize_kgct(x, min_otu_percentage=min_otu_percentage))
 
 message('Saving classification matrices...')
 # save matrices and gctx objects
@@ -299,7 +276,7 @@ names(div.level.method) <- filter.levels
 # coerce forcefully into a dataframe
 # there's definitely a better way to do this...
 div.df <- as.data.frame(div.level.method)
-rownames(div.df) <- sample.reads$sample
+rownames(div.df) <- sample.names
 div.df <- cbind(data.frame(sample=rownames(div.df)), div.df)
 div.df <- melt(div.df, id.vars = 'sample')
 div.df$tax.level <- sapply(div.df$variable, function(x) strsplit(as.character(x), split="\\.")[[1]][1])
@@ -408,7 +385,7 @@ for (tn in filter.levels){
 #################################################################################
 message('Doing PCoA calculations...')
 # only do this if we have >=3 samples
-if (nrow(sample.reads) >=3){
+if (sample.number >=3){
     # do for each tax level
     plotlist.nolabels <- list()
     plotlist.labels <- list()
@@ -503,19 +480,14 @@ if (nrow(sample.groups) < 3){
     print('Compositional data analysis....')
     for (tax.level in do.tax.levels[!(do.tax.levels %in% c('kingdom'))]){
         print(paste('.....', tax.level))
-        # AT A SPECIFIC TAX LEVEL: filtering
-        # keep only those samples with > min.reads
-        min.reads <- 5000
-        # keep only OTUs with an FRACTION of at least 0.001
-        # This is equivalent to a PERCENTAGE of 0.1
-        min.prop = 0.001
-        # keep OTUs that are found in at least 30% of samples
-        cutoff = .3
         use.mat <- kgct.filtered.classified.list[[tax.level]]@mat
         if(nrow(use.mat) > 2){
             reads.filtered <- tryCatch(codaSeq.filter(use.mat,
-                min.reads=min.reads, min.occurrence=cutoff, min.prop=min.prop, samples.by.row=FALSE),
-            error=function(e) matrix(0))
+                min.reads=codata_min_reads, min.occurrence=codata_otu_cutoff, min.prop=codata_min_prop, samples.by.row=FALSE),
+            error=function(e) {
+                warning(e)
+                matrix(0)
+                })
             } else {
                 reads.filtered <- matrix(0)
             }
@@ -532,7 +504,6 @@ if (nrow(sample.groups) < 3){
             } else {
                 rfz <- reads.filtered
             }
-
             # convert to CLR
             clr.aldex <- aldex.clr(rfz, conds=rep(NA, ncol(rfz)), mc.samples=128, denom = 'all', verbose = F)
             # get clr from mean of the MC instances
@@ -611,7 +582,6 @@ if (nrow(sample.groups) < 3){
                 if (nrow(aldex.res.plot) >0 ){
                     # make clr values
                     m.prop <-  apply(rfz, 2, function(x) x/sum(x))
-                    # rfz.clr <- t(codaSeq.clr(rfz, samples.by.row=FALSE))
                     clr.aldex <- aldex.clr(rfz[,c(s.pos, s.neg)],
                         conds = c(rep(group.pos, length(s.pos)), rep(group.neg, length(s.neg))),
                         mc.samples=128, denom = 'all', verbose = F)

@@ -1,0 +1,112 @@
+100.00	7617	0	R	1	root
+100.00	7617	0	R1	131567	  cellular organisms
+99.87	7607	0	D	2	    Bacteria
+57.97	4416	0	D1	1783270	      FCB group
+57.97	4416	0	D2	68336	        Bacteroidetes/Chlorobi group
+57.97	4416	0	P	976	          Bacteroidota
+57.97	4416	0	C	200643	            Bacteroidia
+57.97	4416	0	O	171549	              Bacteroidales
+29.96	2282	0	F	2005525	                Tannerellaceae
+29.96	2282	0	G	375288	                  Parabacteroides
+29.96	2282	2282	S	823	                    Parabacteroides distasonis
+28.01	2134	0	F	815	                Bacteroidaceae
+18.35	1397	0	G	816	                  Bacteroides
+13.34	1016	1016	S	674529	                    Bacteroides faecis
+2.42	183	183	S	820	                    Bacteroides uniformis
+1.09	83	83	S	817	                    Bacteroides fragilis
+0.50	37	37	S	818	                    Bacteroides thetaiotaomicron
+0.99	75	75	S	28116	                    Bacteroides ovatus
+9.67	736	0	G	909656	                  Phocaeicola
+9.67	736	736	S	357276	                    Phocaeicola dorei
+22.07	1681	0	D1	1783272	      Terrabacteria group
+13.13	999	0	P	201174	        Actinomycetota
+12.38	942	0	C	1760	          Actinomycetes
+10.93	832	0	O	85004	            Bifidobacteriales
+10.93	832	0	F	31953	              Bifidobacteriaceae
+10.93	832	0	G	1678	                Bifidobacterium
+5.19	395	395	S	216816	                  Bifidobacterium longum
+5.74	437	437	S	1680	                  Bifidobacterium adolescentis
+0.83	63	0	O	85009	            Propionibacteriales
+0.83	63	0	F	31957	              Propionibacteriaceae
+0.83	63	0	G	1912216	                Cutibacterium
+0.83	63	63	S	33010	                  Cutibacterium avidum
+0.61	46	0	O	85007	            Mycobacteriales
+0.61	46	0	F	1762	              Mycobacteriaceae
+0.61	46	0	G	1763	                Mycobacterium
+0.61	46	0	G1	120793	                  Mycobacterium avium complex (MAC)
+0.61	46	46	S	1764	                    Mycobacterium avium
+0.75	57	0	C	84998	          Coriobacteriia
+0.75	57	0	O	1643822	            Eggerthellales
+0.75	57	0	F	1643826	              Eggerthellaceae
+0.75	57	0	G	84111	                Eggerthella
+0.75	57	57	S	84112	                  Eggerthella lenta
+8.94	681	0	P	1239	        Bacillota
+7.65	582	0	C	91061	          Bacilli
+6.85	522	0	O	186826	            Lactobacillales
+6.85	522	0	F	33958	              Lactobacillaceae
+6.85	522	0	G	2759736	                Lacticaseibacillus
+6.85	522	522	S	47715	                  Lacticaseibacillus rhamnosus
+0.80	60	0	O	1385	            Bacillales
+0.80	60	0	F	90964	              Staphylococcaceae
+0.80	60	0	G	1279	                Staphylococcus
+0.80	60	60	S	1280	                  Staphylococcus aureus
+1.29	98	0	C	186801	          Clostridia
+1.29	98	0	O	186802	            Eubacteriales
+1.07	81	0	F	186803	              Lachnospiraceae
+1.07	81	0	G	572511	                Blautia
+1.07	81	81	S	418240	                  Blautia wexlerae
+0.23	17	0	F	216572	              Oscillospiraceae
+0.23	17	0	G	946234	                Flavonifractor
+0.23	17	17	S	292800	                  Flavonifractor plautii
+19.83	1510	0	P	1224	      Pseudomonadota
+19.24	1465	0	C	1236	        Gammaproteobacteria
+18.45	1405	0	O	2887326	          Moraxellales
+18.45	1405	0	F	468	            Moraxellaceae
+18.45	1405	0	G	469	              Acinetobacter
+18.45	1405	0	G1	909768	                Acinetobacter calcoaceticus/baumannii complex
+18.45	1405	1405	S	470	                  Acinetobacter baumannii
+0.63	47	0	O	91347	          Enterobacterales
+0.63	47	0	F	543	            Enterobacteriaceae
+0.63	47	0	G	590	              Salmonella
+0.63	47	47	S	28901	                Salmonella enterica
+0.16	12	0	O	72274	          Pseudomonadales
+0.16	12	0	F	135621	            Pseudomonadaceae
+0.16	12	0	G	286	              Pseudomonas
+0.16	12	0	G1	136843	                Pseudomonas fluorescens group
+0.16	12	12	S	294	                  Pseudomonas fluorescens
+0.59	44	0	C	28216	        Betaproteobacteria
+0.59	44	0	O	80840	          Burkholderiales
+0.59	44	0	F	119060	            Burkholderiaceae
+0.59	44	0	G	32008	              Burkholderia
+0.59	44	0	G1	87882	                Burkholderia cepacia complex
+0.59	44	44	S	152500	                  Burkholderia dolosa
+0.13	10	0	D	2759	    Eukaryota
+0.13	10	0	D1	33154	      Opisthokonta
+0.13	10	0	K	33208	        Metazoa
+0.13	10	0	K1	6072	          Eumetazoa
+0.13	10	0	K2	33213	            Bilateria
+0.13	10	0	K3	33511	              Deuterostomia
+0.13	10	0	P	7711	                Chordata
+0.13	10	0	P1	89593	                  Craniata
+0.13	10	0	P2	7742	                    Vertebrata
+0.13	10	0	P3	7776	                      Gnathostomata
+0.13	10	0	P4	117570	                        Teleostomi
+0.13	10	0	P5	117571	                          Euteleostomi
+0.13	10	0	P6	8287	                            Sarcopterygii
+0.13	10	0	P7	1338369	                              Dipnotetrapodomorpha
+0.13	10	0	P8	32523	                                Tetrapoda
+0.13	10	0	P9	32524	                                  Amniota
+0.13	10	0	C	40674	                                    Mammalia
+0.13	10	0	C1	32525	                                      Theria
+0.13	10	0	C2	9347	                                        Eutheria
+0.13	10	0	C3	1437010	                                          Boreoeutheria
+0.13	10	0	C4	314146	                                            Euarchontoglires
+0.13	10	0	O	9443	                                              Primates
+0.13	10	0	O1	376913	                                                Haplorrhini
+0.13	10	0	O2	314293	                                                  Simiiformes
+0.13	10	0	O3	9526	                                                    Catarrhini
+0.13	10	0	O4	314295	                                                      Hominoidea
+0.13	10	0	F	9604	                                                        Hominidae
+0.13	10	0	F1	207598	                                                          Homininae
+0.13	10	0	G	9605	                                                            Homo
+0.13	10	10	S	9606	                                                              Homo sapiens

@@ -1,0 +1,30 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+unclassified	22.55	18.67	23.19	34.07	19.03	33.93	57.06	46.49
+classified at a higher level	1.44	5.67	2.03	1.99	7.62	17.75	2.4	8.88
+Bacteroidia	44.25	64.02	64.5	47.33	62.35	35.49	11.94	23.48
+Actinomycetes	9.54	8.99	4.53	13.92	2.11	0.77	2.75	2.3
+Clostridia	1.12	0.33	1.84	0.21	0.24	5.02	15.48	14.6
+Bacilli	5.73	1.42	1.39	1.22	6.79	2.51	2.32	1.78
+Gammaproteobacteria	14.42	0.38	2.29	0.58	0.43	1.18	0.89	0.55
+Verrucomicrobiae	0	0	0	0	0	2.31	5.94	0.87
+Erysipelotrichia	0.01	0	0	0	1	0.06	0.32	0.45
+Coriobacteriia	0.58	0.21	0.07	0.25	0	0.05	0.25	0.19
+Betaproteobacteria	0.26	0.12	0.05	0.18	0.13	0.36	0.2	0.13
+Alphaproteobacteria	0.07	0.1	0.08	0.11	0.17	0.48	0.2	0.16
+Thermoprotei	0	0.05	0.01	0.03	0.03	0.02	0.03	0.02
+Epsilonproteobacteria	0.02	0	0.01	0.01	0	0	0.07	0.02
+Flavobacteriia	0.01	0.02	0	0	0.01	0.02	0.03	0.04
+Negativicutes	0	0	0	0.07	0.01	0	0.01	0.02
+Caudoviricetes	0	0	0	0	0	0.02	0.06	0.01
+Tissierellia	0	0	0	0	0.05	0	0.01	0
+Spirochaetia	0	0	0	0.02	0.02	0	0	0
+Megaviricetes	0	0	0	0	0	0.02	0	0
+Sphingobacteriia	0	0	0	0	0	0.01	0	0.01
+Cyanophyceae	0	0.01	0.01	0	0	0	0	0
+Terriglobia	0	0	0	0	0	0	0.01	0
+Planctomycetia	0	0	0	0	0.01	0	0	0
+Deinococci	0	0	0	0	0	0	0.01	0
+Fimbriimonadia	0	0	0	0	0	0	0.01	0
+Mollicutes	0	0	0	0.01	0	0	0	0
+Chitinophagia	0	0.01	0	0	0	0	0	0
+Chlorobiia	0	0	0	0	0	0	0.01	0

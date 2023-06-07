@@ -1,0 +1,9 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+unclassified	38.83	37.83	44.39	54.33	36.88	45.29	70.83	59.76
+classified at a higher level	0.05	0.01	0.09	0.01	0.03	0	-0.03	0.01
+Bacteria	61.08	62.09	55.21	45.42	62.94	54.63	29.1	40.19
+Metazoa	0.04	0.06	0.29	0.23	0.15	0.04	0.02	0.03
+Viruses	0	0	0	0	0	0.02	0.04	0
+Heunggongvirae	0	0	0	0	0	0.01	0.04	0
+Archaea	0	0.01	0.02	0.01	0	0	0	0.01
+Bamfordvirae	0	0	0	0	0	0.01	0	0

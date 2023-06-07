@@ -1,0 +1,22 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Caudoviricetes	0	0	0	0	0	1	4	0
+Megaviricetes	0	0	0	0	0	1	0	0
+Gammaproteobacteria	1628	21	166	43	31	79	62	45
+Alphaproteobacteria	5	11	8	9	11	35	15	9
+Betaproteobacteria	2	2	1	6	3	10	5	2
+Epsilonproteobacteria	1	0	1	0	0	0	4	2
+Terriglobia	0	0	0	0	0	0	1	0
+Verrucomicrobiae	0	0	0	0	0	189	440	69
+Bacilli	388	73	81	74	538	106	151	102
+Clostridia	79	17	116	10	13	379	994	988
+Erysipelotrichia	1	0	0	0	57	3	19	30
+Negativicutes	0	0	0	5	0	0	0	0
+Tissierellia	0	0	0	0	2	0	0	0
+Actinomycetes	696	646	322	948	148	57	190	154
+Coriobacteriia	44	16	6	13	0	2	15	12
+Mollicutes	0	0	0	1	0	0	0	0
+Flavobacteriia	0	0	0	0	0	0	0	1
+Bacteroidia	3051	4844	4701	3315	4723	2769	843	1720
+Chlorobiia	0	0	0	0	0	0	1	0
+Halobacteria	0	0	1	0	0	0	0	0
+Thermoprotei	0	1	1	1	0	0	0	1

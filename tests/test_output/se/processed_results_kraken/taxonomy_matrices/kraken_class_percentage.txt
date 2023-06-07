@@ -1,0 +1,24 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+unclassified	38.83	37.83	44.39	54.33	36.88	45.29	70.83	59.76
+classified at a higher level	2.22	5.86	1.57	1.42	7.86	18.4	1.73	8.89
+Bacteroidia	30.51	48.44	47.01	33.15	47.23	27.69	8.43	17.2
+Actinomycetes	6.96	6.46	3.22	9.48	1.48	0.57	1.9	1.54
+Clostridia	0.79	0.17	1.16	0.1	0.13	3.79	9.94	9.88
+Gammaproteobacteria	16.28	0.21	1.66	0.43	0.31	0.79	0.62	0.45
+Bacilli	3.88	0.73	0.81	0.74	5.38	1.06	1.51	1.02
+Verrucomicrobiae	0	0	0	0	0	1.89	4.4	0.69
+Erysipelotrichia	0.01	0	0	0	0.57	0.03	0.19	0.3
+Coriobacteriia	0.44	0.16	0.06	0.13	0	0.02	0.15	0.12
+Alphaproteobacteria	0.05	0.11	0.08	0.09	0.11	0.35	0.15	0.09
+Betaproteobacteria	0.02	0.02	0.01	0.06	0.03	0.1	0.05	0.02
+Epsilonproteobacteria	0.01	0	0.01	0	0	0	0.04	0.02
+Caudoviricetes	0	0	0	0	0	0.01	0.04	0
+Negativicutes	0	0	0	0.05	0	0	0	0
+Thermoprotei	0	0.01	0.01	0.01	0	0	0	0.01
+Tissierellia	0	0	0	0	0.02	0	0	0
+Megaviricetes	0	0	0	0	0	0.01	0	0
+Terriglobia	0	0	0	0	0	0	0.01	0
+Mollicutes	0	0	0	0.01	0	0	0	0
+Flavobacteriia	0	0	0	0	0	0	0	0.01
+Chlorobiia	0	0	0	0	0	0	0.01	0
+Halobacteria	0	0	0.01	0	0	0	0	0

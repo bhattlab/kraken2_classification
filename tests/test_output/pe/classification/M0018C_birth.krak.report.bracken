@@ -1,0 +1,21 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Phocaeicola dorei	357276	S	3451	1962	5413	0.67909
+Phocaeicola vulgatus	821	S	26	15	41	0.00514
+Bacteroides fragilis	817	S	82	48	130	0.01631
+Bacteroides thetaiotaomicron	818	S	38	7	45	0.00565
+Bacteroides ovatus	28116	S	27	68	95	0.01192
+Bacteroides uniformis	820	S	22	19	41	0.00514
+Bacteroides faecis	674529	S	18	4	22	0.00276
+Parabacteroides distasonis	823	S	245	234	479	0.06009
+Parabacteroides merdae	46503	S	10	1	11	0.00138
+Enterococcus faecalis	1351	S	251	320	571	0.07163
+Staphylococcus epidermidis	1282	S	97	6	103	0.01292
+Staphylococcus aureus	1280	S	55	32	87	0.01091
+Thomasclavelia spiroformis	29348	S	95	6	101	0.01267
+Bifidobacterium longum	216816	S	74	58	132	0.01656
+Bifidobacterium adolescentis	1680	S	30	20	50	0.00627
+Mycobacterium avium	1764	S	10	169	179	0.02246
+Salmonella enterica	28901	S	25	296	321	0.04027
+Bartonella krasnovii	2267275	S	10	0	10	0.00125
+Burkholderia dolosa	152500	S	11	98	109	0.01367
+Homo sapiens	9606	S	23	0	23	0.00289

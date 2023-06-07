@@ -1,0 +1,33 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Bacteroides sp. M10	2763022	S	315	534	849	0.13805
+Bacteroides sp. D2	556259	S	80	242	322	0.05236
+Bacteroides uniformis	820	S	338	501	839	0.13642
+Bacteroides faecis	674529	S	146	60	206	0.03350
+Bacteroides ovatus	28116	S	67	332	399	0.06488
+Bacteroides fragilis	817	S	49	51	100	0.01626
+Bacteroides thetaiotaomicron	818	S	30	8	38	0.00618
+Bacteroides xylanisolvens	371601	S	23	78	101	0.01642
+Bacteroides zhangwenhongii	2650157	S	10	3	13	0.00211
+Phocaeicola dorei	357276	S	135	88	223	0.03626
+Parabacteroides distasonis	823	S	123	168	291	0.04732
+Alistipes onderdonkii	328813	S	90	13	103	0.01675
+Alistipes shahii	328814	S	21	4	25	0.00407
+Alistipes finegoldii	214856	S	13	3	16	0.00260
+Odoribacter splanchnicus	28118	S	10	0	10	0.00163
+Faecalibacterium prausnitzii	853	S	58	100	158	0.02569
+Faecalibacterium sp. I4-3-84	2929495	S	20	49	69	0.01122
+Flavonifractor plautii	292800	S	19	1	20	0.00325
+Vescimonas coprocola	2714355	S	10	2	12	0.00195
+Roseburia intestinalis	166486	S	88	49	137	0.02228
+Enterocloster clostridioformis	1531	S	13	19	32	0.00520
+Staphylococcus aureus	1280	S	125	106	231	0.03756
+Lactococcus lactis	1358	S	35	23	58	0.00943
+Mycobacterium avium	1764	S	31	437	468	0.07610
+Curtobacterium sp. Csp2	2495430	S	21	0	21	0.00341
+Salmonella enterica	28901	S	45	469	514	0.08358
+Klebsiella variicola	244366	S	14	5	19	0.00309
+Pseudoalteromonas sp. Scap25	2589992	S	13	582	595	0.09675
+Pseudomonas fluorescens	294	S	13	0	13	0.00211
+Bartonella krasnovii	2267275	S	29	0	29	0.00472
+Xanthobacter autotrophicus	280	S	16	1	17	0.00276
+Burkholderia dolosa	152500	S	23	184	207	0.03366

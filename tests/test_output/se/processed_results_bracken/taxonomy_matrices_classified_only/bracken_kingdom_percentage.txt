@@ -1,0 +1,3 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Bacteria	100	100	99.469	99.481	99.759	100	100	100
+Metazoa	0	0	0.531	0.519	0.241	0	0	0

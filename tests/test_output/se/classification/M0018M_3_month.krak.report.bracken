@@ -1,0 +1,24 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Bacteroides sp. M10	2763022	S	247	403	650	0.12765
+Bacteroides sp. D2	556259	S	61	177	238	0.04674
+Bacteroides uniformis	820	S	283	405	688	0.13511
+Bacteroides faecis	674529	S	118	47	165	0.03240
+Bacteroides ovatus	28116	S	61	290	351	0.06893
+Bacteroides fragilis	817	S	20	19	39	0.00766
+Bacteroides xylanisolvens	371601	S	17	50	67	0.01316
+Bacteroides thetaiotaomicron	818	S	10	2	12	0.00236
+Phocaeicola dorei	357276	S	116	73	189	0.03712
+Parabacteroides distasonis	823	S	98	138	236	0.04635
+Alistipes onderdonkii	328813	S	75	11	86	0.01689
+Alistipes shahii	328814	S	20	4	24	0.00471
+Faecalibacterium prausnitzii	853	S	43	78	121	0.02376
+Faecalibacterium sp. I4-3-84	2929495	S	16	41	57	0.01119
+Flavonifractor plautii	292800	S	15	1	16	0.00314
+Roseburia intestinalis	166486	S	65	52	117	0.02298
+Staphylococcus aureus	1280	S	61	26	87	0.01709
+Lactococcus lactis	1358	S	30	10	40	0.00786
+Mycobacterium avium	1764	S	36	550	586	0.11508
+Salmonella enterica	28901	S	44	491	535	0.10507
+Pseudoalteromonas sp. Scap25	2589992	S	15	728	743	0.14592
+Bartonella krasnovii	2267275	S	19	0	19	0.00373
+Xanthobacter autotrophicus	280	S	12	1	13	0.00255

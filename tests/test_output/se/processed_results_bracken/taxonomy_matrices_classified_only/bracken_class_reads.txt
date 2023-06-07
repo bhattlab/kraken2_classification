@@ -1,0 +1,9 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Gammaproteobacteria	1738	418	246	119	376	1279	148	749
+Alphaproteobacteria	0	0	0	0	0	33	0	0
+Bacilli	395	100	88	76	610	128	124	125
+Clostridia	70	0	114	0	0	313	976	939
+Erysipelotrichia	0	0	0	0	58	0	0	19
+Actinomycetes	738	641	312	928	404	586	172	139
+Coriobacteriia	44	15	0	0	0	0	0	0
+Bacteroidia	3049	4927	4673	3286	4764	2750	818	1727
