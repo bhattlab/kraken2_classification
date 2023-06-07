@@ -1,0 +1,8 @@
+M0018C_2_month	tests/test_data/SRR7281046_sub_1.fastq.gz
+M0018C_1_month	tests/test_data/SRR7281058_sub_1.fastq.gz
+M0018C_3_month	tests/test_data/SRR7280802_sub_1.fastq.gz
+M0018C_14_day	tests/test_data/SRR7281059_sub_1.fastq.gz
+M0018C_birth	tests/test_data/SRR7281057_sub_1.fastq.gz
+M0018M_3_month	tests/test_data/SRR7280885_sub_1.fastq.gz
+M0018M_gest	tests/test_data/SRR7280946_sub_1.fastq.gz
+M0018M_birth	tests/test_data/SRR7280884_sub_1.fastq.gz

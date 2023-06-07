@@ -1,0 +1,71 @@
+100.00	6037	0	R	1	root
+100.00	6037	0	R1	131567	  cellular organisms
+100.00	6037	0	D	2	    Bacteria
+50.52	3049	0	D1	1783270	      FCB group
+50.52	3049	0	D2	68336	        Bacteroidetes/Chlorobi group
+50.52	3049	0	P	976	          Bacteroidota
+50.52	3049	0	C	200643	            Bacteroidia
+50.52	3049	0	O	171549	              Bacteroidales
+26.47	1597	0	F	2005525	                Tannerellaceae
+26.47	1597	0	G	375288	                  Parabacteroides
+26.47	1597	1597	S	823	                    Parabacteroides distasonis
+24.05	1452	0	F	815	                Bacteroidaceae
+15.54	937	0	G	816	                  Bacteroides
+11.01	664	664	S	674529	                    Bacteroides faecis
+2.26	136	136	S	820	                    Bacteroides uniformis
+0.90	54	54	S	817	                    Bacteroides fragilis
+0.38	22	22	S	818	                    Bacteroides thetaiotaomicron
+0.99	59	59	S	28116	                    Bacteroides ovatus
+8.52	514	0	G	909656	                  Phocaeicola
+8.52	514	514	S	357276	                    Phocaeicola dorei
+28.80	1738	0	P	1224	      Pseudomonadota
+28.80	1738	0	C	1236	        Gammaproteobacteria
+27.49	1659	0	O	2887326	          Moraxellales
+27.49	1659	0	F	468	            Moraxellaceae
+27.49	1659	0	G	469	              Acinetobacter
+27.49	1659	0	G1	909768	                Acinetobacter calcoaceticus/baumannii complex
+27.49	1659	1659	S	470	                  Acinetobacter baumannii
+1.31	79	0	O	91347	          Enterobacterales
+1.31	79	0	F	543	            Enterobacteriaceae
+1.31	79	0	G	590	              Salmonella
+1.31	79	79	S	28901	                Salmonella enterica
+20.68	1248	0	D1	1783272	      Terrabacteria group
+12.97	782	0	P	201174	        Actinomycetota
+12.23	738	0	C	1760	          Actinomycetes
+10.20	615	0	O	85004	            Bifidobacteriales
+10.20	615	0	F	31953	              Bifidobacteriaceae
+10.20	615	0	G	1678	                Bifidobacterium
+4.97	300	300	S	216816	                  Bifidobacterium longum
+5.23	315	315	S	1680	                  Bifidobacterium adolescentis
+1.29	77	0	O	85007	            Mycobacteriales
+1.29	77	0	F	1762	              Mycobacteriaceae
+1.29	77	0	G	1763	                Mycobacterium
+1.29	77	0	G1	120793	                  Mycobacterium avium complex (MAC)
+1.29	77	77	S	1764	                    Mycobacterium avium
+0.75	45	0	O	85009	            Propionibacteriales
+0.75	45	0	F	31957	              Propionibacteriaceae
+0.75	45	0	G	1912216	                Cutibacterium
+0.75	45	45	S	33010	                  Cutibacterium avidum
+0.73	44	0	C	84998	          Coriobacteriia
+0.73	44	0	O	1643822	            Eggerthellales
+0.73	44	0	F	1643826	              Eggerthellaceae
+0.73	44	0	G	84111	                Eggerthella
+0.73	44	44	S	84112	                  Eggerthella lenta
+7.71	465	0	P	1239	        Bacillota
+6.55	395	0	C	91061	          Bacilli
+6.06	365	0	O	186826	            Lactobacillales
+6.06	365	0	F	33958	              Lactobacillaceae
+6.06	365	0	G	2759736	                Lacticaseibacillus
+6.06	365	365	S	47715	                  Lacticaseibacillus rhamnosus
+0.49	29	0	O	1385	            Bacillales
+0.49	29	0	F	90964	              Staphylococcaceae
+0.49	29	0	G	1279	                Staphylococcus
+0.49	29	29	S	1280	                  Staphylococcus aureus
+1.16	70	0	C	186801	          Clostridia
+1.16	70	0	O	186802	            Eubacteriales
+0.88	52	0	F	186803	              Lachnospiraceae
+0.88	52	0	G	572511	                Blautia
+0.88	52	52	S	418240	                  Blautia wexlerae
+0.28	17	0	F	216572	              Oscillospiraceae
+0.28	17	0	G	946234	                Flavonifractor
+0.28	17	17	S	292800	                  Flavonifractor plautii

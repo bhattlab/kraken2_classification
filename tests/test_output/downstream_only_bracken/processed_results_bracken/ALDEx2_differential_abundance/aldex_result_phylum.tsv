@@ -1,0 +1,5 @@
+taxa	n.pos	n.neg	rab.all	rab.win.infant	rab.win.mother	diff.btw	diff.win	effect	overlap	we.ep	we.eBH	wi.ep	wi.eBH	abs.effect
+Bacteroidota	5	3	2.157	2.966	1.468	-1.518	0.4477	-2.79	0.05182	0.008023	0.03209	0.06083	0.1406	2.79
+Actinomycetota	5	3	-0.9799	-0.5464	-1.276	-1.302	0.9552	-0.9644	0.1399	0.05689	0.09269	0.1395	0.186	0.9644
+Bacillota	5	3	-0.8845	-1.173	0.9902	2.102	1.605	1.425	0.08809	0.06993	0.09377	0.07143	0.1406	1.425
+Pseudomonadota	5	3	-1.06	-1.127	-0.3173	0.6959	1.047	0.57	0.3021	0.3852	0.3852	0.5382	0.5382	0.57

@@ -1,0 +1,17 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Bacteroides ovatus	28116	S	331	1330	1661	0.37461
+Bacteroides sp. D2	556259	S	46	81	127	0.02864
+Bacteroides sp. M10	2763022	S	15	14	29	0.00654
+Bacteroides fragilis	817	S	34	23	57	0.01286
+Bacteroides xylanisolvens	371601	S	30	54	84	0.01894
+Bacteroides luhongzhouii	2650158	S	14	5	19	0.00429
+Phocaeicola dorei	357276	S	514	308	822	0.18539
+Parabacteroides distasonis	823	S	222	261	483	0.10893
+Bifidobacterium longum	216816	S	319	232	551	0.12427
+Bifidobacterium adolescentis	1680	S	170	178	348	0.07848
+Cutibacterium avidum	33010	S	27	1	28	0.00631
+Staphylococcus aureus	1280	S	22	12	34	0.00767
+Staphylococcus epidermidis	1282	S	18	1	19	0.00429
+Enterococcus faecalis	1351	S	15	7	22	0.00496
+Salmonella enterica	28901	S	24	95	119	0.02684
+Homo sapiens	9606	S	23	0	23	0.00519

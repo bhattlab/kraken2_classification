@@ -1,0 +1,17 @@
+name	taxonomy_id	taxonomy_lvl	kraken_assigned_reads	added_reads	new_est_reads	fraction_total_reads
+Parabacteroides distasonis	823	S	1439	1428	2867	0.46969
+Bacteroides faecis	674529	S	666	177	843	0.13811
+Bacteroides ovatus	28116	S	133	361	494	0.08093
+Bacteroides fragilis	817	S	56	37	93	0.01524
+Bacteroides sp. D2	556259	S	17	26	43	0.00704
+Bacteroides thetaiotaomicron	818	S	19	3	22	0.00360
+Bacteroides uniformis	820	S	13	11	24	0.00393
+Bacteroides xylanisolvens	371601	S	12	22	34	0.00557
+Phocaeicola dorei	357276	S	319	184	503	0.08240
+Bifidobacterium longum	216816	S	205	153	358	0.05865
+Bifidobacterium adolescentis	1680	S	113	118	231	0.03784
+Cutibacterium avidum	33010	S	43	8	51	0.00836
+Eggerthella lenta	84112	S	13	2	15	0.00246
+Lacticaseibacillus rhamnosus	47715	S	20	1	21	0.00344
+Staphylococcus aureus	1280	S	31	47	78	0.01278
+Salmonella enterica	28901	S	14	404	418	0.06848

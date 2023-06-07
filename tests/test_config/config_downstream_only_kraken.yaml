@@ -1,0 +1,87 @@
+# Specify sample names and read files
+## tab-delimited table with three columns, see manual/usage.md
+##    sample_name  read1_file  [read2_file]
+##    if paired end, all samples must be paired end
+##    if single end, all samples must be single end
+## If this file is specified, sample_reports_file must not be specified.
+sample_reads_file: ''
+# Specify file containing sample groups.
+## Tab delimited with two columns, see manual/downstream_plotting.md
+## If empty string specified, all samples will be treated as one group.
+sample_groups_file: tests/test_input/sample_groups.tsv
+# OPTIONAL: file containing sample reports 
+## Use this with Snakefile_downstream_only to do the downstream processing 
+## and figure generation steps from pipeline results that already exist.
+## tab-delimited table with three columns
+##    sample_name  kraken_report  [bracken_report]
+##    if only kraken_report is listed, run_bracken below must be false
+## If this file is specified, sample_reads_file must not be specified.
+sample_reports_file: tests/test_input/sample_reports_kraken.tsv
+
+# Output base directory - will contain subfolders for reports, plots, etc
+outdir: tests/test_output/downstream_only_kraken
+
+# Do Bracken calculations and use the results in downstream processing?
+run_bracken: False
+
+# Read length of the input data
+## Used in the Bracken species reestimation. You must have a Bracken database built with this length
+read_length: 150
+
+# Confidence threshold: a recently introduced feature for Kraken
+## Increase this to reduce false positives for Kraken
+## Maximum 1.0
+## see: https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#confidence-scoring
+confidence_threshold: 0.0
+
+# Taxonomic level for Bracken results.
+## Currently, only "S" is supported.
+taxonomic_level: S
+
+# Database
+## Must contain a Kraken2 and Bracken database
+## See database options below if you are working on SCG.
+## manual/databases.md has more information
+## Default Bhatt lab database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold
+database: tests/db/
+
+######### Downstream processing options ###################
+# Downstream processing for filtering OTUs
+## This removes any classification result where all samples are below this threshold,
+## which serves to remove the very long tail of lowly abundant species in Kraken2/Bracken results.
+## This parameter can be tuned, but I recommend you keep something here to reduce the long tail.
+## This parameter is defined as a percentage, so 0.001 = 0.001%
+min_otu_percentage: 0.001
+# Filters for compositional data analysis, which get applied at each taxonomic level
+## Keep only those samples with > 5000 reads
+codata_min_reads: 1000
+## Keep only OTUs with an PROPORTION of at least 0.001
+## This is equivalent to a PERCENTAGE of 0.1
+codata_min_prop: 0.001
+## Keep OTUs that are found in at least 30% of samples
+codata_otu_cutoff: 0.3
+# Remove everything in the phylum Chordata?
+## This helps to remove pesky human reads from the matrices and plots
+remove_chordata: True
+###########################################################
+
+########### Extracting unmapped reads #####################
+# Extract unmapped reads from this database for use with
+## another database. Will be in output folder outdir/unmapped_reads
+extract_unmapped: False
+###########################################################
+
+########### Database alternatives on SCG (see README): ####
+# Genbank 2021, viral sequences only
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_viral
+# Refseq 2021
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/refseq
+# Refseq 2021, viral sequences only
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/refseq_viral
+# Genbank 2020 database used in many past analyses:
+#     /labs/asbhatt/data/program_indices/kraken2/kraken_custom_jan2020/genbank_genome_chromosome_scaffold
+#     (and other databases within this parent folder)
+# UHGG v1.0 database:
+#     /oak/stanford/scg/lab_asbhatt/data/program_indices/kraken2/uhgg
+###########################################################
+

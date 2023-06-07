@@ -1,0 +1,7 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Viruses	0	0	0	0	0	2	4	0
+Heunggongvirae	0	0	0	0	0	1	4	0
+Bamfordvirae	0	0	0	0	0	1	0	0
+Metazoa	4	6	29	23	15	4	2	3
+Bacteria	6108	6209	5521	4542	6294	5463	2910	4019
+Archaea	0	1	2	1	0	0	0	1

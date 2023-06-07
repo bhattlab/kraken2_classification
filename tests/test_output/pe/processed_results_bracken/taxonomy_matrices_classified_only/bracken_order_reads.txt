@@ -1,0 +1,18 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+Pseudomonadales	12	0	0	0	0	13	0	0
+Enterobacterales	47	258	302	115	321	533	155	681
+Alteromonadales	0	0	0	0	0	595	0	0
+Moraxellales	1405	0	0	0	0	0	0	0
+Hyphomicrobiales	0	0	0	0	10	47	12	0
+Burkholderiales	44	146	0	48	109	207	56	0
+Bacillales	60	128	55	93	191	231	42	125
+Lactobacillales	522	30	91	30	571	58	170	73
+Eubacteriales	98	0	181	0	0	431	1498	1444
+Erysipelotrichales	0	0	0	0	101	0	16	46
+Actinomycetales	0	0	44	0	0	0	0	0
+Bifidobacteriales	832	808	397	1323	182	0	245	194
+Micrococcales	0	13	0	0	0	21	0	0
+Mycobacteriales	46	0	0	0	179	468	0	0
+Propionibacteriales	63	70	0	43	0	0	0	0
+Eggerthellales	57	20	0	21	0	0	0	0
+Bacteroidales	4416	6483	6456	4723	6281	3540	1174	2373

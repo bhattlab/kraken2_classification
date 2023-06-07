@@ -1,0 +1,77 @@
+100.00	5092	0	R	1	root
+100.00	5092	0	R1	131567	  cellular organisms
+100.00	5092	0	D	2	    Bacteria
+54.02	2750	0	D1	1783270	      FCB group
+54.02	2750	0	D2	68336	        Bacteroidetes/Chlorobi group
+54.02	2750	0	P	976	          Bacteroidota
+54.02	2750	0	C	200643	            Bacteroidia
+54.02	2750	0	O	171549	              Bacteroidales
+47.21	2403	0	F	815	                Bacteroidaceae
+43.48	2214	0	G	816	                  Bacteroides
+17.46	889	0	G1	2646097	                    unclassified Bacteroides
+12.77	650	650	S	2763022	                      Bacteroides sp. M10
+4.69	238	238	S	556259	                      Bacteroides sp. D2
+13.51	688	688	S	820	                    Bacteroides uniformis
+3.24	165	165	S	674529	                    Bacteroides faecis
+6.91	351	351	S	28116	                    Bacteroides ovatus
+0.79	39	39	S	817	                    Bacteroides fragilis
+1.32	67	67	S	371601	                    Bacteroides xylanisolvens
+0.25	12	12	S	818	                    Bacteroides thetaiotaomicron
+3.73	189	0	G	909656	                  Phocaeicola
+3.73	189	189	S	357276	                    Phocaeicola dorei
+4.64	236	0	F	2005525	                Tannerellaceae
+4.64	236	0	G	375288	                  Parabacteroides
+4.64	236	236	S	823	                    Parabacteroides distasonis
+2.17	110	0	F	171550	                Rikenellaceae
+2.17	110	0	G	239759	                  Alistipes
+1.69	86	86	S	328813	                    Alistipes onderdonkii
+0.48	24	24	S	328814	                    Alistipes shahii
+25.79	1313	0	P	1224	      Pseudomonadota
+25.13	1279	0	C	1236	        Gammaproteobacteria
+14.61	743	0	O	135622	          Alteromonadales
+14.61	743	0	F	267888	            Pseudoalteromonadaceae
+14.61	743	0	G	53246	              Pseudoalteromonas
+14.61	743	0	G1	194690	                unclassified Pseudoalteromonas
+14.61	743	743	S	2589992	                  Pseudoalteromonas sp. Scap25
+10.53	535	0	O	91347	          Enterobacterales
+10.53	535	0	F	543	            Enterobacteriaceae
+10.53	535	0	G	590	              Salmonella
+10.53	535	535	S	28901	                Salmonella enterica
+0.66	33	0	C	28211	        Alphaproteobacteria
+0.66	33	0	O	356	          Hyphomicrobiales
+0.38	19	0	F	772	            Bartonellaceae
+0.38	19	0	G	773	              Bartonella
+0.38	19	19	S	2267275	                Bartonella krasnovii
+0.27	13	0	F	335928	            Xanthobacteraceae
+0.27	13	0	G	279	              Xanthobacter
+0.27	13	13	S	280	                Xanthobacter autotrophicus
+20.19	1028	0	D1	1783272	      Terrabacteria group
+11.51	586	0	P	201174	        Actinomycetota
+11.51	586	0	C	1760	          Actinomycetes
+11.51	586	0	O	85007	            Mycobacteriales
+11.51	586	0	F	1762	              Mycobacteriaceae
+11.51	586	0	G	1763	                Mycobacterium
+11.51	586	0	G1	120793	                  Mycobacterium avium complex (MAC)
+11.51	586	586	S	1764	                    Mycobacterium avium
+8.68	441	0	P	1239	        Bacillota
+6.17	313	0	C	186801	          Clostridia
+6.17	313	0	O	186802	            Eubacteriales
+3.85	195	0	F	216572	              Oscillospiraceae
+3.52	179	0	G	216851	                Faecalibacterium
+1.12	57	0	G1	2646395	                  unclassified Faecalibacterium
+1.12	57	57	S	2929495	                    Faecalibacterium sp. I4-3-84
+2.39	121	121	S	853	                  Faecalibacterium prausnitzii
+0.33	16	0	G	946234	                Flavonifractor
+0.33	16	16	S	292800	                  Flavonifractor plautii
+2.32	117	0	F	186803	              Lachnospiraceae
+2.32	117	0	G	841	                Roseburia
+2.32	117	117	S	166486	                  Roseburia intestinalis
+2.51	128	0	C	91061	          Bacilli
+1.72	87	0	O	1385	            Bacillales
+1.72	87	0	F	90964	              Staphylococcaceae
+1.72	87	0	G	1279	                Staphylococcus
+1.72	87	87	S	1280	                  Staphylococcus aureus
+0.80	40	0	O	186826	            Lactobacillales
+0.80	40	0	F	1300	              Streptococcaceae
+0.80	40	0	G	1357	                Lactococcus
+0.80	40	40	S	1358	                  Lactococcus lactis

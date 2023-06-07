@@ -1,0 +1,229 @@
+M0018C_2_month	M0018C_1_month	M0018C_3_month	M0018C_14_day	M0018C_birth	M0018M_3_month	M0018M_gest	M0018M_birth
+unclassified	38.83	37.83	44.39	54.33	36.88	45.29	70.83	59.76
+classified at a higher level	18.57	30.04	26.13	26.41	29.46	38.16	12.58	21.21
+Phocaeicola dorei	3.25	3.19	12.53	5.14	25.17	1.16	1.61	4.16
+Parabacteroides distasonis	7.63	14.39	7.85	2.22	1.71	0.98	0.1	0.64
+Acinetobacter baumannii	15.79	0	0	0	0	0	0	0
+Bacteroides faecis	5.08	6.66	1.66	0.09	0.14	1.18	0.14	0.46
+Bifidobacterium longum	1.75	2.05	0.95	3.19	0.51	0.03	1.03	0.16
+Bacteroides ovatus	0.13	1.33	1.4	3.31	0.15	0.61	0.06	0.14
+Bacteroides uniformis	0.63	0.13	0.26	0.05	0.18	2.83	0.57	2.28
+Bifidobacterium adolescentis	1.65	1.13	0.67	1.7	0.21	0	0.06	0.62
+Lacticaseibacillus rhamnosus	3.44	0.2	0.62	0	0	0	0	0.01
+Blautia wexlerae	0.47	0.02	0.13	0	0	0.04	1.6	1.29
+Bacteroides sp. M10	0.01	0.07	0.08	0.15	0.04	2.47	0.06	0.33
+Alistipes onderdonkii	0	0	0.03	0	0	0.75	1.81	0.18
+Bacteroides fragilis	0.31	0.56	0.43	0.34	0.59	0.2	0.12	0.17
+Staphylococcus aureus	0.21	0.31	0.14	0.22	0.41	0.61	0.16	0.34
+Enterococcus faecalis	0	0.03	0	0.15	1.8	0.01	0	0
+Salmonella enterica	0.19	0.14	0.17	0.24	0.24	0.44	0.26	0.28
+Anaerostipes hadrus	0	0	0	0	0	0.01	1.37	0.39
+Bacteroides sp. D2	0.04	0.17	0.09	0.46	0	0.61	0.01	0.11
+Blautia obeum	0.05	0.03	0.43	0.02	0	0.03	0.23	0.47
+Roseburia intestinalis	0	0.01	0	0	0	0.65	0.29	0.2
+Cutibacterium avidum	0.42	0.43	0	0.27	0	0	0	0
+Streptococcus thermophilus	0	0	0	0	0	0.01	0.75	0.28
+Staphylococcus epidermidis	0	0.01	0	0.18	0.84	0	0	0
+Flavonifractor plautii	0.17	0	0.48	0	0	0.15	0.16	0.03
+Bacteroides thetaiotaomicron	0.17	0.19	0.15	0.08	0.17	0.1	0.04	0.05
+Roseburia hominis	0	0	0	0	0	0.01	0.19	0.74
+Mycobacterium avium	0.15	0.08	0.03	0.04	0.13	0.36	0.06	0.08
+Faecalibacterium prausnitzii	0	0	0	0	0	0.43	0.13	0.35
+Anaerobutyricum hallii	0	0	0	0	0	0.01	0.29	0.57
+Vescimonas coprocola	0	0	0	0	0	0.09	0.75	0.01
+Bacteroides xylanisolvens	0.05	0.12	0.17	0.3	0.01	0.17	0.02	0
+Alistipes shahii	0	0	0	0	0	0.2	0.41	0.19
+Eggerthella lenta	0.42	0.13	0.06	0.09	0	0.01	0.02	0.04
+Alistipes finegoldii	0.02	0.01	0	0.02	0.02	0.05	0.22	0.43
+Coprococcus comes	0	0	0.01	0	0	0.04	0.44	0.27
+Monoglobus pectinilyticus	0	0	0	0	0	0	0.62	0.02
+Bartonella krasnovii	0.03	0.06	0.03	0.05	0.07	0.19	0.09	0.05
+Thomasclavelia spiroformis	0	0	0	0	0.55	0	0.01	0.01
+Faecalibacterium sp. I3-3-89	0	0	0	0	0	0.01	0.02	0.47
+Dorea longicatena	0	0	0	0	0	0.01	0.22	0.24
+Phocaeicola vulgatus	0.03	0.07	0.05	0.04	0.15	0.02	0.03	0.06
+Simiaoa sunii	0	0	0	0	0	0.03	0.13	0.24
+Lactococcus lactis	0	0	0	0	0	0.3	0.05	0.04
+Faecalibacterium sp. I4-3-84	0	0	0	0	0	0.16	0.03	0.19
+Coprococcus catus	0	0	0	0	0	0.02	0.23	0.11
+Schaalia radingae	0	0	0.35	0	0	0	0	0
+Pseudoalteromonas sp. Scap25	0.03	0	0.03	0.02	0.05	0.15	0.01	0.05
+Xanthobacter autotrophicus	0.01	0.04	0.03	0.02	0.03	0.12	0.04	0.03
+Wujia chipingensis	0	0	0	0	0	0	0.29	0
+[Ruminococcus] lactaris	0	0	0	0	0	0	0.05	0.21
+Faecalibacillus intestinalis	0	0	0	0	0	0.02	0.07	0.17
+Bacteroides luhongzhouii	0	0.02	0.06	0.14	0.01	0.03	0	0
+Ruthenibacterium lactatiformans	0	0	0	0	0	0	0.2	0.05
+Escherichia coli	0	0	0.15	0.01	0	0	0.06	0
+Parabacteroides merdae	0	0.04	0.05	0.04	0.08	0	0	0
+[Ruminococcus] torques	0	0	0.01	0	0	0	0.12	0.08
+Odoribacter splanchnicus	0.01	0	0	0	0	0.08	0.03	0.09
+Dysosmobacter welbionis	0	0	0	0	0	0.06	0.06	0.08
+Bifidobacterium breve	0.01	0.01	0.02	0.09	0.04	0	0.01	0.01
+Longicatena caecimuris	0	0	0	0	0	0	0.08	0.09
+Curtobacterium sp. Csp2	0.03	0.01	0.03	0.01	0.02	0.06	0	0
+Ralstonia solanacearum	0	0.01	0	0.04	0.01	0.06	0.01	0.02
+Parabacteroides goldsteinii	0.02	0.06	0.02	0.02	0	0.01	0.02	0
+Enterocloster clostridioformis	0	0.02	0	0	0	0.09	0.01	0.02
+Enterocloster bolteae	0	0.01	0.01	0.02	0	0.03	0.04	0.02
+Bacteroides sp. DH3716P	0	0.03	0	0.09	0	0.01	0	0
+Bacteroides zhangwenhongii	0	0.01	0.01	0.01	0	0.07	0	0.02
+Streptococcus salivarius	0	0.02	0.02	0	0	0	0.03	0.05
+Roseburia sp. NSJ-69	0	0	0	0	0	0.05	0.03	0.04
+[Haemophilus] ducreyi	0.01	0.01	0.01	0.01	0	0.04	0.02	0.01
+Blautia sp. SC05B48	0	0	0.02	0	0	0.01	0.04	0.04
+[Ruminococcus] gnavus	0.01	0	0	0	0	0	0.01	0.09
+Mycolicibacter sp. MYC340	0.01	0	0	0.02	0.01	0.03	0.01	0.03
+Zymomonas mobilis	0.01	0.01	0.02	0.01	0.01	0.02	0.01	0.01
+Clostridioides difficile	0.02	0.01	0	0	0.01	0	0	0.06
+Bacteroides sp. A1C1	0.01	0	0.01	0	0	0.05	0	0.03
+Enterococcus durans	0	0	0	0	0	0	0.09	0
+Akkermansia muciniphila	0	0	0	0	0	0.01	0.05	0.02
+Clostridium sp. M62/1	0	0	0	0	0	0.01	0.05	0.02
+Faecalibacterium sp. HTF-F	0	0	0	0	0	0.02	0.04	0.02
+Faecalibacterium sp. I4-1-79	0	0	0	0	0	0.02	0.01	0.05
+Bifidobacterium pseudocatenulatum	0.02	0.01	0	0.01	0	0.02	0	0.02
+Enterobacter hormaechei	0.02	0	0.01	0.01	0.01	0.01	0	0.01
+Cupriavidus oxalaticus	0	0	0	0.02	0.01	0.02	0.02	0
+Dorea formicigenerans	0.01	0	0	0	0	0	0.01	0.05
+Ruminococcus bicirculans	0	0	0	0	0	0	0	0.07
+Faecalibacterium sp. I3-3-33	0	0	0	0	0	0	0	0.07
+Bacteroides caccae	0.01	0.01	0	0	0.02	0.03	0	0
+Prevotella intermedia	0.01	0.03	0.02	0.01	0	0	0	0
+Barnesiella viscericola	0	0.04	0.02	0	0	0	0	0.01
+Butyrivibrio crossotus	0	0	0	0	0	0	0.02	0.04
+Eubacterium ventriosum	0	0	0	0	0	0	0.02	0.04
+Faecalibacterium sp. IP-3-29	0	0	0	0	0	0.01	0.02	0.03
+Rothia mucilaginosa	0	0.06	0	0	0	0	0	0
+Gordonibacter pamelaeae	0	0.01	0	0.01	0	0	0.04	0
+Bacteroides stercoris	0.01	0	0	0	0	0.02	0.02	0.01
+Bacteroides cellulosilyticus	0.01	0.01	0	0	0	0.03	0	0.01
+Bacteroides caecimuris	0	0	0.01	0.02	0	0.03	0	0
+Phocaeicola coprophilus	0	0	0.01	0.01	0.04	0	0	0
+Alistipes megaguti	0	0	0	0	0	0.03	0	0.03
+Klebsiella variicola	0.01	0.02	0	0.01	0	0.01	0	0
+Xanthomonas citri	0.01	0.01	0	0	0	0.03	0	0
+Burkholderia dolosa	0.01	0.01	0.01	0	0.01	0	0.01	0
+Lactococcus cremoris	0	0	0	0	0	0.02	0.02	0.01
+Faecalibacterium duncaniae	0	0	0	0	0	0	0.02	0.03
+Subdoligranulum variabile	0	0	0	0	0	0	0.02	0.03
+Pusillibacter faecalis	0	0	0	0	0	0.01	0.02	0.02
+Bifidobacterium angulatum	0.02	0.01	0	0.02	0	0	0	0
+Bifidobacterium catenulatum	0	0.01	0	0.02	0.02	0	0	0
+Bacteroides faecium	0	0.01	0.01	0.03	0	0	0	0
+Enterococcus faecium	0	0	0	0	0.01	0	0.03	0
+Hungatella hathewayi	0	0	0	0	0	0.01	0.01	0.02
+[Clostridium] scindens	0	0	0	0	0	0	0.02	0.02
+Winkia neuii	0.04	0	0	0	0	0	0	0
+Cutibacterium acnes	0.02	0	0	0.01	0	0.01	0	0
+Collinsella aerofaciens	0	0	0	0.02	0	0	0.01	0.01
+Bacteroides eggerthii	0.01	0	0	0	0.02	0.01	0	0
+Sulfolobus acidocaldarius	0	0.01	0.01	0.01	0	0	0	0.01
+Campylobacter jejuni	0	0	0.01	0	0	0	0.02	0
+Coprococcus eutactus	0	0	0	0	0	0	0	0.03
+Lachnoclostridium sp. YL32	0	0.01	0	0	0	0.02	0	0
+Romboutsia ilealis	0	0	0	0	0	0	0.03	0
+Eubacterium sp. c-25	0	0	0	0	0	0.01	0	0.02
+Vescimonas fastidiosa	0	0	0	0	0	0	0.02	0.01
+Massilistercora timonensis	0.01	0	0	0	0	0	0.01	0.01
+Faecalitalea cylindroides	0	0	0	0	0.01	0	0.01	0.01
+Veillonella parvula	0	0	0	0.03	0	0	0	0
+Adlercreutzia hattorii	0	0	0	0	0	0	0.01	0.02
+Alistipes communis	0	0	0	0	0	0	0.03	0
+Sodaliphilus pleomorphus	0.01	0	0.01	0.01	0	0	0	0
+Serratia ureilytica	0	0.01	0	0	0	0.01	0	0
+Haemophilus parainfluenzae	0	0	0	0.01	0	0	0	0.01
+Burkholderia cenocepacia	0.01	0	0	0	0	0.01	0	0
+Streptococcus vestibularis	0	0	0	0	0	0	0.02	0
+Paraclostridium bifermentans	0	0	0	0	0.01	0	0.01	0
+Lachnospira eligens	0	0	0	0	0	0	0.01	0.01
+Blautia producta	0	0	0	0	0	0	0.01	0.01
+Blautia argi	0	0	0	0	0	0	0.02	0
+Terrisporobacter hibernicus	0	0	0	0	0.02	0	0	0
+Eubacterium callanderi	0	0	0.01	0	0	0	0.01	0
+Eubacterium sp. MSJ-33	0	0	0	0	0	0	0.01	0.01
+Faecalibacterium sp. I2-3-92	0	0	0	0	0	0	0	0.02
+Anaerotruncus colihominis	0	0	0	0	0	0	0.01	0.01
+Intestinimonas butyriciproducens	0	0	0	0	0.01	0	0.01	0
+Flintibacter sp. KGMB00164	0	0	0	0	0	0	0	0.02
+[Clostridium] innocuum	0	0	0	0	0	0.01	0.01	0
+Thomasclavelia ramosa	0.01	0	0	0	0	0	0	0.01
+Bifidobacterium pullorum	0.01	0	0	0	0	0	0.01	0
+Mycolicibacterium austroafricanum	0.01	0	0	0	0	0.01	0	0
+Propionibacterium freudenreichii	0	0	0	0	0	0	0.01	0.01
+Adlercreutzia equolifaciens	0	0	0	0	0	0.01	0	0.01
+Bacteroides heparinolyticus	0	0	0	0	0.01	0.01	0	0
+Bacteroides humanifaecis	0	0	0	0	0	0.01	0.01	0
+Bacteroides sp. HF-162	0	0	0	0	0	0.02	0	0
+Alistipes senegalensis	0	0	0	0	0	0	0.01	0.01
+Prevotella nigrescens	0	0.01	0.01	0	0	0	0	0
+Parabacteroides johnsonii	0	0	0	0	0	0	0.01	0.01
+Megavirus chiliensis	0	0	0	0	0	0.01	0	0
+Marinobacter sp. Arc7-DN-1	0	0	0	0.01	0	0	0	0
+Citrobacter sedlakii	0.01	0	0	0	0	0	0	0
+Enterobacter bugandensis	0	0	0	0	0	0	0	0.01
+Klebsiella pneumoniae	0	0	0	0	0	0.01	0	0
+Klebsiella michiganensis	0	0	0	0	0	0.01	0	0
+Arenimonas daejeonensis	0	0.01	0	0	0	0	0	0
+Aeromonas hydrophila	0	0	0	0	0	0	0	0.01
+Komagataeibacter oboediens	0	0	0	0	0	0	0.01	0
+Orrella dioscoreae	0	0	0	0	0	0.01	0	0
+Rhodoferax sp. AJA081-3	0	0	0	0	0	0	0.01	0
+Helicobacter cinaedi	0.01	0	0	0	0	0	0	0
+Candidatus Koribacter versatilis	0	0	0	0	0	0	0.01	0
+Staphylococcus cohnii	0	0.01	0	0	0	0	0	0
+Oceanobacillus oncorhynchi	0	0	0	0	0	0	0	0.01
+Psychrobacillus sp. INOP01	0	0	0	0	0.01	0	0	0
+Paenibacillus sp. BIHB4019	0	0	0	0	0	0	0.01	0
+Streptococcus infantis	0	0	0	0.01	0	0	0	0
+Streptococcus pseudopneumoniae	0	0	0	0.01	0	0	0	0
+Lactobacillus crispatus	0	0	0	0	0.01	0	0	0
+Lactiplantibacillus paraplantarum	0	0	0	0	0	0	0.01	0
+Latilactobacillus curvatus	0	0	0	0.01	0	0	0	0
+Dolosigranulum pigrum	0.01	0	0	0	0	0	0	0
+Clostridium perfringens	0	0	0	0.01	0	0	0	0
+Clostridium sp. C1	0	0	0	0	0.01	0	0	0
+Oceanirhabdus sp. W0125-5	0	0	0	0	0	0	0	0.01
+Coprococcus sp. ART55/1	0	0	0	0	0	0	0.01	0
+Anaerostipes caccae	0	0	0	0	0	0.01	0	0
+Blautia sp. NBRC 113351	0	0	0	0	0	0	0	0.01
+Lachnoclostridium phocaeense	0	0	0	0	0.01	0	0	0
+Faecalicatena sp. Marseille-Q4148	0	0	0	0	0	0	0	0.01
+Lacrimispora sphenoides	0	0	0	0	0	0.01	0	0
+Lacrimispora xylanolytica	0	0	0.01	0	0	0	0	0
+Lacrimispora saccharolytica	0	0	0	0	0	0	0.01	0
+Enterocloster asparagiformis	0	0	0	0	0	0	0	0.01
+Peptacetobacter hiranonis	0	0	0	0	0.01	0	0	0
+Candidatus Formimonas warabiya	0	0	0	0	0	0	0	0.01
+Faecalibacterium sp. IP-1-18	0	0	0	0	0	0.01	0	0
+Fastidiosipila sanguinis	0	0	0	0	0	0	0	0.01
+Caproicibacterium amylolyticum	0	0	0	0	0	0.01	0	0
+Peptoniphilus sp. SAHP1	0	0	0	0	0.01	0	0	0
+Actinomyces pacaensis	0	0	0	0	0	0	0	0.01
+Mobiluncus curtisii	0	0	0.01	0	0	0	0	0
+Schaalia odontolytica	0	0	0.01	0	0	0	0	0
+Bifidobacterium dentium	0	0	0	0.01	0	0	0	0
+Bifidobacterium indicum	0	0	0	0.01	0	0	0	0
+Arthrobacter alpinus	0	0	0	0	0	0.01	0	0
+Kocuria varians	0	0	0	0	0	0	0.01	0
+Psychromicrobium lacuslunae	0	0	0	0	0	0	0	0.01
+Dermabacter jinjuensis	0	0	0.01	0	0	0	0	0
+Corynebacterium pseudotuberculosis	0	0	0	0	0	0	0	0.01
+Corynebacterium kefirresidentii	0	0	0	0.01	0	0	0	0
+Corynebacterium lujinxingii	0.01	0	0	0	0	0	0	0
+Mycolicibacterium chitae	0.01	0	0	0	0	0	0	0
+Rhodococcus oxybenzonivorans	0	0	0	0	0	0.01	0	0
+Actinopolymorpha singaporensis	0	0	0	0	0	0	0.01	0
+Streptomyces sp. ICC1	0	0	0	0	0.01	0	0	0
+Streptomyces sp. ICC4	0	0	0	0	0.01	0	0	0
+Collinsella stercoris	0	0	0	0.01	0	0	0	0
+Spiroplasma apis	0	0	0	0.01	0	0	0	0
+Chryseobacterium oryzae	0	0	0	0	0	0	0	0.01
+Bacteroides nordii	0	0	0	0	0	0	0	0.01
+Bacteroides intestinalis	0	0	0.01	0	0	0	0	0
+Phocaeicola salanitronis	0.01	0	0	0	0	0	0	0
+Prevotella scopos	0	0	0	0	0.01	0	0	0
+Hoylesella buccalis	0	0	0	0	0.01	0	0	0
+Coprobacter secundus	0	0	0.01	0	0	0	0	0
+Chlorobaculum limnaeum	0	0	0	0	0	0	0.01	0
+Halohasta litchfieldiae	0	0	0.01	0	0	0	0	0

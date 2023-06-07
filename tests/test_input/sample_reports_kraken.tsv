@@ -1,0 +1,8 @@
+M0018C_2_month	tests/test_output/pe/classification/M0018C_2_month.krak.report
+M0018C_1_month	tests/test_output/pe/classification/M0018C_1_month.krak.report
+M0018C_3_month	tests/test_output/pe/classification/M0018C_3_month.krak.report
+M0018C_14_day	tests/test_output/pe/classification/M0018C_14_day.krak.report
+M0018C_birth	tests/test_output/pe/classification/M0018C_birth.krak.report
+M0018M_3_month	tests/test_output/pe/classification/M0018M_3_month.krak.report
+M0018M_gest	tests/test_output/pe/classification/M0018M_gest.krak.report
+M0018M_birth	tests/test_output/pe/classification/M0018M_birth.krak.report
