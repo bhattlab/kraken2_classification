@@ -23,9 +23,10 @@ If you're in the Bhatt lab, most of this work will take place on the SCG cluster
 If you're in the Bhatt lab, use [these instructions](https://github.com/bhattlab/bhattlab_workflows/blob/master/manual/setup.md) to set up snakemake and set up a profile to submit jobs to the SCG cluster. External users should follow these instructions:
 
 1. [Install mambaforge](https://github.com/conda-forge/miniforge#mambaforge).
-2. Create a fresh environment with `snakemake` or add it to an existing environment:
+2. Create a fresh environment with `snakemake` or add it to an existing environment. Activate this environment for any step using this pipeline:
 ```
 mamba create --name snakemake --channel conda-forge --channel bioconda snakemake
+conda activate snakemake
 ```
 3. [Install singularity](https://docs.sylabs.io/guides/latest/user-guide/quick_start.html#quick-installation-steps).
 
