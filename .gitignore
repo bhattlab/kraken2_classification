@@ -1,5 +1,5 @@
 .snakemake/
 large_data/
 Rplots.pdf
-test_data/db
-test_data/test_output/scripts
+tests/db
+tests/test_output/scripts
