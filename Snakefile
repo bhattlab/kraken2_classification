@@ -7,7 +7,7 @@ from os.path import join, exists
 import sys
 import snakemake
 import time
-localrules: downstream_processing, downstream_processing_krakenonly, bracken, copy_files_processing, create_taxonomy_array
+localrules: downstream_processing_kraken, downstream_processing_bracken, bracken, copy_files_processing, create_taxonomy_array
 
 # Include code from other files
 # scripts/setup.smk interprets config file and sets pipeline options
@@ -17,8 +17,7 @@ include: "scripts/setup.smk"
 rule all:
     input:
         expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names),
-        # expand(join(outdir, "classification/{samp}.krak"), samp=sample_names),
-        join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf'),
+        join(outdir, 'processed_results_kraken/plots/classified_taxonomy_barplot_species.pdf'),
         run_extra_all_outputs,
         join(outdir, "kraken2_processing_completed.txt")
 
@@ -97,47 +96,50 @@ rule bracken:
         """
 
 # Downstream processing with R
-## Two steps: first with Bracken if the tool was run, the second with Kraken only
-rule downstream_processing:
+## Run for Kraken, and also Bracken if the tool was run
+rule downstream_processing_kraken:
     input:
-        downstream_processing_input,
+        downstream_processing_input_kraken,
         tax_array = join(outdir, 'taxonomy_array.tsv'),
         script_test = join(outdir, 'scripts/post_classification_workflow.R')
     params:
-        sample_reads = config["sample_file"],
-        sample_groups = config["sample_groups_file"],
+        sample_reads_file = config["sample_reads_file"],
+        sample_reports_file = config["sample_reports_file"],
+        sample_groups_file = config["sample_groups_file"],
         workflow_outdir = outdir,
-        result_dir = join(outdir, 'processed_results'),
-        use_bracken_report = config['run_bracken'],
-        remove_chordata = config['remove_chordata']
-    singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
-    output:
-        join(outdir, 'processed_results/plots/classified_taxonomy_barplot_species.pdf')
-    script:
-        'scripts/post_classification_workflow.R'
-
-rule downstream_processing_krakenonly:
-    input:
-        downstream_processing_input,
-        tax_array = join(outdir, 'taxonomy_array.tsv'),
-        script_test = join(outdir, 'scripts/post_classification_workflow.R')
-    params:
-        sample_reads = config["sample_file"],
-        sample_groups = config["sample_groups_file"],
-        workflow_outdir = outdir,
-        result_dir = join(outdir, 'processed_results_krakenonly'),
+        result_dir = join(outdir, 'processed_results_kraken'),
         use_bracken_report = False,
         remove_chordata = config['remove_chordata']
     singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
     output:
-        join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf')
+        join(outdir, 'processed_results_kraken/plots/classified_taxonomy_barplot_species.pdf')
+    script:
+        'scripts/post_classification_workflow.R'
+
+rule downstream_processing_bracken:
+    input:
+        downstream_processing_input_bracken,
+        tax_array = join(outdir, 'taxonomy_array.tsv'),
+        script_test = join(outdir, 'scripts/post_classification_workflow.R')
+    params:
+        sample_reads_file = config["sample_reads_file"],
+        sample_reports_file = config["sample_reports_file"],
+        sample_groups_file = config["sample_groups_file"],
+        workflow_outdir = outdir,
+        result_dir = join(outdir, 'processed_results_bracken'),
+        use_bracken_report = config['run_bracken'],
+        remove_chordata = config['remove_chordata']
+    singularity: "shub://bhattlab/kraken2_classification:kraken2_processing"
+    output:
+        join(outdir, 'processed_results_bracken/plots/classified_taxonomy_barplot_species.pdf')
     script:
         'scripts/post_classification_workflow.R'
 
 # Remove file copied files during setup
 rule remove_files_processing:
     input: 
-        rules.downstream_processing.output
+        rules.downstream_processing_kraken.output,
+        run_extra_all_outputs
     output:
         join(outdir, "kraken2_processing_completed.txt")
     params:
