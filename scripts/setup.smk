@@ -6,6 +6,10 @@ if "outdir" not in config.keys():
     else:
         configfile: "config.yaml"
 
+# If running this whole pipeline, sample_reports_file cannot be specified.
+if config['sample_reports_file'] != '' and config['sample_reports_file'] is not None:
+    sys.exit("sample_reports_file cannot be specified in the config if running the whole pipeline.")
+
 # output base directory
 outdir = config['outdir']
 
@@ -18,24 +22,25 @@ if not 'confidence_threshold' in config:
     config['confidence_threshold'] = 0.0
 confidence_threshold = config['confidence_threshold']
 
-# Read in sample names and sequencing files from sample_file
+# Read in sample names and sequencing files from sample_reads_file
 # Set options depending on if the input is paired-end or not
-sample_reads, paired_end = get_sample_reads(config['sample_file'])
+sample_reads, paired_end = get_sample_reads(config['sample_reads_file'])
 if paired_end:
     paired_string = '--paired'
 else:
     paired_string = ''
 sample_names = sample_reads.keys()
+downstream_processing_input_kraken = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
+downstream_processing_input_bracken = []
 
 # Determine extra output files if certain steps are defined in the config
 extra_run_list =[]
 ## Add bracken outputs
 if config['run_bracken']:
     extra_run_list.append('bracken')
-    extra_run_list.append('krakenonly_processed')
-    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names)
-else:
-    downstream_processing_input = expand(join(outdir, "classification/{samp}.krak.report"), samp=sample_names)
+    extra_run_list.append('bracken_processed')
+    downstream_processing_input_bracken = expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names)
+
 ## Add unmapped read extraction
 if config['extract_unmapped']:
     if paired_end:
@@ -45,7 +50,7 @@ if config['extract_unmapped']:
 ## Define the actual outputs. Some options unused currently.
 extra_files = {
     "bracken": expand(join(outdir, "classification/{samp}.krak_bracken_species.report"), samp=sample_names),
-    "krakenonly_processed": join(outdir, 'processed_results_krakenonly/plots/classified_taxonomy_barplot_species.pdf'),
+    "bracken_processed": join(outdir, 'processed_results_bracken/plots/classified_taxonomy_barplot_species.pdf'),
     "unmapped_paired": expand(join(outdir, "unmapped_reads/{samp}_unmapped_1.fq"), samp=sample_names),
     "unmapped_single": expand(join(outdir, "unmapped_reads/{samp}_unmapped.fq"), samp=sample_names),
     "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
