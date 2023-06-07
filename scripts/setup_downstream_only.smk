@@ -25,8 +25,11 @@ confidence_threshold = config['confidence_threshold']
 # Read in sample names and sequencing files from sample_reads_file
 # Set options depending on if the input has bracken reports or not
 sample_reports, bracken_reports = get_sample_reports(config['sample_reports_file'])
+print(sample_reports)
 sample_names = sample_reports.keys()
 downstream_processing_input_kraken = [a[0] for a in sample_reports.values()]
+print(downstream_processing_input_kraken)
+downstream_processing_input_bracken = []
 if bracken_reports != config['run_bracken']:
     sys.exit("Conflicting inputs: run_bracken in config file and bracken report listed in sample_reports")
 
