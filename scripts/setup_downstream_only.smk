@@ -25,10 +25,8 @@ confidence_threshold = config['confidence_threshold']
 # Read in sample names and sequencing files from sample_reads_file
 # Set options depending on if the input has bracken reports or not
 sample_reports, bracken_reports = get_sample_reports(config['sample_reports_file'])
-print(sample_reports)
 sample_names = sample_reports.keys()
 downstream_processing_input_kraken = [a[0] for a in sample_reports.values()]
-print(downstream_processing_input_kraken)
 downstream_processing_input_bracken = []
 if bracken_reports != config['run_bracken']:
     sys.exit("Conflicting inputs: run_bracken in config file and bracken report listed in sample_reports")
@@ -46,7 +44,6 @@ extra_files = {
     "barplot": join(outdir, "plots/taxonomic_composition.pdf"),
 }
 run_extra_all_outputs = [extra_files[f] for f in extra_run_list]
-print("run Extra files: " + str(run_extra_all_outputs))
 
 # Set some resource requirements
 bracken_memory = 8
@@ -56,10 +53,3 @@ bracken_threads = 1
 # output file name of Bracken and adjust based on taxonomic level.
 if config['taxonomic_level'] != 'S':
     sys.exit('taxonomic_level setting can only be S')
-
-# Set config['codata_min_reads'] to lower than the default if working with test data
-if config['codata_min_reads'] > 1000 \
-    and "M0018C_2_month" in sample_reports \
-    and sample_reports["M0018C_2_month"][0] == "test_data/test_output/classification2/M0018C_2_month.krak.report":
-    print("Changing config['codata_min_reads'] to 1000 based on test data ")
-    config['codata_min_reads'] = 1000

@@ -3,25 +3,23 @@
 ##    sample_name  read1_file  [read2_file]
 ##    if paired end, all samples must be paired end
 ##    if single end, all samples must be single end
-## By default, this loads a very small test dataset
-# sample_reads_file: ''
-sample_reads_file: test_data/classification_input.tsv
+## If this file is specified, sample_reports_file must not be specified.
+sample_reads_file: ''
 # Specify file containing sample groups.
 ## Tab delimited with two columns, see manual/downstream_plotting.md
 ## If empty string specified, all samples will be treated as one group.
-sample_groups_file: test_data/sample_groups.tsv
+sample_groups_file: ''
 # OPTIONAL: file containing sample reports 
 ## Use this with Snakefile_downstream_only to do the downstream processing 
 ## and figure generation steps from pipeline results that already exist.
 ## tab-delimited table with three columns
 ##    sample_name  kraken_report  [bracken_report]
 ##    if only kraken_report is listed, run_bracken below must be false
-sample_reports_file:
-# sample_reports_file: test_data/sample_reports.tsv
-
+## If this file is specified, sample_reads_file must not be specified.
+sample_reports_file: ''
 
 # Output base directory - will contain subfolders for reports, plots, etc
-outdir: test_data/test_output
+outdir: ''
 
 # Do Bracken calculations and use the results in downstream processing?
 run_bracken: True
@@ -45,7 +43,7 @@ taxonomic_level: S
 ## See database options below if you are working on SCG.
 ## manual/databases.md has more information
 ## Default Bhatt lab database: /labs/asbhatt/data/program_indices/kraken2/kraken_custom_dec2021/genbank_genome_chromosome_scaffold
-database: test_data/db/
+database: ''
 
 ######### Downstream processing options ###################
 # Downstream processing for filtering OTUs
